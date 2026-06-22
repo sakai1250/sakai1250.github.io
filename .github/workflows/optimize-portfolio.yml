@@ -1,0 +1,166 @@
+name: Optimize Portfolio Assets
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests Pillow
+
+      - name: Process README and Optimize Images
+        run: |
+          python -c "
+          import re
+          import os
+          import json
+          import requests
+          from PIL import Image
+          from io import BytesIO
+
+          # 設定
+          README_URL = 'https://raw.githubusercontent.com/sakai1250/sakai1250/main/Readme.md'
+          ASSETS_DIR = 'assets'
+          THUMB_DIR = os.path.join(ASSETS_DIR, 'thumbnails')
+          DATA_FILE = os.path.join(ASSETS_DIR, 'data.json')
+
+          os.makedirs(THUMB_DIR, exist_ok=True)
+          
+          generated_files = set()
+
+          # README読み込み (外部URLから取得)
+          res = requests.get(README_URL)
+          if res.status_code != 200:
+              print(f'Failed to fetch README: {res.status_code}')
+              exit(0)
+          content = res.text
+
+          data = {'badges': {}, 'apps': {}}
+
+          # --- 1. バッジの抽出 ---
+          def extract_images(header_pattern):
+              # ヘッダーから次のヘッダーまでを抽出
+              pattern = re.compile(rf'#+\s*({header_pattern})[\s\S]*?(?=(?:#+\s)|$)', re.IGNORECASE)
+              match = pattern.search(content)
+              if not match: return []
+              
+              # 画像タグ抽出
+              img_pattern = re.compile(r'(!\[(.*?)\]\((.*?)\))|(<img\s+[^>]*src=[\"\'](.*?)[\"\'][^>]*>)', re.IGNORECASE)
+              images = []
+              for m in img_pattern.finditer(match.group(0)):
+                  if m.group(1): # Markdown形式
+                      images.append({'alt': m.group(2), 'src': m.group(3)})
+                  elif m.group(4): # HTML形式
+                      src = m.group(5)
+                      alt_match = re.search(r'alt=[\"\'](.*?)[\"\']', m.group(4), re.IGNORECASE)
+                      alt = alt_match.group(1) if alt_match else ''
+                      images.append({'alt': alt, 'src': src})
+              return images
+
+          data['badges']['badges-languages'] = extract_images('Languages|言語')
+          data['badges']['badges-frameworks'] = extract_images('Frameworks|Tools|ツール|技術')
+          data['badges']['badges-orgs'] = extract_images('Organizations|所属')
+
+          # --- 2. アプリ情報の抽出と画像最適化 ---
+          lines = content.split('\n')
+          for i, line in enumerate(lines):
+              # GitHubリポジトリリンクを含む行を探す
+              repo_match = re.search(r'github\.com/([^/]+/[^/]+)', line)
+              if repo_match:
+                  full_repo = repo_match.group(1).replace('.git', '').strip()
+                  repo_slug = full_repo  # user/repo
+                  
+                  # 説明文の抽出 (リンクや画像タグを除去)
+                  desc = re.sub(r'\[([^\]]+)\]\([^\)]+\)', '', line) # リンク除去
+                  desc = re.sub(r'<[^>]+>', '', desc) # HTMLタグ除去
+                  desc = re.sub(r'!\[.*?\]\(.*?\)', '', desc) # Markdown画像除去
+                  desc = re.sub(r'^[\s\-\*\d\.:|]+', '', desc).strip() # 行頭記号除去
+                  
+                  # 画像URLの抽出
+                  img_src = None
+                  # 変更: user-attachmentsのURLも画像として認識する
+                  img_match = re.search(r'!\[.*?\]\((.*?)\)|<img.*?src=[\"\'](.*?)[\"\']|(https://github\.com/user-attachments/assets/[\w-]+)', line)
+                  if img_match:
+                      img_src = img_match.group(1) or img_match.group(2) or img_match.group(3)
+                  
+                  # 画像が現在行にない場合、次の行(最大3行)を探す
+                  if not img_src:
+                      for offset in range(1, 4):
+                          if i + offset >= len(lines): break
+                          next_line = lines[i + offset]
+                          # 次の行が別のリポジトリリンクやヘッダーなら中断
+                          # ただし、画像URL(user-attachments)の場合は中断しない
+                          if ('github.com' in next_line and 'user-attachments' not in next_line) or next_line.strip().startswith('#'):
+                              break
+                          
+                          sub_img_match = re.search(r'!\[.*?\]\((.*?)\)|<img.*?src=[\"\'](.*?)[\"\']|(https://github\.com/user-attachments/assets/[\w-]+)', next_line)
+                          if sub_img_match:
+                              img_src = sub_img_match.group(1) or sub_img_match.group(2) or sub_img_match.group(3)
+                              break
+                  
+                  if desc or img_src:
+                      app_data = {'desc': desc}
+                      
+                      # 画像がある場合、ダウンロードしてリサイズ
+                      if img_src and img_src.startswith('http'):
+                          try:
+                              filename = f\"{full_repo.replace('/', '_')}.webp\"
+                              local_path = os.path.join(THUMB_DIR, filename)
+                              
+                              # 画像取得
+                              r = requests.get(img_src, timeout=10)
+                              if r.status_code == 200:
+                                  img = Image.open(BytesIO(r.content))
+                                  # モード変換 (WebPはRGBA対応。P/CMYKは変換)
+                                  if img.mode == 'P': img = img.convert('RGBA')
+                                  if img.mode == 'CMYK': img = img.convert('RGB')
+                                  # リサイズ (幅400pxに制限)
+                                  img.thumbnail((400, 400))
+                                  # 保存 (WebP, 品質85)
+                                  img.save(local_path, 'WEBP', quality=85)
+                                  
+                                  generated_files.add(filename)
+                                  app_data['img'] = f\"assets/thumbnails/{filename}\"
+                              else:
+                                  app_data['img'] = img_src # 失敗時は元のURL
+                          except Exception as e:
+                              print(f'Error processing {full_repo}: {e}')
+                              app_data['img'] = img_src
+                      elif img_src:
+                          app_data['img'] = img_src
+
+                      data['apps'][full_repo] = app_data
+
+          # 未使用の画像ファイルを削除 (完全同期)
+          for f in os.listdir(THUMB_DIR):
+              if f not in generated_files:
+                  os.remove(os.path.join(THUMB_DIR, f))
+
+          # JSON保存
+          with open(DATA_FILE, 'w', encoding='utf-8') as f:
+              json.dump(data, f, ensure_ascii=False, indent=2)
+          "
+
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore: update portfolio assets and optimized images"
+          file_pattern: "assets/*"
