@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(window.init3DEffects || init3DEffects, '3DEffects');
     safeInit(window.initBackgroundParticles || initBackgroundParticles, 'BackgroundParticles');
     safeInit(window.initTypingEffect || initTypingEffect, 'TypingEffect');
-    safeInit(window.initDraggableInteractions || initDraggableInteractions, 'DraggableInteractions');
 });
 
 // === Core Functions ===
@@ -104,12 +103,12 @@ function initTheme() {
     const set = (t) => {
         document.documentElement.setAttribute('data-theme', t);
         localStorage.setItem('theme', t);
-        if (icon) icon.textContent = t === 'dark' ? '🌙' : '☀️';
+        if (icon) icon.textContent = t === 'dark' ? '☾' : '☀︎';
         document.querySelectorAll('#stats-langs, #stats-general').forEach(img => {
             img.src = img.src.replace(/theme=[^&]+/, `theme=${t === 'dark' ? 'dracula' : 'default'}`);
         });
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-        if (metaThemeColor) metaThemeColor.setAttribute('content', t === 'dark' ? '#0d1117' : '#ffffff');
+        if (metaThemeColor) metaThemeColor.setAttribute('content', t === 'dark' ? '#09131F' : '#F7F3EA');
     };
     if (btn) btn.addEventListener('click', () => set(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
     set(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
