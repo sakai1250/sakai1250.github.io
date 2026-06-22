@@ -1,0 +1,106 @@
+{
+  "badges": {
+    "badges-languages": [],
+    "badges-frameworks": [
+      {
+        "alt": "Flutter",
+        "src": "https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white"
+      },
+      {
+        "alt": "Django",
+        "src": "https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white"
+      },
+      {
+        "alt": "Laravel",
+        "src": "https://img.shields.io/badge/Laravel-%23FF2D20.svg?style=for-the-badge&logo=laravel&logoColor=white"
+      },
+      {
+        "alt": "Flask",
+        "src": "https://img.shields.io/badge/Flask-000?style=for-the-badge&logo=flask&logoColor=fff"
+      },
+      {
+        "alt": "ROS2",
+        "src": "https://img.shields.io/badge/ros2-%2322314E.svg?style=for-the-badge&logo=ros&logoColor=white"
+      },
+      {
+        "alt": "Next JS",
+        "src": "https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white"
+      }
+    ],
+    "badges-orgs": [
+      {
+        "alt": "GitHub画像",
+        "src": "https://github.com/user-attachments/assets/06029876-4a7b-44fe-8df6-cac6bbbf8391"
+      },
+      {
+        "alt": "GitHub画像",
+        "src": "https://github.com/user-attachments/assets/3df7dbab-02ff-494d-b468-3bf755043a2c"
+      },
+      {
+        "alt": "GitHub画像",
+        "src": "https://github.com/user-attachments/assets/7109b8d7-da71-4b8d-8858-773980b358d5"
+      }
+    ]
+  },
+  "apps": {
+    "DenverCoder1/readme-typing-svg\">": {
+      "desc": "",
+      "img": "https://readme-typing-svg.demolab.com/?lines=I"
+    },
+    "user-attachments/assets": {
+      "desc": "",
+      "img": "assets/thumbnails/user-attachments_assets.webp"
+    },
+    "sakai1250/hacku2023\">GitHub<": {
+      "desc": "App Store | GitHub"
+    },
+    "sakai1250/otsuri_docter\">GitHub<": {
+      "desc": "App Store | GitHub"
+    },
+    "sakai1250/PresentMemo\">": {
+      "desc": "",
+      "img": "assets/thumbnails/sakai1250_PresentMemo\">.webp"
+    },
+    "sakai1250/PresentMemo\">GitHub<": {
+      "desc": "App Store | GitHub"
+    },
+    "sakai1250/super_res\">": {
+      "desc": "",
+      "img": "assets/thumbnails/sakai1250_super_res\">.webp"
+    },
+    "sakai1250/super_res\">GitHub<": {
+      "desc": "App Store | GitHub"
+    },
+    "jphacks/F_2208\">": {
+      "desc": "",
+      "img": "assets/thumbnails/jphacks_F_2208\">.webp"
+    },
+    "sakai1250/Who-is-the-Ground-Truth-\">": {
+      "desc": "",
+      "img": "assets/thumbnails/sakai1250_Who-is-the-Ground-Truth-\">.webp"
+    },
+    "sakai1250/Who-is-the-Ground-Truth-\">GitHub<": {
+      "desc": "App Store | GitHub"
+    },
+    "jphacks/F_2107\">": {
+      "desc": "",
+      "img": "assets/thumbnails/jphacks_F_2107\">.webp"
+    },
+    "sakai1250/HackU2022\">": {
+      "desc": "",
+      "img": "assets/thumbnails/sakai1250_HackU2022\">.webp"
+    },
+    "sakai1250/ML_app_flask_test\">": {
+      "desc": "",
+      "img": "assets/thumbnails/sakai1250_ML_app_flask_test\">.webp"
+    },
+    "sakai1250/RL_super_mario_bro\">": {
+      "desc": "",
+      "img": "assets/thumbnails/sakai1250_RL_super_mario_bro\">.webp"
+    },
+    "sakai1250/Block_KUZUSHI_unity\">": {
+      "desc": "",
+      "img": "assets/thumbnails/sakai1250_Block_KUZUSHI_unity\">.webp"
+    }
+  }
+}

@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="1770375438872~2.png">
+  <title>Taigo Sakai | Portfolio</title>
+  <link rel="stylesheet" href="https://unpkg.com/@primer/css@22.0.2/dist/primer.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Chakra+Petch:wght@400;500;600;700&family=Sora:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="名城大学大学院 博士後期課程 坂井泰吾のポートフォリオ。Deep Learning, Computer Visionの研究や、iOS/Webアプリ開発の実績を紹介しています。">
+  <!-- Performance: Preconnect to external asset domains -->
+  <link rel="preconnect" href="https://github-readme-stats-vercel-wea9.vercel.app">
+  <link rel="preconnect" href="https://img.shields.io">
+  <link rel="dns-prefetch" href="https://api.rss2json.com">
+  <!-- Dynamic Theme Color for Mobile Browsers -->
+  <meta name="theme-color" content="#0d1117">
+  <meta property="og:title" content="Taigo Sakai | Portfolio">
+  <meta property="og:description"
+    content="名城大学大学院 博士後期課程 坂井泰吾のポートフォリオ。Deep Learning, Computer Visionの研究や、iOS/Webアプリ開発の実績を紹介しています。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sakai1250.github.io/">
+  <meta property="og:image" content="https://github.com/sakai1250.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:creator" content="@ikaitaig">
+  <link rel="stylesheet" href="style.css?v=20260609-4" />
+  <!-- Structured Data (JSON-LD) for SEO & Professionalism -->
+  <script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Person",
+    "name": "Taigo Sakai",
+    "jobTitle": "Ph.D. Student / Researcher / Engineer",
+    "url": "https://sakai1250.github.io/",
+    "sameAs": [
+      "https://github.com/sakai1250",
+      "https://qiita.com/sakai1250",
+      "https://www.linkedin.com/in/sakai1250"
+    ],
+    "alumniOf": "Meijo University"
+  }
+  </script>
+  <!-- Theme Initialization: Prevent Flash of Incorrect Theme -->
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('theme');
+      const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      const theme = savedTheme || systemTheme;
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="loading-screen">
+    <div class="spinner">Taigo Sakai</div>
+  </div>
+  
+  <!-- Neural Network Background Canvas will be injected here by JS -->
+
+  <div class="page">
+
+    <header class="header-bar">
+      <div class="header-inner">
+        <div class="header-top">
+          <div class="header-profile">
+            <img src="https://researchmap.jp/sakai1250/avatar.jpg" alt="Taigo Sakai"
+              style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--surface-2); box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+            <div class="header-identity">
+              <h1 class="header-name">Taigo Sakai</h1>
+              <div class="header-subtitle">
+                <span lang="ja">名城大学 大学院 理工学研究科</span>
+                <span lang="en">Meijo University Graduate School of Science and Technology</span>
+              </div>
+              <div class="typing-container"><span id="typing-text"></span><span class="cursor" aria-hidden="true"></span></div>
+            </div>
+          </div>
+
+          <!-- Stats (Middle) -->
+          <div class="header-stats">
+            <div class="stat-item">
+              <div class="stat-value" id="stat-papers">-</div>
+              <div class="stat-label">
+                <span lang="ja">論文</span>
+                <span lang="en">Papers</span>
+              </div>
+            </div>
+            <div class="stat-item" style="border-left: 1px solid var(--stroke); padding-left: 24px;">
+              <div class="stat-value" id="stat-awards">-</div>
+              <div class="stat-label">
+                <span lang="ja">受賞</span>
+                <span lang="en">Awards</span>
+              </div>
+            </div>
+            <div class="stat-item" style="border-left: 1px solid var(--stroke); padding-left: 24px;">
+              <div class="stat-value" id="stat-apps">-</div>
+              <div class="stat-label">
+                <span lang="ja">アプリ</span>
+                <span lang="en">Apps</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="header-actions">
+            <button class="header-btn" id="lang-toggle" type="button">
+              <span lang="ja">EN</span>
+              <span lang="en">JA</span>
+            </button>
+            <button class="header-btn" id="theme-toggle" type="button" aria-label="テーマ切り替え">
+              <span id="theme-icon">🌙</span>
+            </button>
+            <a href="#contact" class="header-btn scroll-link">
+              <span lang="ja">連絡</span>
+              <span lang="en">Contact</span>
+            </a>
+            <a href="https://github.com/sakai1250" class="header-btn primary">
+              <span lang="ja">フォロー</span>
+              <span lang="en">Follow</span>
+            </a>
+          </div>
+        </div>
+        <div class="header-tab-row">
+          <nav class="tab-nav header-tab-nav" aria-label="Primary sections">
+            <div class="tab-item active" data-tab="research" role="button" tabindex="0">
+              <span lang="ja">研究 (Researcher)</span>
+              <span lang="en">Research</span>
+            </div>
+            <div class="tab-item" data-tab="engineer" role="button" tabindex="0">
+              <span lang="ja">開発 (Engineer)</span>
+              <span lang="en">Engineering</span>
+            </div>
+          </nav>
+          <div class="filter-row year-filter">
+            <span class="filter-label">
+              <span lang="ja">年度</span>
+              <span lang="en">Year</span>
+            </span>
+            <button class="chip active" data-year="all" type="button">
+              <span lang="ja">すべて</span>
+              <span lang="en">All</span>
+            </button>
+            <button class="chip" data-year="2026" type="button">2026</button>
+            <button class="chip" data-year="2025" type="button">2025</button>
+            <button class="chip" data-year="2024" type="button">2024</button>
+            <button class="chip" data-year="2023" type="button">2023</button>
+            <button class="chip" data-year="2022" type="button">2022</button>
+            <button class="chip" data-year="2021" type="button">2021</button>
+            <button class="chip" data-year="2020" type="button">2020</button>
+          </div>
+        </div>
+        <!-- <div class="header-bottom">
+          <div class="header-nav">
+            <button class="nav-btn" data-jump="research" type="button">
+              <span lang="ja">研究を見る</span>
+              <span lang="en">Research</span>
+            </button>
+            <button class="nav-btn" data-jump="engineer" type="button">
+              <span lang="ja">開発を見る</span>
+              <span lang="en">Development</span>
+            </button>
+          </div>
+          <div class="header-hint">
+            <span lang="ja">検索: / キー</span>
+            <span lang="en">Search: / key</span>
+          </div>
+        </div> -->
+      </div>
+    </header>
+
+    <div id="content">
+      <div class="container-lg">
+
+        <aside class="profile-sidebar">
+          <div class="profile-card">
+            <div class="profile-name">Taigo Sakai</div>
+            <div class="profile-username">坂井 泰吾</div>
+            <div class="profile-bio">
+              <div lang="ja">
+                名城大学 大学院<br>
+                理工学研究科 電気電子・情報・材料工学専攻<br>
+                博士後期課程
+              </div>
+              <div lang="en">
+                Meijo University Graduate School<br>
+                Dept. of Electrical, Electronic, Information and Materials Engineering<br>
+                Ph.D. Course
+              </div>
+            </div>
+            <div class="profile-links">
+              <div class="profile-link-row">
+                <a href="mailto:263441505@ccmailg.meijo-u.ac.jp"><span class="icon"><svg class="octicon octicon-mail"
+                      viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor">
+                      <path
+                        d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25v-8.5C0 2.784.784 2 1.75 2ZM1.5 12.251c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V5.809L8.38 9.397a.75.75 0 0 1-.76 0L1.5 5.809v6.442Zm13-8.181v-.32a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25v.32L8 7.88Z">
+                      </path>
+                    </svg></span> Email</a>
+                <button class="copy-btn" data-copy="263441505@ccmailg.meijo-u.ac.jp" 
+                  data-ja-label="コピー" data-en-label="Copy"
+                  data-ja-success="コピー済み" data-en-success="Copied!"
+                  data-error="Error" type="button">
+                  <span lang="ja">コピー</span>
+                  <span lang="en">Copy</span>
+                </button>
+              </div>
+              <a href="https://x.com/ikaitaig" target="_blank"><span class="icon"><svg
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" role="img"
+                    aria-labelledby="x-icon" class="octicon" fill="currentColor">
+                    <title id="x-icon">X</title>
+                    <path
+                      d="M9.332 6.925 14.544 1h-1.235L8.783 6.145 5.17 1H1l5.466 7.78L1 14.993h1.235l4.78-5.433 3.816 5.433H15L9.332 6.925ZM7.64 8.848l-.554-.775L2.68 1.91h1.897l3.556 4.975.554.775 4.622 6.466h-1.897L7.64 8.848Z">
+                    </path>
+                  </svg></span> @ikaitaig</a>
+              <a href="https://www.linkedin.com/in/sakai1250" target="_blank"><span class="icon"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor"
+                    role="img" aria-labelledby="linkedin-icon" class="octicon">
+                    <title id="linkedin-icon">LinkedIn</title>
+                    <path
+                      d="M14.5455 0H1.45455C0.650909 0 0 0.650909 0 1.45455V14.5455C0 15.3491 0.650909 16 1.45455 16H14.5455C15.3491 16 16 15.3491 16 14.5455V1.45455C16 0.650909 15.3491 0 14.5455 0ZM5.05746 13.0909H2.912V6.18764H5.05746V13.0909ZM3.96291 5.20073C3.27127 5.20073 2.712 4.64 2.712 3.94982C2.712 3.25964 3.272 2.69964 3.96291 2.69964C4.65236 2.69964 5.21309 3.26036 5.21309 3.94982C5.21309 4.64 4.65236 5.20073 3.96291 5.20073ZM13.0938 13.0909H10.9498V9.73382C10.9498 8.93309 10.9353 7.90327 9.83491 7.90327C8.71855 7.90327 8.54691 8.77527 8.54691 9.67564V13.0909H6.40291V6.18764H8.46109V7.13091H8.49018C8.77673 6.58836 9.47636 6.016 10.52 6.016C12.6924 6.016 13.0938 7.44582 13.0938 9.30473V13.0909V13.0909Z">
+                    </path>
+                  </svg></span> LinkedIn</a>
+              <a href="https://www.kaggle.com/sakaitt" target="_blank"><span class="icon text-icon">K</span> Kaggle</a>
+              <a href="https://qiita.com/sakai1250" target="_blank"><span class="icon"><svg
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor"
+                    role="img" aria-labelledby="qiita-icon">
+                    <title id="qiita-icon">Qiita</title>
+                    <path
+                      d="M8 1.5a6.5 6.5 0 1 0 3.837 11.801l2.308 2.308a.75.75 0 0 0 1.06-1.06l-2.308-2.308A6.5 6.5 0 0 0 8 1.5ZM3 8a5 5 0 1 1 10 0A5 5 0 0 1 3 8Z" />
+                  </svg></span> Qiita</a>
+              <a href="https://github.com/sakai1250" target="_blank"><span class="icon"><svg height="16"
+                    aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+                    class="octicon octicon-mark-github" fill="currentColor">
+                    <path
+                      d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.46-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z">
+                    </path>
+                  </svg></span> GitHub</a>
+              <a href="https://scholar.google.com/citations?user=eS-5wrQAAAAJ&hl=ja&authuser=2" target="_blank"><span
+                  class="icon text-icon">G</span> Google Scholar</a>
+            </div>
+          </div>
+        </aside>
+
+        <main class="main-content">
+
+
+          <nav id="section-tab-nav" class="section-tab-nav" aria-label="Cards"></nav>
+
+          <div id="research-content" class="tab-content active">
+
+            <section class="section-card">
+              <h2 class="section-title">
+                <span lang="ja">🏫 所属・学歴</span>
+                <span lang="en">🏫 Education</span>
+              </h2>
+              <ul class="repo-list">
+                <li data-year="2026">
+                  <b lang="ja">名城大学 大学院 理工学研究科 電気電子・情報・材料工学専攻 博士後期課程</b>
+                  <b lang="en">Meijo University Graduate School, Ph.D. Student</b>
+                  <div class="muted">
+                    <span lang="ja">2026年4月 – 現在 | 指導教員: 堀田 一弘 教授</span>
+                    <span lang="en">Apr. 2026 – Present | Advisor: Prof. Kazuhiro Hotta</span>
+                  </div>
+                </li>
+                <li data-year="2026">
+                  <b lang="ja">名城大学 特任助手</b>
+                  <b lang="en">Special Assistant, Meijo University</b>
+                  <div class="muted">
+                    <span lang="ja">2026年4月 – 現在</span>
+                    <span lang="en">Apr. 2026 – Present</span>
+                  </div>
+                </li>
+                <li data-year="2024">
+                  <b lang="ja">名城大学 大学院 理工学研究科 電気電子工学専攻 修士課程</b>
+                  <b lang="en">Meijo University Graduate School, Master's Student</b>
+                  <div class="muted">
+                    <span lang="ja">2024年4月 – 2026年3月</span>
+                    <span lang="en">Apr. 2024 – Mar. 2026</span>
+                  </div>
+                </li>
+                <li data-year="2020">
+                  <b lang="ja">名城大学 理工学部 電気電子工学科</b>
+                  <b lang="en">Meijo University, Dept. of Electrical and Electronic Engineering</b>
+                  <div class="muted">
+                    <span lang="ja">2020年4月 – 2024年3月</span>
+                    <span lang="en">Apr. 2020 – Mar. 2024</span>
+                  </div>
+                </li>
+              </ul>
+            </section>
+
+            <section class="section-card">
+              <h2 class="section-title">
+                <span lang="ja">🏆 受賞・表彰</span>
+                <span lang="en">🏆 Awards</span>
+              </h2>
+              <ul class="repo-list">
+                <li data-year="2026"><span class="badge-year">2026</span>
+                  <span lang="ja">大学院生研究助成（B） 採択</span>
+                  <span lang="en">Research Grant for Graduate Students (B)</span>
+                  <a class="link-arrow" href="https://www.meijo-u.ac.jp/academics/education/gp/graduate_support.html" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2026"><span class="badge-year">2026</span>
+                  <span lang="ja">電子情報通信学会東海支部 学生研究奨励賞</span>
+                  <span lang="en">IEICE Tokai Branch Student Research Encouragement Award</span>
+                  <a class="link-arrow" href="https://www.tc-iaip.org/dia/2026/index.html" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2026"><span class="badge-year">2026</span>
+                  <span lang="ja">SCAT研究助成 研究奨励金 採択(他助成との重複のため辞退)</span>
+                  <span lang="en">SCAT Research Grant, Encouragement Prize (Declined due to duplicate funding)</span>
+                </li>
+                <li data-year="2026"><span class="badge-year">2026</span> 
+                  <span lang="ja">リンナイ奨学財団 給付型奨学生 採択</span>
+                  <span lang="en">Rinnai Scholarship Foundation, Selected as a Scholarship Student</span>
+                </li>
+                <li data-year="2026"><span class="badge-year">2026</span>
+                  <span lang="ja">動的画像処理実利用化ワークショップ DIA2026 研究奨励賞(3/96件中)</span>
+                  <span lang="en">Workshop on Dynamic Image Processing and Application (DIA2026), Encouragement Award</span>
+                  <a class="link-arrow" href="https://www.tc-iaip.org/dia/2026/index.html" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2025"><span class="badge-year">2025</span>
+                  <span lang="ja">名城大学　学長表彰</span>
+                  <span lang="en">Meijo University, President's Award</span>
+                  <a class="link-arrow" href="https://www.meijo-u.ac.jp/news/detail_32515.html" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2025">
+                  <span class="badge-year">2025</span>
+                  <span lang="ja">LINEヤフー主催HackU 名城大学　HappyHacking賞</span>
+                  <span lang="en">LINE Yahoo HackU Meijo University, HappyHacking Award</span>
+                  <a class="link-arrow" href="https://www.meijo-u.ac.jp/news/detail_32213.html" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2025"><span class="badge-year">2025</span>
+                  <span lang="ja">名城大学　学業優秀奨学生</span>
+                  <span lang="en">Meijo University, Academic Excellence Scholarship</span>
+                </li>
+                <li data-year="2025"><span class="badge-year">2025</span>
+                  <span lang="ja">画像の認識・理解シンポジウム MIRU2025 学生奨励賞(55/726件中)</span>
+                  <span lang="en">Meeting on Image Recognition and Understanding (MIRU2025), Student Encouragement Award</span>
+                  <a class="link-arrow" href="https://cvim.ipsj.or.jp/MIRU2025/award.html#MIRU_Student_Encouragement_Awards" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2025"><span class="badge-year">2025</span>
+                  <span lang="ja">ViEW2025 外観検査アルゴリズムコンテスト2025 最優秀賞(1/131件中)</span>
+                  <span lang="en">ViEW2025 Visual Inspection Algorithm Contest, First Prize</span>
+                  <a class="link-arrow" href="https://alcon.itlab.org/history/" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2024"><span class="badge-year">2024</span>
+                  <span lang="ja">名城大学　学長表彰</span>
+                  <span lang="en">Meijo University, President's Award</span>
+                  <a class="link-arrow" href="https://www.meijo-u.ac.jp/news/detail_31131.html" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2024"><span class="badge-year">2024</span>
+                  <span lang="ja">Axell　超解像コンペ　9位入賞</span>
+                  <span lang="en">Axell Super-Resolution Competition, 9th Place</span>
+                  <a class="link-arrow" href="https://user.competition.signate.jp/ja/competition/detail/?competition=477f26ab62174c3ab7b9e3dfde73be42&task=08cf1b36206b427d9fe4336ef62faaad&tab=leaderboard&leaderboard=private" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2024"><span class="badge-year">2024</span>
+                  <span lang="ja">情報処理学会 CVIM 研究会 卒業論文セッション優秀賞</span>
+                  <span lang="en">IPSJ CVIM Study Group, Best Bachelor's Thesis Session Award</span>
+                  <a class="link-arrow" href="https://www.ipsj.or.jp/award/cvim-award1.html" aria-label="関連リンク"></a>
+                </li>           
+                <li data-year="2024"><span class="badge-year">2024</span>
+                  <span lang="ja">RoboMaster in NorthAmerica 2024 SecondPrize</span>
+                  <span lang="en">RoboMaster in North America 2024, Second Prize</span>
+                  <a class="link-arrow" href="https://www.robomaster.com/en-US/resource/pages/announcement/1779" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2023"><span class="badge-year">2023</span>
+                  <span lang="ja">名城大学　学長表彰</span>
+                  <span lang="en">Meijo University, President's Award</span>
+                  <a class="link-arrow" href="https://www.meijo-u.ac.jp/news/detail_29751.html" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2023"><span class="badge-year">2023</span>
+                  <span lang="ja">パワーアカデミ主催電気教材企画コンテスト　最優秀賞</span>
+                  <span lang="en">Power Academy Electrical Education Content Contest, First Prize</span>
+                  <a class="link-arrow" href="https://www.power-academy.jp/event/contest/search/2021/" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2023"><span class="badge-year">2023</span>
+                  <span lang="ja">LINEヤフー主催HackU 名城大学　最優秀賞</span>
+                  <span lang="en">LINE Yahoo HackU Meijo University, Grand Prize</span>
+                  <a class="link-arrow" href="https://www.meijo-u.ac.jp/news/detail_29547.html" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2023"><span class="badge-year">2023</span>
+                  <span lang="ja">LINEヤフー主催HackU 名城大学　HappyHacking賞</span>
+                  <span lang="en">LINE Yahoo HackU Meijo University, HappyHacking Award</span>
+                  <a class="link-arrow" href="https://www.meijo-u.ac.jp/news/detail_29547.html" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2021"><span class="badge-year">2021</span>
+                  <span lang="ja">名城大学　学長表彰</span>
+                  <span lang="en">Meijo University, President's Award</span>
+                  <a class="link-arrow" href="https://www.meijo-u.ac.jp/news/detail_27045.html" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2021"><span class="badge-year">2021</span>
+                  <span lang="ja">パワーアカデミ主催電気教材企画コンテスト　優秀賞</span>
+                  <span lang="en">Power Academy Electrical Education Content Contest, Excellence Award</span>
+                  <a class="link-arrow" href="https://www.power-academy.jp/event/contest/search/2021/" aria-label="関連リンク"></a>
+                </li>
+              </ul>
+            </section>
+
+            <section class="section-card">
+              <h2 class="section-title">
+                <span lang="ja">📜 資格</span>
+                <span lang="en">📜 Certifications</span>
+              </h2>
+              <ul class="repo-list">
+                <li data-year="2024">
+                  <span class="badge-year">2024</span> <b>JDLA Deep Learning Engineer</b>
+                  <div class="muted">
+                    <span lang="ja">日本ディープラーニング協会 (JDLA) | 発行日: 2024年8月</span>
+                    <span lang="en">Japan Deep Learning Association (JDLA) | Issued: Aug. 2024</span>
+                  </div>
+                </li>
+                <li data-year="2023">
+                  <span class="badge-year">2023</span> 
+                  <b lang="ja">電気主任技術者三種</b>
+                  <b lang="en">Third-Class Electric Chief Engineer</b>
+                  <div class="muted">
+                    <span lang="ja">電気技術者支援センター | 発行日: 2023年3月</span>
+                    <span lang="en">Electric Engineer Support Center | Issued: Mar. 2023</span>
+                  </div>
+                </li>
+              </ul>
+            </section>
+
+            <section class="section-card">
+              <h2 class="section-title">
+                <span lang="ja">🤝 ボランティア</span>
+                <span lang="en">🤝 Volunteer</span>
+              </h2>
+              <ul class="repo-list">
+              <ul class="repo-list">
+                <li data-year="2026">
+                  <span class="badge-year">2026</span> <b>Technical Program Committee</b>
+                  <div class="muted">
+                    <span lang="ja">ECCV 2026 3rd Human-inspired Computer Vision Workshop | 2026年7月 - 8月</span>
+                    <span lang="en">ECCV 2026 3rd Human-inspired Computer Vision Workshop | Jul. 2026 - Aug. 2025</span>
+                  </div>
+                </li>
+                <li data-year="2026">
+                  <span class="badge-year">2026</span> <b>新タスク提案系研究 調査ポスター作成・発表</b>
+                  <div class="muted">
+                    <span lang="ja">MIRU2026 若手プログラム | 2026年5月 - 8月</span>
+                    <span lang="en">MIRU2026 Wakate Program | May. 2026 - Aug. 2025</span>
+                  </div>
+                </li>
+                <li data-year="2025">
+                  <span class="badge-year">2025</span> <b>Technical Program Committee</b>
+                  <div class="muted">
+                    <span lang="ja">ICCV 2025 2nd Human-inspired Computer Vision Workshop | 2025年7月 - 8月</span>
+                    <span lang="en">ICCV 2025 2nd Human-inspired Computer Vision Workshop | Jul. 2025 - Aug. 2025</span>
+                  </div>
+                </li>
+                <li data-year="2024">
+                  <span class="badge-year">2024</span> 
+                  <b lang="ja">論文紹介</b>
+                  <b lang="en">Paper Presentation</b>
+                  <div class="muted">
+                    <span lang="ja">第61回 名古屋CV・PRML勉強会 | 2024年12月</span>
+                    <span lang="en">61st Nagoya CV/PRML Study Group | Dec. 2024</span>
+                  </div>
+                </li>
+                <li data-year="2024">
+                  <span class="badge-year">2024</span> 
+                  <b lang="ja">論文紹介</b>
+                  <b lang="en">Paper Presentation</b>
+                  <div class="muted">
+                    <span lang="ja">第60回 名古屋CV・PRML勉強会 | 2024年7月 - 2025年7月</span>
+                    <span lang="en">60th Nagoya CV/PRML Study Group | Jul. 2024 - Jul. 2025</span>
+                  </div>
+                </li>
+                <li data-year="2024">
+                  <span class="badge-year">2024</span> <b>Technical Program Committee</b>
+                  <div class="muted">
+                    <span lang="ja">ECCV 2024 Human-inspired Computer Vision Workshop | 2024年7月 - 8月</span>
+                    <span lang="en">ECCV 2024 Human-inspired Computer Vision Workshop | Jul. 2024 - Aug. 2024</span>
+                  </div>
+                </li>
+              </ul>
+            </section>
+
+            <section class="section-card">
+              <h2 class="section-title">
+                <span lang="ja">💼 インターン</span>
+                <span lang="en">💼 Internship</span>
+              </h2>
+              <ul class="repo-list">
+                <li data-year="2024">
+                  <span class="badge-year">2024</span> 
+                  <b lang="ja">研究開発インターン - セコム（株）</b>
+                  <b lang="en">R&D Intern - SECOM Co., Ltd.</b>
+                  <div class="muted">
+                    <span lang="ja">2024年8月 - 9月</span>
+                    <span lang="en">Aug. 2024 - Sep. 2024</span>
+                  </div>
+                </li>
+                <li data-year="2022">
+                  <span class="badge-year">2022</span> 
+                  <b lang="ja">開発インターン - 扶桑工機</b>
+                  <b lang="en">Development Intern - Fuso Koki</b>
+                  <div class="muted">
+                    <span lang="ja">2022年8月</span>
+                    <span lang="en">Aug. 2022</span>
+                  </div>
+                </li>
+                <li data-year="2022">
+                  <span class="badge-year">2022</span> 
+                  <b lang="ja">開発インターン - HiKOKI</b>
+                  <b lang="en">Development Intern - HiKOKI</b>
+                  <div class="muted">
+                    <span lang="ja">2022年9月</span>
+                    <span lang="en">Sep. 2022</span>
+                  </div>
+                </li>
+              </ul>
+            </section>
+
+            <section class="section-card">
+              <h2 class="section-title">
+                <span lang="ja">🔬 研究業績</span>
+                <span lang="en">🔬 Research Achievements</span>
+              </h2>
+
+              <h3 class="subsection-title">国際会議・ワークショップ（査読あり）</h3>
+              <ul class="repo-list">
+                <li data-year="2026">
+                  <span class="badge-year">2026</span> T. Sakai, K. Hotta, “
+                  Dynamic Distillation and Gradient Consistency for Robust Long-Tailed Incremental Learning,”
+                  <div class="muted">ICIP 2026, Tampere, Finland.</div>
+                  <a class="link-arrow" href="https://arxiv.org/abs/2605.03364v1" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2026">
+                  <span class="badge-year">2026</span> T. Sakai, K. Hotta, “
+                  Improving Noise Robustness in Medical Image Classification via Dynamic Integration of CNN and KAN,”
+                  <div class="muted">CARS 2026, Poster, Aichi, Japan.</div>
+                </li>
+                <li data-year="2026">
+                  <span class="badge-year">2026</span> T. Sakai, T. Nakamura, H. Shimizu, K. Hotta, “Visibility-Gated
+                  ConvGRU for Robust Multi-View Pedestrian Detection and Tracking in BEV Space,”
+                  <div class="muted">VISAPP 2026, Oral, Marbella, Spain.</div>
+                  <a class="link-arrow" href="https://www.scitepress.org/PublishedPapers/2026/144227/" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2025">
+                  <span class="badge-year">2025</span> T. Sakai, K. Hotta, “Long-Tailed Data Classification by
+                  Increasing and Decreasing Neurons During Training,”
+                  <div class="muted">ICCV 2025 Workshop on Human-inspired Computer Vision, Poster, Hawaii, USA.</div>
+                  <a class="link-arrow" href="https://openaccess.thecvf.com/content/ICCV2025W/HCV/html/Sakai_Long-Tailed_Data_Classification_by_Increasing_and_Decreasing_Neurons_During_Training_ICCVW_2025_paper.html" aria-label="関連リンク"></a>
+                </li>
+                <li data-year="2024">
+                  <span class="badge-year">2024</span> T. Sakai, K. Hotta, “Growing Deep Neural Network Considering with
+                  Similarity between Neurons,”
+                  <div class="muted">ECCV 2024 Workshop on Human-inspired Computer Vision, Poster, Milano, Italy.</div>
+                  <a class="link-arrow" href="https://link.springer.com/chapter/10.1007/978-3-031-91578-9_13" aria-label="関連リンク"></a>
+                </li>
+              </ul>
+
+              <h3 class="subsection-title">国内学会・シンポジウム</h3>
+              <ul class="repo-list">
+                <li data-year="2026">
+                  <span class="badge-year">2026</span> 坂井 泰吾, 中村 剛, 志水 洋, 堀田 一弘,
+                  「BEV空間におけるロバストなマルチビュー歩行者検出と追跡のためのVisibility-Gated ConvGRU」
+                  <div class="muted">動的画像処理実利用化ワークショップ (DIA2026), 高知, 口頭発表（査読あり）。</div>
+                </li>
+                <li data-year="2025">
+                  <span class="badge-year">2025</span> 坂井 泰吾, 堀田 一弘, 「医用画像分類におけるCNNとKANの動的な統合によるノイズ頑健性の向上」
+                  <div class="muted">2025年度 日本生体医工学会東海支部大会, 愛知, 口頭発表。</div>
+                </li>
+                <li data-year="2025">
+                  <span class="badge-year">2025</span> 坂井 泰吾, 堀田 一弘, 「不均衡なデータセットの継続学習における勾配一貫性正規化と動的な知識蒸留」
+                  <div class="muted">画像の認識・理解シンポジウム (MIRU2025), 京都, 口頭発表（査読あり）。</div>
+                </li>
+                <li data-year="2025">
+                  <span class="badge-year">2025</span> 神谷 聡，坂井 泰吾，小嶋 華，朽津 和幸，友井 拓実，堀田 一弘, 「少ない教師付きデータからのゼニゴケ仮根の先端追跡法」
+                  <div class="muted">動的画像処理実利用化ワークショップ (DIA2025), 福井, ポスター（査読あり）。</div>
+                </li>
+                <li data-year="2025">
+                  <span class="badge-year">2025</span> 坂井 泰吾，米倉 崇晃，堀田 一弘, 「SAM2とマスク細線化によるシロイヌナズナの教師無し先端追跡手法」
+                  <div class="muted">情報処理学会 第87回全国大会, 大阪, 2025年3月15日, 口頭発表。</div>
+                </li>
+                <li data-year="2025">
+                  <span class="badge-year">2025</span> 土井田 啓輔, 坂井 泰吾, 他, 「複数視野を使った複数物体追跡の精度向上」
+                  <div class="muted">第30回画像センシングシンポジウム (SSII2025), 東京, ポスター（査読あり）。</div>
+                </li>
+                <li data-year="2024">
+                  <span class="badge-year">2024</span> 坂井 泰吾, 堀田 一弘, 「学習中のニューロン増減によるクラス不均衡データの識別」
+                  <div class="muted">ビジョン技術の実利用ワークショップ (ViEW2024), 神奈川, ポスター（査読あり）。</div>
+                </li>
+                <li data-year="2024">
+                  <span class="badge-year">2024</span> 坂井 泰吾, 堀田 一弘, 「ニューロン間の類似度を考慮した深層ニューラルネットワークによる画像分類」
+                  <div class="muted">令和6年度 電気・電子・情報関係学会 東海支部連合大会, 2024年8月30日, 口頭発表。</div>
+                </li>
+                <li data-year="2024">
+                  <span class="badge-year">2024</span> 坂井 泰吾, 堀田 一弘, 「ニューロン間の類似度分布を考慮したニューロン増加型深層ニューラルネットワーク」
+                  <div class="muted">情報処理学会 第238回CVIM研究会 卒論セッション, 2024年5月8日, 口頭発表。</div>
+                </li>
+              </ul>
+            </section>
+          </div>
+
+          <div id="engineer-content" class="tab-content">
+            <div class="filter-row">
+              <span class="filter-label">フィルター</span>
+              <button class="chip active" data-filter="all" type="button">すべて</button>
+              <button class="chip" data-filter="ios" type="button">iOS</button>
+              <button class="chip" data-filter="android" type="button">Android</button>
+              <button class="chip" data-filter="web" type="button">Web</button>
+              <button class="chip" data-filter="game" type="button">Game</button>
+              <button class="chip" data-filter="ai" type="button">AI</button>
+            </div>
+
+            <section class="section-card">
+              <h2 class="section-title">
+                <span lang="ja">🚀 アプリ・サービス</span>
+                <span lang="en">🚀 My Apps & Services</span>
+              </h2>
+              <div class="grid-dense">
+                <div class="app-card" data-tags="ios ai">
+                  <img src="https://github.com/user-attachments/assets/e7a7dbf0-f338-454a-9802-2ea1ab64da41"
+                    class="app-thumb" alt="icon" loading="lazy">
+                  <div class="app-info">
+                    <a href="https://apps.apple.com/jp/app/kikonashi/id6502258139" class="app-title">kikonAshI (iOS)</a>
+                    <div class="app-desc">
+                      <span lang="ja">独自開発したファッションAI搭載。毎日のコーデの提案と育成機能。</span>
+                      <span lang="en">Equipped with custom fashion AI. Daily outfit suggestions and character growth features.</span>
+                    </div>
+                    <div class="app-links">
+                      <a href="https://apps.apple.com/jp/app/kikonashi/id6502258139"><svg class="octicon"
+                          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="14" height="14"
+                          fill="currentColor" style="margin-right:4px; vertical-align: text-bottom;">
+                          <path
+                            d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 52.3-11.4 69.5-34.3z" />
+                        </svg> App Store</a>
+                      <a href="https://github.com/sakai1250/hacku2023">GitHub</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="app-card" data-tags="ios android">
+                  <img src="https://github.com/user-attachments/assets/b1d58dae-fc06-4ca8-aae2-7b76901d79b8"
+                    class="app-thumb" alt="icon" loading="lazy">
+                  <div class="app-info">
+                    <a href="https://www.jogiken.com/sugosugiru/" class="app-title">すごすぎる時間割</a>
+                    <div class="app-desc">
+                      <span lang="ja">情報技術研究会で開発。シンプルなUIの大学生向け時間割アプリ。</span>
+                      <span lang="en">Developed at the IT Research Group. A simple timetable app for university students.</span>
+                    </div>
+                    <div class="app-links">
+                      <a href="https://apps.apple.com/jp/app/id6744370038"><svg class="octicon"
+                          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="14" height="14"
+                          fill="currentColor" style="margin-right:4px; vertical-align: text-bottom;">
+                          <path
+                            d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 52.3-11.4 69.5-34.3z" />
+                        </svg> App Store</a>
+                      <a href="https://play.google.com/store/apps/details?id=com.jogiken.sugosugiru">Android</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="app-card" data-tags="web ios">
+                  <img src="https://github.com/user-attachments/assets/321aa41a-fb83-470b-8d45-0f44b94eb28a"
+                    class="app-thumb" alt="icon" loading="lazy">
+                  <div class="app-info">
+                    <a href="https://recolle.vercel.app/" class="app-title">recolLe (Web/iOS)</a>
+                    <div class="app-desc">
+                      <span lang="ja">NFCフォトアルバム。「かざす」動作で思い出を呼び出す体験。</span>
+                      <span lang="en">NFC Photo Album. An experience that recalls memories with a simple "tap."</span>
+                    </div>
+                    <div class="app-links">
+                      <a href="https://recolle.vercel.app/">Web</a>
+                      <a href="https://apps.apple.com/jp/app/id6755230226"><svg class="octicon"
+                          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="14" height="14"
+                          fill="currentColor" style="margin-right:4px; vertical-align: text-bottom;">
+                          <path
+                            d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 52.3-11.4 69.5-34.3z" />
+                        </svg> App Store</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="app-card" data-tags="ios ai">
+                  <img src="https://github.com/user-attachments/assets/52ef9d7e-7f2d-4c4b-88d1-8d822a382450"
+                    class="app-thumb" alt="icon" loading="lazy">
+                  <div class="app-info">
+                    <a href="https://itunes.apple.com/jp/app/id6755966828?mt=8" class="app-title">おつりDoctor (iOS)</a>
+                    <div class="app-desc">
+                      <span lang="ja">硬貨を撮影して金額を自動集計。ユーザー育成機能付き。</span>
+                      <span lang="en">Capture coins to automatically calculate totals. Includes user growth features.</span>
+                    </div>
+                    <div class="app-links">
+                      <a href="https://apps.apple.com/jp/app/id6755966828"><svg class="octicon"
+                          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="14" height="14"
+                          fill="currentColor" style="margin-right:4px; vertical-align: text-bottom;">
+                          <path
+                            d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 52.3-11.4 69.5-34.3z" />
+                        </svg> App Store</a>
+                      <a href="https://github.com/sakai1250/PresentMemo">GitHub</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="app-card" data-tags="ios ai">
+                  <img src="https://github.com/user-attachments/assets/3003e521-a656-4c6a-aaf4-e983ff9ef91a"
+                    class="app-thumb" alt="icon" loading="lazy">
+                  <div class="app-info">
+                    <a href="https://itunes.apple.com/jp/app/id6762557219?mt=8" class="app-title">MAIORAL (iOS)</a>
+                    <div class="app-desc">
+                      <span lang="ja">独自開発の学習特化AIを搭載した、発表準備向けアプリ。</span>
+                      <span lang="en">A presentation prep app equipped with a custom AI specialized for learning.</span>
+                    </div>
+                    <div class="app-links">
+                      <a href="https://apps.apple.com/jp/app/id6762557219"><svg class="octicon"
+                          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="14" height="14"
+                          fill="currentColor" style="margin-right:4px; vertical-align: text-bottom;">
+                          <path
+                            d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 52.3-11.4 69.5-34.3z" />
+                        </svg> App Store</a>
+                      <a href="https://github.com/sakai1250/otsuri_docter">GitHub</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="app-card" data-tags="ios ai">
+                  <img src="https://github.com/user-attachments/assets/3c2a0ed5-b342-4b52-b6f7-b706f5d005cd"
+                    class="app-thumb" alt="icon" loading="lazy">
+                  <div class="app-info">
+                    <a href="https://github.com/sakai1250/super_res.git" class="app-title">超kAI蔵 (iOS)</a>
+                    <div class="app-desc">
+                      <span lang="ja">最大4倍AI超解像。フォルダ分類・メモ保存搭載で研究用途にも。</span>
+                      <span lang="en">Up to 4x AI super-resolution. Features folder classification and note-taking for research.</span>
+                    </div>
+                    <div class="app-links">
+                      <a href="https://apps.apple.com/jp/app/id6751739848"><svg class="octicon"
+                          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="14" height="14"
+                          fill="currentColor" style="margin-right:4px; vertical-align: text-bottom;">
+                          <path
+                            d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 52.3-11.4 69.5-34.3z" />
+                        </svg> App Store</a>
+                      <a href="https://github.com/sakai1250/super_res.git">GitHub</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="app-card" data-tags="web">
+                  <img src="https://github.com/user-attachments/assets/770a600a-b3b5-4459-ae9a-f09943e82a0f"
+                    class="app-thumb" alt="icon" loading="lazy">
+                  <div class="app-info">
+                    <a href="https://github.com/jphacks/F_2208" class="app-title">貯Pay箱 (Web)</a>
+                    <div class="app-desc">
+                      <span lang="ja">電子マネー×ToDo管理。タスク達成でモチベーションを可視化。</span>
+                      <span lang="en">Electronic Money × ToDo Management. Visualize motivation through task completion.</span>
+                    </div>
+                    <div class="app-links">
+                      <a href="https://github.com/jphacks/F_2208">GitHub</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="app-card" data-tags="ios game">
+                  <img src="https://github.com/user-attachments/assets/322c6e47-1bdd-47b5-8439-7b186ef4b687"
+                    class="app-thumb" alt="icon" loading="lazy">
+                  <div class="app-info">
+                    <a href="https://github.com/sakai1250/Who-is-the-Ground-Truth-" class="app-title">Who is GT?
+                      (iOS)</a>
+                    <div class="app-desc">
+                      <span lang="ja">画像AIとユーザーが直接対決するゲーム。真の正解は誰だ？</span>
+                      <span lang="en">A game where users face off against image AI. Who is the true ground truth?</span>
+                    </div>
+                    <div class="app-links">
+                      <a href="https://apps.apple.com/jp/app/id6755972438"><svg class="octicon"
+                          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="14" height="14"
+                          fill="currentColor" style="margin-right:4px; vertical-align: text-bottom;">
+                          <path
+                            d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 52.3-11.4 69.5-34.3z" />
+                        </svg> App Store</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="app-card" data-tags="android">
+                  <img src="https://github.com/user-attachments/assets/b6dec124-0428-49cc-9835-4d2a2d89f23a"
+                    class="app-thumb" alt="icon" loading="lazy">
+                  <div class="app-info">
+                    <a href="https://github.com/jphacks/F_2107" class="app-title">NERO (Android)</a>
+                    <div class="app-desc">
+                      <span lang="ja">タスク管理と同時に睡眠時間を記録。健康と効率を両立。</span>
+                      <span lang="en">Track sleep while managing tasks. Balancing health and efficiency.</span>
+                    </div>
+                    <div class="app-links">
+                      <a href="https://github.com/jphacks/F_2107">GitHub</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="app-card" data-tags="web">
+                  <img src="https://github.com/user-attachments/assets/0e3a5e1e-a535-4aa6-918e-a66d2c62f4be"
+                    class="app-thumb" alt="icon" loading="lazy">
+                  <div class="app-info">
+                    <a href="https://github.com/sakai1250/HackU2022" class="app-title">StylePlan</a>
+                    <div class="app-desc">
+                      <span lang="ja">大学生の一人暮らしを支援。天気、ToDo、レシピ、音楽を統合。</span>
+                      <span lang="en">Support for university students living alone. Integrates weather, ToDo, recipes, and music.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section-card">
+              <h2 class="section-title">
+                <span lang="ja">🎮 プレイグラウンド</span>
+                <span lang="en">🎮 Playground</span>
+              </h2>
+              <div class="grid-dense">
+                <div class="app-card" data-tags="web ai">
+                  <img src="https://github.com/user-attachments/assets/6810d77d-35e9-44ff-96c7-7921653a5e1c"
+                    class="app-thumb" alt="icon" loading="lazy">
+                  <div class="app-info">
+                    <a href="https://github.com/sakai1250/ML_app_flask_test" class="app-title">金魚画像識別サイト</a>
+                    <div class="app-desc">
+                      <span lang="ja">Flask製Webアプリ。金魚の画像をAIが判別。</span>
+                      <span lang="en">Flask-based Web app. AI identifies goldfish images.</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="app-card" data-tags="ai">
+                  <img src="https://github.com/user-attachments/assets/f463115e-7fdf-47ac-97d1-164cb3b9bea7"
+                    class="app-thumb" alt="icon" loading="lazy">
+                  <div class="app-info">
+                    <a href="https://github.com/sakai1250/RL_super_mario_bro" class="app-title">
+                      <span lang="ja">SuperMario強化学習</span>
+                      <span lang="en">Super Mario Reinforcement Learning</span>
+                    </a>
+                    <div class="app-desc">
+                      <span lang="ja">強化学習でマリオを自動プレイ。1-1, 1-3等クリア。</span>
+                      <span lang="en">Autonomous Mario gameplay via Reinforcement Learning. Clears 1-1, 1-3, etc.</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="app-card" data-tags="game">
+                  <img src="https://github.com/user-attachments/assets/c82ac5df-8c0c-4e3b-b9e8-92ede64a08d9"
+                    class="app-thumb" alt="icon" loading="lazy">
+                  <div class="app-info">
+                    <a href="https://github.com/sakai1250/Block_KUZUSHI_unity" class="app-title">ブロック崩し</a>
+                    <div class="app-desc">
+                      <span lang="ja">Unityで制作したクラシックなブロック崩し。</span>
+                      <span lang="en">A classic brick breaker game created with Unity.</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="app-card" data-tags="game">
+                  <div class="app-thumb"
+                    style="display:flex;align-items:center;justify-content:center;background:#0d1117;font-size:24px;">🎮
+                  </div>
+                  <div class="app-info">
+                    <a href="https://github.com/sakai1250/Tetorinu/tree/main" class="app-title">テトリヌ</a>
+                    <div class="app-desc">
+                      <span lang="ja">学部1年時に作成。学科内投票3位。</span>
+                      <span lang="en">Created in the first year of undergrad. Ranked 3rd in departmental voting.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section-card">
+              <h2 class="section-title">
+                <span lang="ja">📝 Qiita</span>
+                <span lang="en">📝 Qiita</span>
+              </h2>
+              <ul class="repo-list" id="qiita-list">
+                <li>Loading articles...</li>
+              </ul>
+            </section>
+
+            <section class="section-card">
+              <h2 class="section-title">
+                <span lang="ja">🛠️ 技術スタック・所属</span>
+                <span lang="en">🛠️ Tech Stack & Organizations</span>
+              </h2>
+
+              <div class="badge-row" id="badges-languages">
+                <h4>
+                  <span lang="ja">プログラミング言語</span>
+                  <span lang="en">Languages</span>
+                </h4>
+                <img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54"
+                  alt="Python" loading="lazy">
+                <img src="https://img.shields.io/badge/swift-F54A2A?style=for-the-badge&logo=swift&logoColor=white"
+                  alt="Swift" loading="lazy">
+                <img src="https://img.shields.io/badge/Dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white"
+                  alt="Dart" loading="lazy">
+                <img
+                  src="https://img.shields.io/badge/TypeScript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white"
+                  alt="TypeScript" loading="lazy">
+                <img
+                  src="https://img.shields.io/badge/Java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white"
+                  alt="Java" loading="lazy">
+                <img src="https://img.shields.io/badge/C-A8B9CC?style=for-the-badge&logo=c&logoColor=black" alt="C"
+                  loading="lazy">
+                <img
+                  src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"
+                  alt="C++" loading="lazy">
+
+              </div>
+
+              <div class="badge-row" id="badges-frameworks">
+                <h4>
+                  <span lang="ja">フレームワーク・ツール</span>
+                  <span lang="en">Frameworks & Tools</span>
+                </h4>
+                <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white"
+                  alt="Flutter" loading="lazy">
+                <img src="https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white"
+                  alt="Django" loading="lazy">
+                <img src="https://img.shields.io/badge/Flask-000?style=for-the-badge&logo=flask&logoColor=fff"
+                  alt="Flask" loading="lazy">
+                <img src="https://img.shields.io/badge/Unity-FFFFFF?style=for-the-badge&logo=unity&logoColor=black"
+                  alt="Unity" loading="lazy">
+                <img
+                  src="https://custom-icon-badges.demolab.com/badge/Microsoft%20Azure-0089D6?style=for-the-badge&logo=msazure&logoColor=white"
+                  alt="Azure" loading="lazy">
+                <img src="https://img.shields.io/badge/ros2-%2322314E.svg?style=for-the-badge&logo=ros&logoColor=white"
+                  alt="ROS2" loading="lazy">
+              </div>
+              <div class="badge-row" id="badges-orgs">
+                <h4>
+                  <span lang="ja">所属・団体</span>
+                  <span lang="en">Organizations</span>
+                </h4>
+                <a href="https://github.com/RM-NAGOYASHACHIHOKO"><img
+                    src="https://github.com/user-attachments/assets/06029876-4a7b-44fe-8df6-cac6bbbf8391" alt="Nagoya"
+                    width="40" loading="lazy"></a>
+                <a href="https://github.com/jphacks"><img
+                    src="https://github.com/user-attachments/assets/3df7dbab-02ff-494d-b468-3bf755043a2c" alt="JPHacks"
+                    width="40" loading="lazy"></a>
+                <a href="https://www.jogiken.com/"><img
+                    src="https://github.com/user-attachments/assets/7109b8d7-da71-4b8d-8858-773980b358d5" alt="Jogiken"
+                    width="40" loading="lazy"></a>
+              </div>
+
+              <div style="margin-top: 24px;">
+                <img id="stats-langs" alt="Top Langs" height="130"
+                  src="https://github-readme-stats-vercel-wea9.vercel.app/api/top-langs/?username=sakai1250&layout=compact&show_icons=true&theme=dracula&count_private=true"
+                  loading="lazy" />
+                <img id="stats-general" alt="github stats" height="130"
+                  src="https://github-readme-stats-vercel-wea9.vercel.app/api?username=sakai1250&theme=dracula&show_icons=ture&count_private=true"
+                  loading="lazy" />
+              </div>
+            </section>
+
+          </div>
+
+          <section id="contact" class="section-card">
+            <h2 class="section-title">
+              <span lang="ja">📮 お問い合わせ</span>
+              <span lang="en">📮 Contact</span>
+            </h2>
+            <p style="font-size: 14px; color: var(--muted); margin-bottom: 20px;">
+              <span lang="ja">研究・開発に関するお問い合わせや、その他ご連絡はこちらからお願いします。</span>
+              <span lang="en">For inquiries regarding research, development, or any other matters, please contact me here.</span>
+            </p>
+            <form id="contact-form" action="https://formspree.io/f/mlgegwjy" method="POST">
+              <div class="form-group">
+                <label for="name" class="form-label">
+                  <span lang="ja">お名前</span>
+                  <span lang="en">Name</span>
+                </label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="Your Name" required>
+              </div>
+              <div class="form-group">
+                <label for="email" class="form-label">
+                  <span lang="ja">メールアドレス</span>
+                  <span lang="en">Email Address</span>
+                </label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="email@example.com" required>
+              </div>
+              <div class="form-group">
+                <label for="message" class="form-label">
+                  <span lang="ja">メッセージ</span>
+                  <span lang="en">Message</span>
+                </label>
+                <textarea id="message" name="message" class="form-control" placeholder="Your message..." required></textarea>
+              </div>
+              <button type="submit" class="header-btn primary" style="width: 100%; justify-content: center; padding: 12px; border-radius: 8px;">
+                <span lang="ja">送信する</span>
+                <span lang="en">Send Message</span>
+              </button>
+              <div id="form-status" class="form-status"></div>
+            </form>
+          </section>
+        </main>
+      </div>
+    </div>
+    <footer class="footer">
+      <span lang="ja">最終更新: <span id="last-updated">2025-12-04</span> | Hosted on GitHub Pages.</span>
+      <span lang="en">Last updated: <span id="last-updated-en">2025-12-04</span> | Hosted on GitHub Pages.</span>
+      <div style="margin-top: 12px;">
+        <a id="share-btn"
+          href="https://twitter.com/intent/tweet?text=Check%20out%20Taigo%20Sakai's%20Portfolio!&url=https://sakai1250.github.io/&via=ikaitaig"
+          target="_blank" class="btn btn-sm"
+          style="color: var(--text-sub); border-color: var(--stroke); background: var(--surface-2); display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+            <path
+              d="M9.332 6.925 14.544 1h-1.235L8.783 6.145 5.17 1H1l5.466 7.78L1 14.993h1.235l4.78-5.433 3.816 5.433H15L9.332 6.925ZM7.64 8.848l-.554-.775L2.68 1.91h1.897l3.556 4.975.554.775 4.622 6.466h-1.897L7.64 8.848Z">
+            </path>
+          </svg>
+          <span lang="ja">Xでシェア</span>
+          <span lang="en">Share on X</span>
+        </a>
+      </div>
+    </footer>
+    <button id="back-to-top" type="button" aria-label="Back to top">
+      <span lang="ja">↑ トップ</span>
+      <span lang="en">↑ Top</span>
+    </button>
+
+    <!-- TOC FAB -->
+    <button id="toc-fab" type="button" aria-label="目次">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
+        <path
+          d="M1.5 1.75a.75.75 0 0 1 .75-.75h11.5a.75.75 0 0 1 0 1.5H2.25a.75.75 0 0 1-.75-.75ZM1.5 8a.75.75 0 0 1 .75-.75h11.5a.75.75 0 0 1 0 1.5H2.25A.75.75 0 0 1 1.5 8Zm.75 5.5a.75.75 0 0 0 0 1.5h11.5a.75.75 0 0 0 0-1.5H2.25Z">
+        </path>
+      </svg>
+    </button>
+    <div id="toc-menu">
+      <div class="toc-header">
+        <span lang="ja">目次</span>
+        <span lang="en">TOC</span>
+      </div>
+      <nav id="toc-nav"></nav>
+    </div>
+
+  </div>
+
+  <!-- Modal Structure -->
+  <div id="app-modal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-container" tabindex="-1">
+      <button class="modal-close" aria-label="Close">×</button>
+      <div class="modal-body">
+        <img id="modal-img" src="" alt="" class="modal-img">
+        <h3 id="modal-title" class="modal-title"></h3>
+        <p id="modal-desc" class="modal-desc"></p>
+        <div id="modal-links" class="modal-links"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="effects.js?v=20260522-18"></script>
+  <script src="main.js?v=20260522-18"></script>
+</body>
+
+</html>
