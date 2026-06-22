@@ -190,8 +190,10 @@
   - opacityを下げる。
   - muted goldまたはsoft navyを使用する。
 - 3D effect:
-  - application cardだけに限定する。
-  - 回転角は最大4度、上方向の移動は4px程度とし、操作が分かる強度を保つ。
+  - application cardはマウス位置に応じて最大4度、上方向へ4px浮上させる。
+  - profile cardとsection cardは、空白部または見出し部をドラッグすると最大14度まで回転できる。
+  - ドラッグ回転ではDOM位置を変更せず、離したら元の角度へ戻す。
+  - リンク、ボタン、フォーム、リスト項目、application card上からは親カードのドラッグ回転を開始しない。
 - タイプ入力:
   - 現在の文言とロジックを維持する。
   - uppercase、強いletter-spacing、発光を外す。

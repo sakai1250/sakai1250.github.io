@@ -47,6 +47,15 @@ test('keeps a visible but restrained application card tilt', () => {
   assert.match(effects, /translateY\(-4px\)/);
 });
 
+test('supports drag rotation without restoring card reordering', () => {
+  assert.match(main, /initCardDragRotation/);
+  assert.match(effects, /function initCardDragRotation/);
+  assert.match(effects, /\.profile-card, \.section-card/);
+  assert.match(effects, /rotateX\(\$\{rotateX\}deg\) rotateY\(\$\{rotateY\}deg\)/);
+  assert.match(effects, /window\.initCardDragRotation = initCardDragRotation/);
+  assert.doesNotMatch(effects, /insertBefore|appendChild\(placeholder\)|getDragAfterElement/);
+});
+
 test('uses editorial fonts instead of cyber display fonts', () => {
   assert.match(html, /Cormorant\+Garamond/);
   assert.doesNotMatch(html, /Orbitron|Chakra\+Petch/);

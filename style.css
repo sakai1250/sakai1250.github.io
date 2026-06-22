@@ -468,6 +468,10 @@ img { max-width: 100%; height: auto; }
   background: #071A2F;
   color: var(--profile-text);
   box-shadow: 0 18px 42px rgba(7, 26, 47, 0.18);
+  cursor: grab;
+  transform-style: preserve-3d;
+  backface-visibility: visible;
+  will-change: transform;
 }
 
 .profile-card::before {
@@ -627,6 +631,10 @@ img { max-width: 100%; height: auto; }
   border: 1px solid var(--stroke);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
+  cursor: grab;
+  transform-style: preserve-3d;
+  backface-visibility: visible;
+  will-change: transform;
   transition: transform 0.25s var(--ease-organic), box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
@@ -634,6 +642,26 @@ img { max-width: 100%; height: auto; }
   transform: translateY(-2px);
   border-color: var(--stroke-strong);
   box-shadow: var(--shadow-md);
+}
+
+.profile-card.card-rotating,
+.section-card.card-rotating {
+  position: relative;
+  z-index: 20;
+  cursor: grabbing;
+  box-shadow: var(--shadow-lg);
+}
+
+.profile-card a,
+.profile-card button,
+.section-card a,
+.section-card button,
+.section-card input,
+.section-card textarea,
+.section-card select,
+.section-card .repo-list li,
+.section-card .app-card {
+  cursor: pointer;
 }
 
 .section-title {

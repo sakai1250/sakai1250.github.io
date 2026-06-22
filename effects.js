@@ -23,6 +23,65 @@ function init3DEffects() {
     });
 }
 
+function initCardDragRotation() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    document.querySelectorAll('.profile-card, .section-card').forEach(card => {
+        if (card.dataset.dragRotationReady === 'true') return;
+        card.dataset.dragRotationReady = 'true';
+
+        let rotating = false;
+        let startX = 0;
+        let startY = 0;
+
+        const reset = (event) => {
+            if (!rotating) return;
+            rotating = false;
+            if (event?.pointerId !== undefined) {
+                card.releasePointerCapture?.(event.pointerId);
+            }
+            card.classList.remove('card-rotating');
+            card.style.transition = 'transform 0.55s var(--ease-out-expo), box-shadow 0.3s ease';
+            card.style.transform = '';
+            window.setTimeout(() => {
+                if (!card.classList.contains('card-rotating')) {
+                    card.style.transition = '';
+                }
+            }, 560);
+        };
+
+        card.addEventListener('pointerdown', (event) => {
+            if (event.button !== 0 || event.pointerType === 'touch') return;
+            if (event.target.closest('a, button, input, textarea, select, .repo-list li, .app-card')) return;
+
+            rotating = true;
+            startX = event.clientX;
+            startY = event.clientY;
+            card.classList.add('card-rotating');
+            card.style.transition = 'none';
+            card.setPointerCapture?.(event.pointerId);
+        });
+
+        card.addEventListener('pointermove', (event) => {
+            if (!rotating) return;
+            const deltaX = event.clientX - startX;
+            const deltaY = event.clientY - startY;
+            if (Math.hypot(deltaX, deltaY) < 4) return;
+
+            event.preventDefault();
+            const rotateX = Math.max(-14, Math.min(14, -deltaY / 8));
+            const rotateY = Math.max(-14, Math.min(14, deltaX / 8));
+            const lift = Math.min(10, Math.hypot(deltaX, deltaY) / 18);
+            card.style.transform = `perspective(850px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(${-lift}px) scale(1.015)`;
+        });
+
+        card.addEventListener('pointerup', reset);
+        card.addEventListener('pointercancel', reset);
+        card.addEventListener('lostpointercapture', reset);
+        window.addEventListener('blur', () => reset());
+    });
+}
+
 function initAvatarDragGuide() {
     const avatar = document.querySelector('.header-avatar');
     if (!avatar || avatar.dataset.dragGuideReady === 'true') return;
@@ -264,3 +323,4 @@ window.init3DEffects = init3DEffects;
 window.initBackgroundParticles = initBackgroundParticles;
 window.initTypingEffect = initTypingEffect;
 window.initAvatarDragGuide = initAvatarDragGuide;
+window.initCardDragRotation = initCardDragRotation;

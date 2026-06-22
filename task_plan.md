@@ -41,3 +41,5 @@ Implement the approved Ivory Editorial redesign while preserving the portfolioâ€
 - [x] Restore avatar drag guidance without restoring card/list reordering
 - [x] Increase application-card tilt to a restrained maximum of 4 degrees
 - [x] Verify drag target text, return animation, card transform, and browser errors
+- [x] Restore drag rotation for profile and section cards without DOM reordering
+- [x] Verify rotation, release reset, unchanged parent/count, and app modal behavior

@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(window.initBackgroundParticles || initBackgroundParticles, 'BackgroundParticles');
     safeInit(window.initTypingEffect || initTypingEffect, 'TypingEffect');
     safeInit(window.initAvatarDragGuide || initAvatarDragGuide, 'AvatarDragGuide');
+    safeInit(window.initCardDragRotation || initCardDragRotation, 'CardDragRotation');
 });
 
 // === Core Functions ===

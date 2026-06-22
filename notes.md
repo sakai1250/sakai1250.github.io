@@ -31,3 +31,7 @@
 - Dragging over the profile card showed `プロフィール・連絡先`; releasing restored the avatar position and hid the tooltip.
 - Increased application-card tilt to a maximum of 4 degrees with a 4px lift. Browser verification observed approximately 3.7 degrees at the tested pointer position.
 - Card/list drag reordering, handles, placeholders, and drop targets remain removed.
+- Restored drag rotation for `.profile-card` and `.section-card` independently from reordering.
+- Browser drag verification observed `rotateX(-10.375deg) rotateY(11.725deg)` and a 6.96px lift.
+- After release, the transform cleared, the section remained under `#research-content`, and the section count remained 6.
+- Clicking an application card still opened its modal after the drag-rotation change.
