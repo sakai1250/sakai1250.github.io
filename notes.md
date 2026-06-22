@@ -24,3 +24,10 @@
 - Dark body background and theme token resolved to `#09131F`.
 - EN/JA toggle, Engineering tab, 2025 filter, theme toggle, app modal open/close all passed through Chrome DevTools Protocol.
 - Browser runtime errors: none.
+
+## Interaction restoration
+
+- Restored the top-left avatar drag guide as `initAvatarDragGuide()`, independently from removed card/list reordering.
+- Dragging over the profile card showed `プロフィール・連絡先`; releasing restored the avatar position and hid the tooltip.
+- Increased application-card tilt to a maximum of 4 degrees with a 4px lift. Browser verification observed approximately 3.7 degrees at the tested pointer position.
+- Card/list drag reordering, handles, placeholders, and drop targets remain removed.

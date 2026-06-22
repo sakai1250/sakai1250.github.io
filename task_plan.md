@@ -34,3 +34,10 @@ Implement the approved Ivory Editorial redesign while preserving the portfolioâ€
 ## Status
 
 **Complete** - Implementation, responsive checks, interaction checks, and final diff review finished.
+
+## Interaction Restoration
+
+- [x] Add failing tests for avatar drag guidance and visible 3D card tilt
+- [x] Restore avatar drag guidance without restoring card/list reordering
+- [x] Increase application-card tilt to a restrained maximum of 4 degrees
+- [x] Verify drag target text, return animation, card transform, and browser errors

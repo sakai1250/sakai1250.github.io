@@ -33,10 +33,18 @@ test('defines ivory editorial tokens and removes neon token usage', () => {
   assert.doesNotMatch(css, /--neon-glow|--grad-sunset|--grad-neon|#00e5ff/i);
 });
 
-test('removes draggable card initialization and styling', () => {
-  assert.doesNotMatch(main, /initDraggableInteractions/);
-  assert.doesNotMatch(effects, /initDraggableInteractions|initPlayfulCardDrag|playful-draggable/);
-  assert.doesNotMatch(css, /\.playful-|cursor:\s*grab/i);
+test('removes card reordering but keeps the avatar drag guide', () => {
+  assert.match(main, /initAvatarDragGuide/);
+  assert.match(effects, /function initAvatarDragGuide/);
+  assert.match(effects, /window\.initAvatarDragGuide = initAvatarDragGuide/);
+  assert.doesNotMatch(effects, /initPlayfulCardDrag|playful-draggable|playful-placeholder/);
+  assert.doesNotMatch(css, /\.playful-/);
+  assert.match(css, /\.header-avatar[\s\S]*cursor:\s*grab/i);
+});
+
+test('keeps a visible but restrained application card tilt', () => {
+  assert.match(effects, /const maxTilt = 4/);
+  assert.match(effects, /translateY\(-4px\)/);
 });
 
 test('uses editorial fonts instead of cyber display fonts', () => {

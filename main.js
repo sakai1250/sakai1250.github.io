@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(window.init3DEffects || init3DEffects, '3DEffects');
     safeInit(window.initBackgroundParticles || initBackgroundParticles, 'BackgroundParticles');
     safeInit(window.initTypingEffect || initTypingEffect, 'TypingEffect');
+    safeInit(window.initAvatarDragGuide || initAvatarDragGuide, 'AvatarDragGuide');
 });
 
 // === Core Functions ===

@@ -198,6 +198,19 @@ img { max-width: 100%; height: auto; }
   object-fit: cover;
   border: 3px solid var(--surface);
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  will-change: transform;
+  transition: transform 0.42s var(--ease-out-expo), box-shadow 0.2s ease;
+}
+
+.header-avatar.avatar-dragging {
+  position: relative;
+  z-index: 1200;
+  cursor: grabbing;
+  box-shadow: 0 18px 38px rgba(7, 26, 47, 0.22);
+  transition: box-shadow 0.2s ease;
 }
 
 .header-identity {
@@ -753,7 +766,7 @@ img { max-width: 100%; height: auto; }
   background: var(--surface-2);
   cursor: pointer;
   transform-style: preserve-3d;
-  transition: transform 0.22s var(--ease-organic), border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+  transition: transform 0.26s var(--ease-organic), border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
 }
 
 .app-card:hover {
@@ -1091,6 +1104,32 @@ textarea.form-control { min-height: 130px; resize: vertical; }
 
 .header-profile:hover::before { opacity: 0.75; transform: translateY(-50%) scale(1); }
 .header-profile:hover::after { opacity: 0.9; }
+
+.avatar-drag-tooltip {
+  position: fixed;
+  z-index: 5000;
+  max-width: min(320px, calc(100vw - 24px));
+  padding: 8px 12px;
+  border: 1px solid color-mix(in srgb, var(--accent), transparent 28%);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary), transparent 5%);
+  color: #F8F4E9;
+  box-shadow: var(--shadow-md);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+  white-space: normal;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -100%) translateY(-10px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.avatar-drag-tooltip.visible {
+  opacity: 0.96;
+  transform: translate(-50%, -100%) translateY(-14px);
+}
 
 .reveal-item {
   opacity: 0;

@@ -5,19 +5,119 @@
 function init3DEffects() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+    const maxTilt = 4;
+
     document.querySelectorAll('.app-card').forEach(card => {
         card.addEventListener('mousemove', (event) => {
             const rect = card.getBoundingClientRect();
             const xRatio = (event.clientX - rect.left) / rect.width - 0.5;
             const yRatio = (event.clientY - rect.top) / rect.height - 0.5;
-            const rotateX = Math.max(-1.5, Math.min(1.5, yRatio * -3));
-            const rotateY = Math.max(-1.5, Math.min(1.5, xRatio * 3));
-            card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-2px)`;
+            const rotateX = Math.max(-maxTilt, Math.min(maxTilt, yRatio * -8));
+            const rotateY = Math.max(-maxTilt, Math.min(maxTilt, xRatio * 8));
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
         });
 
         card.addEventListener('mouseleave', () => {
             card.style.transform = '';
         });
+    });
+}
+
+function initAvatarDragGuide() {
+    const avatar = document.querySelector('.header-avatar');
+    if (!avatar || avatar.dataset.dragGuideReady === 'true') return;
+    avatar.dataset.dragGuideReady = 'true';
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'avatar-drag-tooltip';
+    tooltip.setAttribute('role', 'status');
+    tooltip.setAttribute('aria-live', 'polite');
+    document.body.appendChild(tooltip);
+
+    let dragging = false;
+    let startX = 0;
+    let startY = 0;
+
+    const getGuideText = (clientX, clientY) => {
+        avatar.style.visibility = 'hidden';
+        const target = document.elementFromPoint(clientX, clientY);
+        avatar.style.visibility = '';
+
+        const lang = document.documentElement.getAttribute('data-lang') || 'ja';
+        if (!target) return lang === 'ja' ? 'ページ外' : 'Outside the page';
+
+        const appCard = target.closest('.app-card');
+        if (appCard) {
+            const title = appCard.querySelector('.app-title')?.textContent.trim() || '';
+            return `${lang === 'ja' ? '開発作品' : 'Project'} · ${title}`;
+        }
+
+        const section = target.closest('.section-card');
+        if (section) {
+            const title = section.querySelector('.section-title');
+            const localizedTitle = title?.querySelector(`[lang="${lang}"]`) || title;
+            return `${lang === 'ja' ? 'セクション' : 'Section'} · ${localizedTitle?.textContent.trim() || ''}`;
+        }
+
+        if (target.closest('.profile-sidebar')) {
+            return lang === 'ja' ? 'プロフィール・連絡先' : 'Profile and contact links';
+        }
+        if (target.closest('.section-tab-nav')) {
+            return lang === 'ja' ? 'セクションナビゲーション' : 'Section navigation';
+        }
+        if (target.closest('.header-bar')) {
+            return lang === 'ja' ? 'プロフィールと表示設定' : 'Profile and display controls';
+        }
+        if (target.closest('.main-content')) {
+            return lang === 'ja' ? '研究・開発コンテンツ' : 'Research and engineering content';
+        }
+        return lang === 'ja' ? 'ページ背景' : 'Page background';
+    };
+
+    const updateTooltip = (clientX, clientY) => {
+        tooltip.textContent = getGuideText(clientX, clientY);
+        tooltip.style.left = `${clientX}px`;
+        tooltip.style.top = `${Math.max(18, clientY - 20)}px`;
+        tooltip.classList.add('visible');
+    };
+
+    const endDrag = (event) => {
+        if (!dragging) return;
+        dragging = false;
+        avatar.releasePointerCapture?.(event.pointerId);
+        avatar.classList.remove('avatar-dragging');
+        avatar.style.transform = '';
+        tooltip.classList.remove('visible');
+    };
+
+    avatar.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        event.preventDefault();
+        dragging = true;
+        startX = event.clientX;
+        startY = event.clientY;
+        avatar.classList.add('avatar-dragging');
+        avatar.setPointerCapture?.(event.pointerId);
+        updateTooltip(event.clientX, event.clientY);
+    });
+
+    avatar.addEventListener('pointermove', (event) => {
+        if (!dragging) return;
+        event.preventDefault();
+        const offsetX = event.clientX - startX;
+        const offsetY = event.clientY - startY;
+        avatar.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0) scale(1.06)`;
+        updateTooltip(event.clientX, event.clientY);
+    });
+
+    avatar.addEventListener('pointerup', endDrag);
+    avatar.addEventListener('pointercancel', endDrag);
+    window.addEventListener('blur', () => {
+        if (!dragging) return;
+        dragging = false;
+        avatar.classList.remove('avatar-dragging');
+        avatar.style.transform = '';
+        tooltip.classList.remove('visible');
     });
 }
 
@@ -163,3 +263,4 @@ function initTypingEffect() {
 window.init3DEffects = init3DEffects;
 window.initBackgroundParticles = initBackgroundParticles;
 window.initTypingEffect = initTypingEffect;
+window.initAvatarDragGuide = initAvatarDragGuide;

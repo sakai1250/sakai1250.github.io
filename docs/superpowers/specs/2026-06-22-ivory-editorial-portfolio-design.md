@@ -174,20 +174,24 @@
 
 ### Remove
 
-- カードのドラッグ並べ替え
-- ドラッグハンドル
-- ドラッグ用placeholder、drop target、tooltip
-- カードを掴めることを示すgrab cursor
+- カードとリスト項目のドラッグ並べ替え
+- 並べ替え用ドラッグハンドル
+- 並べ替え用placeholderとdrop target
+- カードとリスト項目を掴めることを示すgrab cursor
 
 ### Retain with refinement
 
+- 左上プロフィール画像のドラッグ案内:
+  - 画像をドラッグした位置に応じて、プロフィール、ナビゲーション、研究セクション、開発作品などを案内する。
+  - カード並べ替え処理とは独立した初期化処理にする。
+  - 案内tooltipはdeep navyとgoldで上品に表示し、画像を離すと元位置へ戻す。
 - 背景パーティクル:
   - 粒子数と接続線を減らす。
   - opacityを下げる。
   - muted goldまたはsoft navyを使用する。
 - 3D effect:
   - application cardだけに限定する。
-  - 回転角を小さくし、上方向の移動を2px程度に抑える。
+  - 回転角は最大4度、上方向の移動は4px程度とし、操作が分かる強度を保つ。
 - タイプ入力:
   - 現在の文言とロジックを維持する。
   - uppercase、強いletter-spacing、発光を外す。
