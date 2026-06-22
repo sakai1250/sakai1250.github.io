@@ -43,3 +43,5 @@ Implement the approved Ivory Editorial redesign while preserving the portfolioâ€
 - [x] Verify drag target text, return animation, card transform, and browser errors
 - [x] Restore drag rotation for profile and section cards without DOM reordering
 - [x] Verify rotation, release reset, unchanged parent/count, and app modal behavior
+- [x] Remove the rotation clamp and allow cumulative rotations beyond 360 degrees
+- [x] Verify visible backface and a browser-measured 756-degree rotation

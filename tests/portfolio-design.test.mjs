@@ -42,8 +42,8 @@ test('removes card reordering but keeps the avatar drag guide', () => {
   assert.match(css, /\.header-avatar[\s\S]*cursor:\s*grab/i);
 });
 
-test('keeps a visible but restrained application card tilt', () => {
-  assert.match(effects, /const maxTilt = 4/);
+test('keeps a visible application card tilt', () => {
+  assert.match(effects, /const maxTilt = \d+/);
   assert.match(effects, /translateY\(-4px\)/);
 });
 
@@ -52,8 +52,16 @@ test('supports drag rotation without restoring card reordering', () => {
   assert.match(effects, /function initCardDragRotation/);
   assert.match(effects, /\.profile-card, \.section-card/);
   assert.match(effects, /rotateX\(\$\{rotateX\}deg\) rotateY\(\$\{rotateY\}deg\)/);
+  assert.match(effects, /rotateX \+= deltaY \* -0\.9/);
+  assert.match(effects, /rotateY \+= deltaX \* 0\.9/);
+  assert.doesNotMatch(effects, /Math\.max\(-14, Math\.min\(14/);
   assert.match(effects, /window\.initCardDragRotation = initCardDragRotation/);
   assert.doesNotMatch(effects, /insertBefore|appendChild\(placeholder\)|getDragAfterElement/);
+});
+
+test('keeps card backs visible during full rotations', () => {
+  assert.match(css, /\.profile-card[\s\S]*backface-visibility:\s*visible/);
+  assert.match(css, /\.section-card[\s\S]*backface-visibility:\s*visible/);
 });
 
 test('uses editorial fonts instead of cyber display fonts', () => {

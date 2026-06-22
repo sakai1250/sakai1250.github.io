@@ -191,7 +191,8 @@
   - muted goldまたはsoft navyを使用する。
 - 3D effect:
   - application cardはマウス位置に応じて最大4度、上方向へ4px浮上させる。
-  - profile cardとsection cardは、空白部または見出し部をドラッグすると最大14度まで回転できる。
+  - profile cardとsection cardは、空白部または見出し部のドラッグ距離を累積角度へ変換し、360度を超えて何周でも回転できる。
+  - `backface-visibility: visible`を維持し、180度を超えた回転中も裏面側を表示する。
   - ドラッグ回転ではDOM位置を変更せず、離したら元の角度へ戻す。
   - リンク、ボタン、フォーム、リスト項目、application card上からは親カードのドラッグ回転を開始しない。
 - タイプ入力:

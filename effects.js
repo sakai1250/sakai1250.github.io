@@ -5,15 +5,15 @@
 function init3DEffects() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const maxTilt = 4;
+    const maxTilt = 120;
 
     document.querySelectorAll('.app-card').forEach(card => {
         card.addEventListener('mousemove', (event) => {
             const rect = card.getBoundingClientRect();
             const xRatio = (event.clientX - rect.left) / rect.width - 0.5;
             const yRatio = (event.clientY - rect.top) / rect.height - 0.5;
-            const rotateX = Math.max(-maxTilt, Math.min(maxTilt, yRatio * -8));
-            const rotateY = Math.max(-maxTilt, Math.min(maxTilt, xRatio * 8));
+            const rotateX = Math.max(-maxTilt, Math.min(maxTilt, yRatio * -12));
+            const rotateY = Math.max(-maxTilt, Math.min(maxTilt, xRatio * 12));
             card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
         });
 
@@ -31,8 +31,10 @@ function initCardDragRotation() {
         card.dataset.dragRotationReady = 'true';
 
         let rotating = false;
-        let startX = 0;
-        let startY = 0;
+        let previousX = 0;
+        let previousY = 0;
+        let rotateX = 0;
+        let rotateY = 0;
 
         const reset = (event) => {
             if (!rotating) return;
@@ -55,8 +57,10 @@ function initCardDragRotation() {
             if (event.target.closest('a, button, input, textarea, select, .repo-list li, .app-card')) return;
 
             rotating = true;
-            startX = event.clientX;
-            startY = event.clientY;
+            previousX = event.clientX;
+            previousY = event.clientY;
+            rotateX = 0;
+            rotateY = 0;
             card.classList.add('card-rotating');
             card.style.transition = 'none';
             card.setPointerCapture?.(event.pointerId);
@@ -64,14 +68,16 @@ function initCardDragRotation() {
 
         card.addEventListener('pointermove', (event) => {
             if (!rotating) return;
-            const deltaX = event.clientX - startX;
-            const deltaY = event.clientY - startY;
+            const deltaX = event.clientX - previousX;
+            const deltaY = event.clientY - previousY;
             if (Math.hypot(deltaX, deltaY) < 4) return;
 
             event.preventDefault();
-            const rotateX = Math.max(-14, Math.min(14, -deltaY / 8));
-            const rotateY = Math.max(-14, Math.min(14, deltaX / 8));
-            const lift = Math.min(10, Math.hypot(deltaX, deltaY) / 18);
+            previousX = event.clientX;
+            previousY = event.clientY;
+            rotateX += deltaY * -0.9;
+            rotateY += deltaX * 0.9;
+            const lift = Math.min(12, 5 + Math.hypot(deltaX, deltaY) / 12);
             card.style.transform = `perspective(850px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(${-lift}px) scale(1.015)`;
         });
 

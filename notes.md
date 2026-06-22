@@ -35,3 +35,6 @@
 - Browser drag verification observed `rotateX(-10.375deg) rotateY(11.725deg)` and a 6.96px lift.
 - After release, the transform cleared, the section remained under `#research-content`, and the section count remained 6.
 - Clicking an application card still opened its modal after the drag-rotation change.
+- Removed the 14-degree drag-rotation clamp and changed pointer movement to cumulative rotation.
+- Full-spin browser verification reached `rotateY(-756deg)`, with `backface-visibility: visible`.
+- Releasing still cleared the transform, and the card parent/count remained unchanged.
