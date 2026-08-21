@@ -116,6 +116,30 @@ function initTypingEffect() {
     if (cursor) cursor.style.display = 'none';
 }
 
+function getSectionByEnglishTitle(title) {
+    return Array.from(document.querySelectorAll('.section-card')).find(section => {
+        const heading = section.querySelector('.section-title [lang="en"]');
+        return heading?.textContent.trim() === title;
+    });
+}
+
+function syncPortfolioStats() {
+    const researchSection = getSectionByEnglishTitle('Research Achievements');
+    const awardsSection = getSectionByEnglishTitle('Awards');
+    const appsSection = getSectionByEnglishTitle('My Apps & Services');
+
+    const values = {
+        'stat-papers': researchSection?.querySelectorAll('.repo-list > li').length,
+        'stat-awards': awardsSection?.querySelectorAll('.repo-list > li').length,
+        'stat-apps': appsSection?.querySelectorAll('.app-card').length,
+    };
+
+    Object.entries(values).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element && Number.isInteger(value)) element.textContent = String(value);
+    });
+}
+
 function initPortfolioPolish() {
     if (document.getElementById('portfolio-polish-style')) return;
 
@@ -131,7 +155,7 @@ function initPortfolioPolish() {
         @media (max-width: 768px) {
             .main-content { order: 1 !important; }
             .profile-sidebar { order: 2 !important; }
-            .header-actions .header-btn.primary { display: none !important; }
+            .header-actions a[href*="github.com/sakai1250"] { display: none !important; }
             .header-tab-row .year-filter {
                 flex-wrap: nowrap !important;
                 overflow-x: auto;
@@ -153,7 +177,19 @@ function initPortfolioPolish() {
     const jaStatLabel = paperStat?.querySelector('.stat-label [lang="ja"]');
     const enStatLabel = paperStat?.querySelector('.stat-label [lang="en"]');
     if (jaStatLabel) jaStatLabel.textContent = '研究業績';
-    if (enStatLabel) enStatLabel.textContent = 'Outputs';
+    if (enStatLabel) enStatLabel.textContent = 'Research outputs';
+
+    const cvButton = document.querySelector('.header-actions a[href="assets/cv.pdf"]');
+    const githubButton = document.querySelector('.header-actions a[href*="github.com/sakai1250"]');
+    cvButton?.classList.add('primary');
+    githubButton?.classList.remove('primary');
+
+    if (githubButton) {
+        const ja = githubButton.querySelector('[lang="ja"]');
+        const en = githubButton.querySelector('[lang="en"]');
+        if (ja) ja.textContent = 'GitHub';
+        if (en) en.textContent = 'GitHub';
+    }
 
     document.querySelectorAll('.tab-item').forEach(tab => {
         const ja = tab.querySelector('[lang="ja"]');
@@ -161,6 +197,9 @@ function initPortfolioPolish() {
         if (tab.dataset.tab === 'research') ja.textContent = '研究';
         if (tab.dataset.tab === 'engineer') ja.textContent = '開発';
     });
+
+    syncPortfolioStats();
+    window.setTimeout(syncPortfolioStats, 1700);
 }
 
 if (document.readyState === 'loading') {
