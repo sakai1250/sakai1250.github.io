@@ -8,6 +8,9 @@ function init3DEffects() {
     const maxTilt = 120;
 
     document.querySelectorAll('.app-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transition = 'none';
+        });
         card.addEventListener('mousemove', (event) => {
             const rect = card.getBoundingClientRect();
             const xRatio = (event.clientX - rect.left) / rect.width - 0.5;
@@ -18,6 +21,7 @@ function init3DEffects() {
         });
 
         card.addEventListener('mouseleave', () => {
+            card.style.transition = '';
             card.style.transform = '';
         });
     });
