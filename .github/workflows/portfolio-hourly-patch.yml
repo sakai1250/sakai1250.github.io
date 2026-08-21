@@ -1,0 +1,60 @@
+name: Portfolio patch
+
+on:
+  push:
+    branches:
+      - improve/visual-consensus-clean-run2
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: improve/visual-consensus-clean-run2
+      - name: Apply portfolio refinements
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('index.html')
+          s = p.read_text()
+          replacements = {
+              '<span lang="ja">論文</span>': '<span lang="ja">研究業績</span>',
+              '<span lang="en">Papers</span>': '<span lang="en">Research outputs</span>',
+              '<span lang="ja">研究 (Researcher)</span>': '<span lang="ja">研究</span>',
+              '<span lang="ja">開発 (Engineer)</span>': '<span lang="ja">開発</span>',
+          }
+          for old, new in replacements.items():
+              if old not in s:
+                  print('missing:', old)
+              s = s.replace(old, new, 1)
+          p.write_text(s)
+
+          p = Path('main.js')
+          s = p.read_text()
+          s = s.replace("window.addEventListener('load', () => setTimeout(hide, 500));", "window.addEventListener('load', () => setTimeout(hide, 120));", 1)
+          s = s.replace('setTimeout(hide, 3000);', 'setTimeout(hide, 1200);', 1)
+          p.write_text(s)
+
+          p = Path('style.css')
+          s = p.read_text()
+          marker = '/* Hourly refinement: clarity over decoration */'
+          block = '''\n\n/* Hourly refinement: clarity over decoration */\n.header-profile::before,\n.header-profile::after,\n.avatar-drag-tooltip {\n  display: none !important;\n}\n\n@media (max-width: 768px) {\n  .main-content { order: 1; }\n  .profile-sidebar { order: 2; }\n  .header-actions .header-btn.primary { display: none; }\n  .header-tab-row .year-filter {\n    flex-wrap: nowrap;\n    overflow-x: auto;\n    padding-bottom: 4px;\n    scrollbar-width: none;\n  }\n  .header-tab-row .year-filter::-webkit-scrollbar { display: none; }\n  .header-tab-row .year-filter .filter-label,\n  .header-tab-row .year-filter .chip {\n    flex: 0 0 auto;\n  }\n  .header-tab-row .year-filter .filter-label { width: auto; }\n  .header-tab-row .year-filter .chip { min-height: 36px; }\n}\n'''
+          if marker not in s:
+              s += block
+          p.write_text(s)
+          PY
+          rm -f .portfolio-refine-trigger
+          rm -f .github/workflows/portfolio-hourly-patch.yml
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html main.js style.css .github/workflows/portfolio-hourly-patch.yml .portfolio-refine-trigger
+          git commit -m "Apply portfolio clarity refinements"
+          git push origin HEAD:improve/visual-consensus-clean-run2
