@@ -66,11 +66,11 @@ function initLoader() {
     if (document.readyState === 'complete') {
         setTimeout(hide, 200);
     } else {
-        window.addEventListener('load', () => setTimeout(hide, 500));
+        window.addEventListener('load', () => setTimeout(hide, 120));
     }
 
     // Safety timeout in case load never fires
-    setTimeout(hide, 3000);
+    setTimeout(hide, 1200);
 }
 
 function initTabs() {
