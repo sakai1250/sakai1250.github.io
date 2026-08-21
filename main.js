@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(initStats, 'Stats');
     safeInit(initSearchAndFilters, 'SearchAndFilters');
     safeInit(initCopyButtons, 'CopyButtons');
+    safeInit(initResearchPriority, 'ResearchPriority');
     safeInit(initTOC, 'TOC');
     safeInit(initSectionTabs, 'SectionTabs');
     safeInit(initQiitaArticles, 'QiitaArticles');
@@ -32,11 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(initLanguage, 'Language');
 
     // Visual Effects (From effects.js)
-    safeInit(window.init3DEffects || init3DEffects, '3DEffects');
     safeInit(window.initBackgroundParticles || initBackgroundParticles, 'BackgroundParticles');
     safeInit(window.initTypingEffect || initTypingEffect, 'TypingEffect');
-    safeInit(window.initAvatarDragGuide || initAvatarDragGuide, 'AvatarDragGuide');
-    safeInit(window.initCardDragRotation || initCardDragRotation, 'CardDragRotation');
 });
 
 // === Core Functions ===
@@ -209,6 +207,21 @@ const publicationCount = researchSection?.querySelectorAll('.repo-list > li').le
         const el = document.getElementById(s.id);
         if (el) animate(el, s.v);
     });
+}
+
+function initResearchPriority() {
+    const content = document.getElementById('research-content');
+    if (!content) return;
+
+    const sections = Array.from(content.querySelectorAll(':scope > .section-card'));
+    const achievements = sections.find(section =>
+        section.querySelector('.section-title')?.textContent.includes('Research Achievements')
+    );
+    const education = sections.find(section =>
+        section.querySelector('.section-title')?.textContent.includes('Education')
+    );
+
+    if (achievements && education) content.insertBefore(achievements, education);
 }
 
 function initTOC() {

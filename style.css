@@ -12,7 +12,7 @@
   --text-main: #111827;
   --text-sub: #374151;
   --muted: #5B6472;
-  --accent: #9A7030;
+  --accent: #8A611E;
   --accent-2: #C6A15B;
   --accent-soft: #EEE2CA;
   --stroke: rgba(17, 24, 39, 0.10);
@@ -20,7 +20,7 @@
   --header-bg: rgba(250, 248, 243, 0.92);
   --profile-text: #F8F4E9;
   --profile-muted: #C7C4BC;
-  --particle-color: rgba(184, 138, 68, 0.30);
+  --particle-color: rgba(138, 97, 30, 0.18);
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
@@ -54,7 +54,7 @@
   --header-bg: rgba(9, 19, 31, 0.93);
   --profile-text: #F4F0E7;
   --profile-muted: #BFC5CC;
-  --particle-color: rgba(198, 161, 91, 0.22);
+  --particle-color: rgba(198, 161, 91, 0.14);
   --shadow-sm: 0 5px 16px rgba(0, 0, 0, 0.15);
   --shadow-md: 0 14px 34px rgba(0, 0, 0, 0.22);
   --shadow-lg: 0 24px 58px rgba(0, 0, 0, 0.30);
@@ -87,7 +87,7 @@ body::before {
   z-index: -2;
   pointer-events: none;
   background:
-    radial-gradient(circle at 12% 8%, rgba(184, 138, 68, 0.055), transparent 26%),
+    radial-gradient(circle at 12% 8%, rgba(138, 97, 30, 0.050), transparent 26%),
     radial-gradient(circle at 88% 30%, rgba(7, 26, 47, 0.035), transparent 30%),
     var(--bg);
 }
@@ -199,8 +199,8 @@ img { max-width: 100%; height: auto; }
   object-fit: cover;
   border: 3px solid var(--surface);
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
-  cursor: grab;
-  touch-action: none;
+  cursor: default;
+  touch-action: auto;
   user-select: none;
   will-change: transform;
   transition: transform 0.42s var(--ease-out-expo), box-shadow 0.2s ease;
@@ -359,6 +359,12 @@ img { max-width: 100%; height: auto; }
   color: #FFFFFF;
 }
 
+[data-theme="dark"] .header-btn.primary:hover {
+  border-color: var(--accent-2);
+  background: var(--accent-2);
+  color: #09131F;
+}
+
 .header-tab-row {
   display: flex;
   align-items: center;
@@ -469,7 +475,7 @@ img { max-width: 100%; height: auto; }
   background: #071A2F;
   color: var(--profile-text);
   box-shadow: 0 18px 42px rgba(7, 26, 47, 0.18);
-  cursor: grab;
+  cursor: default;
   transform-style: preserve-3d;
   backface-visibility: visible;
   will-change: transform;
@@ -632,7 +638,7 @@ img { max-width: 100%; height: auto; }
   border: 1px solid var(--stroke);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  cursor: grab;
+  cursor: default;
   transform-style: preserve-3d;
   backface-visibility: visible;
   will-change: transform;
@@ -806,7 +812,7 @@ img { max-width: 100%; height: auto; }
 }
 
 .app-card::before {
-  content: attr(data-tags) " · 0.98";
+  content: attr(data-tags);
   position: absolute;
   top: 0;
   left: 0;
