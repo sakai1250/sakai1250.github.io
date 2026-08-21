@@ -202,7 +202,10 @@ function initStats() {
         };
         requestAnimationFrame(step);
     };
-    [{ id: 'stat-papers', v: 14 }, { id: 'stat-awards', v: 18 }, { id: 'stat-apps', v: 12 }].forEach(s => {
+    const researchSection = Array.from(document.querySelectorAll('#research-content .section-card'))
+    .find(section => section.querySelector('.section-title')?.textContent.includes('Research Achievements'));
+const publicationCount = researchSection?.querySelectorAll('.repo-list > li').length || 18;
+[{ id: 'stat-papers', v: publicationCount }, { id: 'stat-awards', v: 18 }, { id: 'stat-apps', v: 12 }].forEach(s => {
         const el = document.getElementById(s.id);
         if (el) animate(el, s.v);
     });
