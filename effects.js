@@ -152,6 +152,12 @@ function initPortfolioPolish() {
             display: none !important;
         }
 
+        @media (min-width: 769px) {
+            .header-stats {
+                transform: translate(-50%, -8px) !important;
+            }
+        }
+
         @media (max-width: 768px) {
             .main-content { order: 1 !important; }
             .profile-sidebar { order: 2 !important; }
