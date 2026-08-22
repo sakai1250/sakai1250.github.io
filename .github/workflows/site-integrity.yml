@@ -1,0 +1,75 @@
+name: Site integrity
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Check local links and duplicate IDs
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          from urllib.parse import urlsplit
+
+          root = Path('.')
+          html = (root / 'index.html').read_text(encoding='utf-8')
+
+          class Parser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.ids = []
+                  self.refs = []
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if 'id' in attrs:
+                      self.ids.append(attrs['id'])
+                  for key in ('href', 'src'):
+                      if key in attrs:
+                          self.refs.append(attrs[key])
+
+          p = Parser()
+          p.feed(html)
+
+          duplicates = sorted({x for x in p.ids if p.ids.count(x) > 1})
+          if duplicates:
+              raise SystemExit(f'Duplicate HTML ids: {duplicates}')
+
+          ids = set(p.ids)
+          missing = []
+          for ref in p.refs:
+              if not ref or ref.startswith(('http://', 'https://', 'mailto:', 'tel:', 'data:', 'javascript:')):
+                  continue
+              if ref.startswith('#'):
+                  anchor = ref[1:]
+                  if anchor and anchor not in ids:
+                      missing.append(f'missing anchor {ref}')
+                  continue
+              path = urlsplit(ref).path
+              if not path or path == '/':
+                  continue
+              target = root / path.lstrip('/')
+              if not target.exists():
+                  missing.append(f'missing file {path}')
+
+          required = ['assets/cv.pdf', 'assets/avatar.jpg', 'style.css', 'main.js']
+          for path in required:
+              if not (root / path).exists():
+                  missing.append(f'missing required asset {path}')
+
+          if missing:
+              raise SystemExit('\n'.join(missing))
+
+          print(f'OK: {len(ids)} unique ids, {len(p.refs)} references checked')
+          PY
