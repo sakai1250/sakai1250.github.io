@@ -2,13 +2,19 @@
 
 Personal portfolio for Taigo Sakai, a computer vision researcher and engineer.
 
-**Live site:** https://sakai1250.github.io  
-**CV:** https://sakai1250.github.io/assets/cv.pdf
+## Quick links
+
+- **Portfolio:** https://sakai1250.github.io
+- **CV:** https://sakai1250.github.io/assets/cv.pdf
+- **Research:** https://sakai1250.github.io/#research-content
+- **GitHub:** https://github.com/sakai1250
 
 ## Focus
 
 - Research: continual learning, long-tailed learning, multi-view detection and tracking
 - Engineering: deep learning systems, iOS/Web applications, research tooling
+
+The site keeps research outputs, awards, applications, and the downloadable CV in one place so that research collaborators, recruiters, and engineers can reach the relevant material directly.
 
 ## Local preview
 
@@ -19,6 +25,16 @@ python3 -m http.server 8000
 ```
 
 Then open `http://localhost:8000`.
+
+## Maintenance
+
+- `index.html` contains the portfolio content and page structure.
+- `style.css` controls the visual presentation and light/dark themes.
+- `main.js` handles filtering, language switching, statistics, and interaction.
+- `assets/cv.pdf` is the CV linked from the site header.
+- `sitemap.xml` and `robots.txt` support search indexing.
+
+When portfolio content changes, keep the CV, visible counts, and sitemap dates consistent with the site.
 
 ## Deployment
 
