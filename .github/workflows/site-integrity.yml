@@ -24,7 +24,10 @@ jobs:
           from urllib.parse import urlsplit
 
           root = Path('.')
-          html = (root / 'index.html').read_text(encoding='utf-8')
+          html_files = [root / 'index.html', root / '404.html']
+          missing = []
+          total_ids = 0
+          total_refs = 0
 
           class Parser(HTMLParser):
               def __init__(self):
@@ -39,31 +42,38 @@ jobs:
                       if key in attrs:
                           self.refs.append(attrs[key])
 
-          p = Parser()
-          p.feed(html)
-
-          duplicates = sorted({x for x in p.ids if p.ids.count(x) > 1})
-          if duplicates:
-              raise SystemExit(f'Duplicate HTML ids: {duplicates}')
-
-          ids = set(p.ids)
-          missing = []
-          for ref in p.refs:
-              if not ref or ref.startswith(('http://', 'https://', 'mailto:', 'tel:', 'data:', 'javascript:')):
+          for html_path in html_files:
+              if not html_path.exists():
+                  missing.append(f'missing HTML file {html_path}')
                   continue
-              if ref.startswith('#'):
-                  anchor = ref[1:]
-                  if anchor and anchor not in ids:
-                      missing.append(f'missing anchor {ref}')
-                  continue
-              path = urlsplit(ref).path
-              if not path or path == '/':
-                  continue
-              target = root / path.lstrip('/')
-              if not target.exists():
-                  missing.append(f'missing file {path}')
 
-          required = ['assets/cv.pdf', 'assets/avatar.jpg', 'style.css', 'main.js']
+              parser = Parser()
+              parser.feed(html_path.read_text(encoding='utf-8'))
+
+              duplicates = sorted({x for x in parser.ids if parser.ids.count(x) > 1})
+              if duplicates:
+                  missing.append(f'{html_path}: duplicate HTML ids {duplicates}')
+
+              ids = set(parser.ids)
+              total_ids += len(ids)
+              total_refs += len(parser.refs)
+
+              for ref in parser.refs:
+                  if not ref or ref.startswith(('http://', 'https://', 'mailto:', 'tel:', 'data:', 'javascript:')):
+                      continue
+                  if ref.startswith('#'):
+                      anchor = ref[1:]
+                      if anchor and anchor not in ids:
+                          missing.append(f'{html_path}: missing anchor {ref}')
+                      continue
+                  path = urlsplit(ref).path
+                  if not path or path == '/':
+                      continue
+                  target = root / path.lstrip('/')
+                  if not target.exists():
+                      missing.append(f'{html_path}: missing file {path}')
+
+          required = ['assets/cv.pdf', 'assets/avatar.jpg', 'style.css', 'main.js', '404.html']
           for path in required:
               if not (root / path).exists():
                   missing.append(f'missing required asset {path}')
@@ -71,5 +81,5 @@ jobs:
           if missing:
               raise SystemExit('\n'.join(missing))
 
-          print(f'OK: {len(ids)} unique ids, {len(p.refs)} references checked')
+          print(f'OK: {len(html_files)} HTML files, {total_ids} unique ids, {total_refs} references checked')
           PY
