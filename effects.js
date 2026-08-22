@@ -162,6 +162,7 @@ function initPortfolioPolish() {
             .main-content { order: 1 !important; }
             .profile-sidebar { order: 2 !important; }
             .header-actions a[href*="github.com/sakai1250"] { display: none !important; }
+            .header-actions a[href="assets/cv.pdf"] { display: inline-flex !important; }
             .header-tab-row .year-filter {
                 flex-wrap: nowrap !important;
                 overflow-x: auto;
