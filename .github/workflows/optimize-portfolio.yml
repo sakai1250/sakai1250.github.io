@@ -80,12 +80,26 @@ jobs:
           data['badges']['badges-orgs'] = extract_images('Organizations|所属')
 
           # --- 2. アプリ情報の抽出と画像最適化 ---
-          lines = content.split('\n')
+          # README全体のGitHubリンクを拾うと、プロフィール装飾やbadge用repoまで
+          # appとして混入する。My Apps節だけを対象にする。
+          apps_match = re.search(
+              r'^##\s+My Apps\s*$([\s\S]*?)(?=^##\s|\Z)',
+              content,
+              re.IGNORECASE | re.MULTILINE,
+          )
+          apps_content = apps_match.group(1) if apps_match else ''
+          lines = apps_content.split('\n')
           for i, line in enumerate(lines):
-              # GitHubリポジトリリンクを含む行を探す
-              repo_match = re.search(r'github\.com/([^/]+/[^/]+)', line)
+              # GitHub repository URLのowner/repoだけを抽出する。
+              # HTMLの \" > や表示文字列をrepo名へ混ぜない。
+              repo_match = re.search(
+                  r'https?://github\.com/([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)',
+                  line,
+              )
               if repo_match:
-                  full_repo = repo_match.group(1).replace('.git', '').strip()
+                  full_repo = repo_match.group(1)
+                  if full_repo.endswith('.git'):
+                      full_repo = full_repo[:-4]
                   repo_slug = full_repo  # user/repo
                   
                   # 説明文の抽出 (リンクや画像タグを除去)
@@ -117,7 +131,9 @@ jobs:
                               break
                   
                   if desc or img_src:
-                      app_data = {'desc': desc}
+                      app_data = data['apps'].get(full_repo, {'desc': ''})
+                      if desc and len(desc) > len(app_data.get('desc', '')):
+                          app_data['desc'] = desc
                       
                       # 画像がある場合、ダウンロードしてリサイズ
                       if img_src and img_src.startswith('http'):
