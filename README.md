@@ -1,26 +1,12 @@
-# Taigo Sakai Portfolio
+# Taigo Sakai — Portfolio
 
-Personal portfolio of Taigo Sakai, a computer vision researcher and engineer at Meijo University.
+Personal portfolio for Taigo Sakai, a computer vision researcher and engineer.
 
-**Live site:** https://sakai1250.github.io/
+- Research: continual learning, long-tailed learning, multi-view detection and tracking
+- Engineering: deep learning systems, iOS/Web applications, research tooling
+- Website: https://sakai1250.github.io
 
-## Research
-
-Main research topics:
-
-- Computer Vision
-- Continual Learning
-- Long-Tailed Learning
-- Multi-View Detection and Tracking
-- Efficient and robust deep learning
-
-Publications, awards, research presentations, projects, and contact information are listed on the portfolio site.
-
-## Development
-
-The site is built as a lightweight static website with HTML, CSS, and JavaScript and is published with GitHub Pages.
-
-To check it locally:
+## Local preview
 
 ```bash
 python3 -m http.server 8000
