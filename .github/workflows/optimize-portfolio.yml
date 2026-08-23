@@ -101,16 +101,17 @@ jobs:
           )
 
           for block in app_blocks:
+              # Only accept repository URLs from anchor href values. Image sources such as
+              # github.com/user-attachments/assets/... are not repositories.
               repo_match = re.search(
-                  r'https?://github\.com/([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)',
+                  r'<a\b[^>]*href=["\']https?://github\.com/([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+?)(?:\.git)?["\'][^>]*>',
                   block,
+                  re.IGNORECASE,
               )
               if not repo_match:
                   continue
 
               full_repo = repo_match.group(1)
-              if full_repo.endswith('.git'):
-                  full_repo = full_repo[:-4]
 
               paragraph_match = re.search(r'<p\b[^>]*>([\s\S]*?)</p>', block, re.IGNORECASE)
               desc = ''
