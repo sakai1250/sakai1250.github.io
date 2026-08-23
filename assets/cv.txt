@@ -5,6 +5,8 @@ Email: 263441505@ccmailg.meijo-u.ac.jp
 Portfolio: https://sakai1250.github.io/
 GitHub: https://github.com/sakai1250
 LinkedIn: https://www.linkedin.com/in/sakai1250
+Google Scholar: https://scholar.google.com/citations?user=eS-5wrQAAAAJ&hl=ja
+Qiita: https://qiita.com/sakai1250
 
 SUMMARY
 Ph.D. student at Meijo University working on computer vision and continual learning. Research interests include long-tailed learning, dynamic neural capacity, and robust multi-view pedestrian detection and tracking. Author of peer-reviewed international publications and recipient of multiple research and engineering awards.
