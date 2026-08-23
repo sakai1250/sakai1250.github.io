@@ -16,16 +16,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Check local links and duplicate IDs
+      - name: Check local links, duplicate IDs, and indexing files
         run: |
           python - <<'PY'
           from html.parser import HTMLParser
           from pathlib import Path
           from urllib.parse import urlsplit
+          import xml.etree.ElementTree as ET
 
           root = Path('.')
           html_files = [root / 'index.html', root / '404.html']
-          missing = []
+          problems = []
           total_ids = 0
           total_refs = 0
 
@@ -44,7 +45,7 @@ jobs:
 
           for html_path in html_files:
               if not html_path.exists():
-                  missing.append(f'missing HTML file {html_path}')
+                  problems.append(f'missing HTML file {html_path}')
                   continue
 
               parser = Parser()
@@ -52,7 +53,7 @@ jobs:
 
               duplicates = sorted({x for x in parser.ids if parser.ids.count(x) > 1})
               if duplicates:
-                  missing.append(f'{html_path}: duplicate HTML ids {duplicates}')
+                  problems.append(f'{html_path}: duplicate HTML ids {duplicates}')
 
               ids = set(parser.ids)
               total_ids += len(ids)
@@ -64,22 +65,51 @@ jobs:
                   if ref.startswith('#'):
                       anchor = ref[1:]
                       if anchor and anchor not in ids:
-                          missing.append(f'{html_path}: missing anchor {ref}')
+                          problems.append(f'{html_path}: missing anchor {ref}')
                       continue
                   path = urlsplit(ref).path
                   if not path or path == '/':
                       continue
                   target = root / path.lstrip('/')
                   if not target.exists():
-                      missing.append(f'{html_path}: missing file {path}')
+                      problems.append(f'{html_path}: missing file {path}')
 
-          required = ['assets/cv.pdf', 'assets/avatar.jpg', 'style.css', 'main.js', '404.html']
+          required = ['assets/cv.pdf', 'assets/avatar.jpg', 'style.css', 'main.js', '404.html', 'robots.txt', 'sitemap.xml']
           for path in required:
               if not (root / path).exists():
-                  missing.append(f'missing required asset {path}')
+                  problems.append(f'missing required asset {path}')
 
-          if missing:
-              raise SystemExit('\n'.join(missing))
+          sitemap = root / 'sitemap.xml'
+          if sitemap.exists():
+              try:
+                  tree = ET.parse(sitemap)
+                  ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+                  locs = [node.text.strip() for node in tree.findall('.//sm:loc', ns) if node.text]
+                  if not locs:
+                      problems.append('sitemap.xml: no <loc> entries')
+                  for loc in locs:
+                      parsed = urlsplit(loc)
+                      if parsed.netloc != 'sakai1250.github.io':
+                          problems.append(f'sitemap.xml: unexpected host in {loc}')
+                          continue
+                      path = parsed.path or '/'
+                      if path == '/':
+                          continue
+                      target = root / path.lstrip('/')
+                      if not target.exists():
+                          problems.append(f'sitemap.xml: missing local target {path}')
+              except ET.ParseError as exc:
+                  problems.append(f'sitemap.xml: invalid XML: {exc}')
 
-          print(f'OK: {len(html_files)} HTML files, {total_ids} unique ids, {total_refs} references checked')
+          robots = root / 'robots.txt'
+          if robots.exists():
+              text = robots.read_text(encoding='utf-8')
+              expected = 'Sitemap: https://sakai1250.github.io/sitemap.xml'
+              if expected not in text:
+                  problems.append('robots.txt: sitemap declaration is missing or incorrect')
+
+          if problems:
+              raise SystemExit('\n'.join(problems))
+
+          print(f'OK: {len(html_files)} HTML files, {total_ids} unique ids, {total_refs} references, sitemap and robots checked')
           PY
