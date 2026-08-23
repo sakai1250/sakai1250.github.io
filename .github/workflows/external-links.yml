@@ -1,0 +1,88 @@
+name: External Link Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - '404.html'
+      - '.github/workflows/external-links.yml'
+  pull_request:
+    paths:
+      - 'index.html'
+      - '404.html'
+      - '.github/workflows/external-links.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check external links
+        shell: python
+        run: |
+          from html.parser import HTMLParser
+          from pathlib import Path
+          from urllib.error import HTTPError, URLError
+          from urllib.request import Request, urlopen
+          import time
+
+          class LinkParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.links = set()
+
+              def handle_starttag(self, tag, attrs):
+                  if tag != 'a':
+                      return
+                  href = dict(attrs).get('href', '')
+                  if href.startswith(('http://', 'https://')):
+                      self.links.add(href)
+
+          parser = LinkParser()
+          for path in ('index.html', '404.html'):
+              parser.feed(Path(path).read_text(encoding='utf-8'))
+
+          failures = []
+          print(f'Checking {len(parser.links)} external links')
+
+          for url in sorted(parser.links):
+              status = None
+              error = None
+              for method in ('HEAD', 'GET'):
+                  try:
+                      request = Request(
+                          url,
+                          method=method,
+                          headers={'User-Agent': 'Mozilla/5.0 portfolio-link-check/1.0'},
+                      )
+                      with urlopen(request, timeout=15) as response:
+                          status = response.status
+                      break
+                  except HTTPError as exc:
+                      status = exc.code
+                      # 401/403/429 usually mean the page exists but rejects automation.
+                      if status in (401, 403, 429):
+                          break
+                      error = str(exc)
+                      if method == 'HEAD':
+                          continue
+                  except (URLError, TimeoutError) as exc:
+                      error = str(exc)
+                      if method == 'HEAD':
+                          continue
+                  time.sleep(0.2)
+
+              if status in (404, 410) or (status is not None and status >= 500) or status is None:
+                  failures.append((url, status, error))
+                  print(f'FAIL {status or "ERR"}: {url} {error or ""}')
+              else:
+                  print(f'OK   {status}: {url}')
+
+          if failures:
+              raise SystemExit(f'{len(failures)} external link(s) are broken or unreachable')
