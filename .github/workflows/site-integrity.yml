@@ -16,12 +16,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Check links, accessibility basics, and indexing files
+      - name: Check links, accessibility basics, generated data, and indexing files
         run: |
           python - <<'PY'
           from html.parser import HTMLParser
           from pathlib import Path
           from urllib.parse import urlsplit
+          import json
+          import re
           import xml.etree.ElementTree as ET
 
           root = Path('.')
@@ -105,10 +107,53 @@ jobs:
                   if not target.exists():
                       problems.append(f'{html_path}: missing file {path}')
 
-          required = ['assets/cv.pdf', 'assets/avatar.jpg', 'style.css', 'main.js', '404.html', 'robots.txt', 'sitemap.xml']
+          required = ['assets/cv.pdf', 'assets/avatar.jpg', 'assets/data.json', 'style.css', 'main.js', '404.html', 'robots.txt', 'sitemap.xml']
           for path in required:
               if not (root / path).exists():
                   problems.append(f'missing required asset {path}')
+
+          data_path = root / 'assets/data.json'
+          if data_path.exists():
+              try:
+                  data = json.loads(data_path.read_text(encoding='utf-8'))
+                  apps = data.get('apps', {})
+                  if not isinstance(apps, dict) or not apps:
+                      problems.append('assets/data.json: apps must be a non-empty object')
+                  else:
+                      repo_pattern = re.compile(r'^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$')
+                      for repo, app in apps.items():
+                          if not repo_pattern.fullmatch(repo):
+                              problems.append(f'assets/data.json: invalid app repository key {repo!r}')
+                          if not isinstance(app, dict):
+                              problems.append(f'assets/data.json: app {repo!r} must be an object')
+                              continue
+                          if not str(app.get('desc', '')).strip():
+                              problems.append(f'assets/data.json: app {repo!r} has an empty description')
+                          image = str(app.get('img', '')).strip()
+                          if not image:
+                              problems.append(f'assets/data.json: app {repo!r} has no thumbnail')
+                          elif not (root / image).exists():
+                              problems.append(f'assets/data.json: app {repo!r} thumbnail is missing: {image}')
+
+                  badges = data.get('badges', {})
+                  if not isinstance(badges, dict):
+                      problems.append('assets/data.json: badges must be an object')
+                  else:
+                      for group, items in badges.items():
+                          if not isinstance(items, list):
+                              problems.append(f'assets/data.json: badge group {group!r} must be a list')
+                              continue
+                          for index, badge in enumerate(items):
+                              if not isinstance(badge, dict):
+                                  problems.append(f'assets/data.json: badge {group}[{index}] must be an object')
+                                  continue
+                              if not str(badge.get('alt', '')).strip():
+                                  problems.append(f'assets/data.json: badge {group}[{index}] has empty alt text')
+                              src = str(badge.get('src', '')).strip()
+                              if not src.startswith(('https://', 'http://')):
+                                  problems.append(f'assets/data.json: badge {group}[{index}] has invalid src {src!r}')
+              except (json.JSONDecodeError, OSError) as exc:
+                  problems.append(f'assets/data.json: cannot parse generated data: {exc}')
 
           sitemap = root / 'sitemap.xml'
           if sitemap.exists():
@@ -144,6 +189,6 @@ jobs:
 
           print(
               f'OK: {len(html_files)} HTML files, {total_ids} unique ids, '
-              f'{total_refs} references, accessibility basics, sitemap and robots checked'
+              f'{total_refs} references, accessibility basics, generated data, sitemap and robots checked'
           )
           PY
