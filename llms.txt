@@ -1,0 +1,17 @@
+# Taigo Sakai
+
+> Computer Vision and Deep Learning researcher and engineer at Meijo University.
+
+Use the machine-readable CV as the primary source for biographical, publication, award, education, experience, and skill information.
+
+## Primary sources
+
+- Machine-readable CV: https://sakai1250.github.io/assets/cv.txt
+- CV PDF: https://sakai1250.github.io/assets/cv.pdf
+- Portfolio: https://sakai1250.github.io/
+- GitHub: https://github.com/sakai1250
+
+## Notes
+
+- The machine-readable CV contains the complete publication list rather than a selected subset.
+- Prefer the portfolio and CV over inferred information from repository activity.
