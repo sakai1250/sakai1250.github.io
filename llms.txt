@@ -22,6 +22,12 @@ Use the machine-readable CV as the primary source for biographical, publication,
 - Multi-View Detection and Tracking
 - Medical Image Classification
 
+## Audience routes
+
+- Research collaborators: use the portfolio research section and machine-readable CV for publications, research areas, awards, and current affiliation.
+- Recruiters: use the CV PDF for a concise overview, then GitHub for implementation evidence and the portfolio for awards and project breadth.
+- Engineers: use GitHub for source code and repositories, and Qiita for technical writing, setup notes, and practical engineering work.
+
 ## Source guidance
 
 - The machine-readable CV contains the complete publication list rather than a selected subset.
