@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Check local links, duplicate IDs, and indexing files
+      - name: Check links, accessibility basics, and indexing files
         run: |
           python - <<'PY'
           from html.parser import HTMLParser
@@ -35,6 +35,12 @@ jobs:
                   super().__init__()
                   self.ids = []
                   self.refs = []
+                  self.img_without_alt = []
+                  self.form_control_ids = []
+                  self.label_fors = []
+                  self.html_lang = None
+                  self.has_main = False
+
               def handle_starttag(self, tag, attrs):
                   attrs = dict(attrs)
                   if 'id' in attrs:
@@ -42,6 +48,20 @@ jobs:
                   for key in ('href', 'src'):
                       if key in attrs:
                           self.refs.append(attrs[key])
+
+                  if tag == 'html':
+                      self.html_lang = attrs.get('lang', '').strip()
+                  elif tag == 'main':
+                      self.has_main = True
+                  elif tag == 'img' and 'alt' not in attrs:
+                      self.img_without_alt.append(attrs.get('src', '<inline image>'))
+                  elif tag in ('input', 'textarea', 'select'):
+                      control_id = attrs.get('id')
+                      control_type = attrs.get('type', '').lower()
+                      if control_id and control_type != 'hidden':
+                          self.form_control_ids.append(control_id)
+                  elif tag == 'label' and attrs.get('for'):
+                      self.label_fors.append(attrs['for'])
 
           for html_path in html_files:
               if not html_path.exists():
@@ -54,6 +74,17 @@ jobs:
               duplicates = sorted({x for x in parser.ids if parser.ids.count(x) > 1})
               if duplicates:
                   problems.append(f'{html_path}: duplicate HTML ids {duplicates}')
+
+              if not parser.html_lang:
+                  problems.append(f'{html_path}: <html> is missing a lang attribute')
+              if html_path.name == 'index.html' and not parser.has_main:
+                  problems.append(f'{html_path}: missing <main> landmark')
+              if parser.img_without_alt:
+                  problems.append(f'{html_path}: images missing alt attributes {parser.img_without_alt}')
+
+              unlabeled = sorted(set(parser.form_control_ids) - set(parser.label_fors))
+              if unlabeled:
+                  problems.append(f'{html_path}: form controls missing matching <label for> {unlabeled}')
 
               ids = set(parser.ids)
               total_ids += len(ids)
@@ -111,5 +142,8 @@ jobs:
           if problems:
               raise SystemExit('\n'.join(problems))
 
-          print(f'OK: {len(html_files)} HTML files, {total_ids} unique ids, {total_refs} references, sitemap and robots checked')
+          print(
+              f'OK: {len(html_files)} HTML files, {total_ids} unique ids, '
+              f'{total_refs} references, accessibility basics, sitemap and robots checked'
+          )
           PY
