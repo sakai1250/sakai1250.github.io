@@ -62,20 +62,36 @@ Domestic Conferences & Symposia
 18. T. Sakai, K. Hotta. "Growing Deep Neural Network Considering the Distribution of Neuron Similarity." IPSJ CVIM 2024 Bachelor Thesis Session - Oral.
 
 ACADEMIC SERVICE
-- Technical Program Committee, ECCV 2026 Human-inspired Computer Vision Workshop
-- Technical Program Committee, ICCV 2025 Human-inspired Computer Vision Workshop
+- Technical Program Committee, ECCV 2026 3rd Human-inspired Computer Vision Workshop - Jul. 2026 to Aug. 2026
+- MIRU 2026 Wakate Program, survey poster preparation and presentation on new-task research - May 2026 to Aug. 2026
+- Technical Program Committee, ICCV 2025 2nd Human-inspired Computer Vision Workshop - Jul. 2025 to Aug. 2025
+- Paper Presentation, 61st Nagoya CV/PRML Study Group - Dec. 2024
+- Paper Presentation, 60th Nagoya CV/PRML Study Group - Jul. 2024 to Jul. 2025
+- Technical Program Committee, ECCV 2024 Human-inspired Computer Vision Workshop - Jul. 2024 to Aug. 2024
 
 AWARDS & GRANTS
+- Japan Student Services Organization (JASSO) Scholarship Repayment Exemption for Outstanding Achievement, Half Exemption - 2026
+- The Telecommunications Advancement Foundation Overseas Travel Expense Support - 2026
+- Research Grant for Graduate Students (B) - 2026
 - IEICE Tokai Branch Student Research Encouragement Award - 2026
-- DIA2026 Encouragement Award - 3/96 presentations
-- ViEW2025 Algorithm Contest First Prize - 1/131 entries
-- MIRU2025 Student Encouragement Award - 55/726 submissions
-- Meijo University President's Award - 2023, 2024, 2025
-- IPSJ CVIM Best Bachelor's Thesis Session Award - 2024
-- LINE Yahoo HackU Grand Prize - 2023
-- LINE Yahoo HackU HappyHacking Award - 2023, 2025
-- JASSO Outstanding Achievement Repayment Exemption - 2026
+- SCAT Research Grant, Encouragement Prize, declined due to duplicate funding - 2026
 - Rinnai Scholarship Foundation Scholarship Student - 2026
+- DIA2026 Encouragement Award - 3/96 presentations - 2026
+- Meijo University President's Award - 2025
+- LINE Yahoo HackU Meijo University HappyHacking Award - 2025
+- Meijo University Academic Excellence Scholarship - 2025
+- MIRU2025 Student Encouragement Award - 55/726 submissions - 2025
+- ViEW2025 Visual Inspection Algorithm Contest First Prize - 1/131 entries - 2025
+- Meijo University President's Award - 2024
+- Axell Super-Resolution Competition, 9th Place - 2024
+- IPSJ CVIM Best Bachelor's Thesis Session Award - 2024
+- RoboMaster in North America 2024, Second Prize - 2024
+- Meijo University President's Award - 2023
+- Power Academy Electrical Education Content Contest, First Prize - 2023
+- LINE Yahoo HackU Meijo University Grand Prize - 2023
+- LINE Yahoo HackU Meijo University HappyHacking Award - 2023
+- Meijo University President's Award - 2021
+- Power Academy Electrical Education Content Contest, Excellence Award - 2021
 
 CERTIFICATIONS
 - JDLA Deep Learning Engineer, Japan Deep Learning Association - 2024
