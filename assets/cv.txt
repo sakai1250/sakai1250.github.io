@@ -1,0 +1,85 @@
+TAIGO SAKAI
+Ph.D. Student | Computer Vision Researcher
+Meijo University, Nagoya, Japan
+Email: 263441505@ccmailg.meijo-u.ac.jp
+Portfolio: https://sakai1250.github.io/
+GitHub: https://github.com/sakai1250
+LinkedIn: https://www.linkedin.com/in/sakai1250
+
+SUMMARY
+Ph.D. student at Meijo University working on computer vision and continual learning. Research interests include long-tailed learning, dynamic neural capacity, and robust multi-view pedestrian detection and tracking. Author of peer-reviewed international publications and recipient of multiple research and engineering awards.
+
+RESEARCH AREAS
+- Continual Learning
+- Long-Tailed Learning
+- Multi-View Detection & Tracking
+- Deep Learning for Medical Imaging
+
+TECHNICAL SKILLS
+- Python / PyTorch: deep learning research and experimentation
+- OpenCV / Computer Vision: detection, tracking, image analysis
+- Linux / Git / GitHub: research infrastructure and reproducible development
+- iOS / Web Development: prototype and application development
+
+EXPERIENCE
+Special Assistant
+Meijo University | Apr. 2026 - Present
+
+Researcher / Graduate Student
+Hotta Laboratory, Meijo University | 2023 - Present
+
+EDUCATION
+Ph.D. Course, Electrical, Electronic, Information and Materials Engineering
+Meijo University Graduate School | Apr. 2026 - Present
+
+Master's Course, Electrical and Electronic Engineering
+Meijo University Graduate School | Apr. 2024 - Mar. 2026
+
+B.E., Electrical and Electronic Engineering
+Meijo University | Apr. 2020 - Mar. 2024
+
+PUBLICATIONS
+International Conferences & Workshops - Peer-Reviewed
+1. T. Sakai, K. Hotta. "NeuroGuard: Neural Gradient Update Aware of Representation Damage." ECCV 2026 Workshop on Human-inspired Computer Vision - Oral.
+2. K. Toida, T. Sakai, T. Nakamura, H. Shimizu, K. Hotta. "ATLASFusion: Aggregation Tracking with Location-Aware Sparse Fusion for Robust Spatio-Temporal Multi-View Pedestrian Tracking." ECCV 2026 Workshop on Computer Vision for Multimedia Spatial Intelligence through Time - Poster.
+3. T. Sakai, K. Hotta. "Dynamic Distillation and Gradient Consistency for Robust Long-Tailed Incremental Learning." ICIP 2026 - Poster.
+4. T. Sakai, K. Hotta. "Improving Noise Robustness in Medical Image Classification via Dynamic Integration of CNN and KAN." CARS 2026 - Poster.
+5. T. Sakai, T. Nakamura, H. Shimizu, K. Hotta. "Visibility-Gated ConvGRU for Robust Multi-View Pedestrian Detection and Tracking in BEV Space." VISAPP 2026 - Oral.
+6. T. Sakai, K. Hotta. "Long-Tailed Data Classification by Increasing and Decreasing Neurons During Training." ICCV 2025 Workshop on Human-inspired Computer Vision - Poster.
+7. T. Sakai, K. Hotta. "Growing Deep Neural Network Considering with Similarity between Neurons." ECCV 2024 Workshop on Human-inspired Computer Vision - Poster.
+
+Domestic Conferences & Symposia
+8. T. Sakai, K. Hotta. "Medical Image Classification with MedViTV2-KAN Using Rational Function Bases." FIT 2026, Fukuoka - Oral.
+9. T. Sakai, K. Hotta. "Gabor-KAN: Kolmogorov-Arnold Networks with Complex Gabor Wavelets for Medical Image Classification." MIRU 2026, Nagasaki - Peer-reviewed Poster.
+10. T. Sakai, T. Nakamura, H. Shimizu, K. Hotta. "Visibility-Gated ConvGRU for Robust Multi-View Pedestrian Detection and Tracking in BEV Space." DIA 2026, Kochi - Peer-reviewed Oral.
+11. T. Sakai, K. Hotta. "Improving Noise Robustness in Medical Image Classification via Dynamic Integration of CNN and KAN." JSMBE Tokai Branch Meeting 2025, Aichi - Oral.
+12. T. Sakai, K. Hotta. "Gradient Consistency Regularization and Dynamic Knowledge Distillation for Continual Learning on Imbalanced Data." MIRU 2025, Kyoto - Peer-reviewed Oral.
+13. S. Kamiya, T. Sakai, H. Kojima, K. Kuchitsu, T. Tomoi, K. Hotta. "Tip Tracking of Marchantia Rhizoids from Limited Labeled Data." DIA 2025, Fukui - Peer-reviewed Poster.
+14. T. Sakai, T. Yonekura, K. Hotta. "Unsupervised Arabidopsis Tip Tracking Using SAM2 and Mask Skeletonization." IPSJ National Convention 2025, Osaka - Oral.
+15. K. Toida, T. Sakai, et al. "Improving Multi-Object Tracking Accuracy Using Multiple Views." SSII 2025, Tokyo - Peer-reviewed Poster.
+16. T. Sakai, K. Hotta. "Long-Tailed Data Classification by Increasing and Decreasing Neurons During Training." ViEW 2024, Kanagawa - Peer-reviewed Poster.
+17. T. Sakai, K. Hotta. "Image Classification with Deep Neural Networks Considering Neuron Similarity." Tokai-Section Joint Conference 2024 - Oral.
+18. T. Sakai, K. Hotta. "Growing Deep Neural Network Considering the Distribution of Neuron Similarity." IPSJ CVIM 2024 Bachelor Thesis Session - Oral.
+
+ACADEMIC SERVICE
+- Technical Program Committee, ECCV 2026 Human-inspired Computer Vision Workshop
+- Technical Program Committee, ICCV 2025 Human-inspired Computer Vision Workshop
+
+AWARDS & GRANTS
+- IEICE Tokai Branch Student Research Encouragement Award - 2026
+- DIA2026 Encouragement Award - 3/96 presentations
+- ViEW2025 Algorithm Contest First Prize - 1/131 entries
+- MIRU2025 Student Encouragement Award - 55/726 submissions
+- Meijo University President's Award - 2023, 2024, 2025
+- IPSJ CVIM Best Bachelor's Thesis Session Award - 2024
+- LINE Yahoo HackU Grand Prize - 2023
+- LINE Yahoo HackU HappyHacking Award - 2023, 2025
+- JASSO Outstanding Achievement Repayment Exemption - 2026
+- Rinnai Scholarship Foundation Scholarship Student - 2026
+
+CERTIFICATIONS
+- JDLA Deep Learning Engineer, Japan Deep Learning Association - 2024
+- Third-Class Electric Chief Engineer, Japan - 2023
+
+Full portfolio, publication links, projects, and details:
+https://sakai1250.github.io/
