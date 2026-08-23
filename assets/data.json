@@ -80,9 +80,13 @@
     ]
   },
   "apps": {
-    "user-attachments/assets": {
-      "desc": "コーパスからランダムに単語を音声で再生するアプリ。 カテゴリや再生間隔をユーザーが選択でき、語学学習やアイデア発想に活用。",
-      "img": "assets/thumbnails/user-attachments_assets.webp"
+    "sakai1250/hacku2023": {
+      "desc": "独自開発したファッションAIを搭載するアプリ。 毎日着る服の組み合わせをAIが提案し、ユーザーがコーディネートを考える手間を削減。 季節やシーンに応じたスタイルも考慮し、育成機能も搭載。",
+      "img": "assets/thumbnails/sakai1250_hacku2023.webp"
+    },
+    "sakai1250/otsuri_docter": {
+      "desc": "硬貨をカメラで撮影するだけで金額を自動集計できるアプリを開発。 ユーザー育成機能付き。",
+      "img": "assets/thumbnails/sakai1250_otsuri_docter.webp"
     },
     "sakai1250/PresentMemo": {
       "desc": "独自開発の学習特化AIを搭載した、発表準備向けアプリ。 PDF・PPTXから重要語句をAIが抽出し、覚えるべき内容を自動で整理して復習効率を向上。 暗記・クイズ・聞き流し・リハーサルを一つにまとめ、発表直前でも気軽に開いて練習可能。",
