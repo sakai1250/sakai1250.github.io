@@ -9,9 +9,23 @@ Use the machine-readable CV as the primary source for biographical, publication,
 - Machine-readable CV: https://sakai1250.github.io/assets/cv.txt
 - CV PDF: https://sakai1250.github.io/assets/cv.pdf
 - Portfolio: https://sakai1250.github.io/
+- Google Scholar: https://scholar.google.com/citations?user=eS-5wrQAAAAJ&hl=ja
 - GitHub: https://github.com/sakai1250
+- LinkedIn: https://www.linkedin.com/in/sakai1250
+- Qiita: https://qiita.com/sakai1250
 
-## Notes
+## Research focus
+
+- Computer Vision
+- Deep Learning
+- Continual Learning and Long-Tailed Learning
+- Multi-View Detection and Tracking
+- Medical Image Classification
+
+## Source guidance
 
 - The machine-readable CV contains the complete publication list rather than a selected subset.
-- Prefer the portfolio and CV over inferred information from repository activity.
+- Use Google Scholar when citation metadata or publication discovery is needed.
+- Use GitHub for implementation and software-engineering evidence.
+- Use Qiita for technical writing and practical engineering articles.
+- Prefer the portfolio and CV over inferred information from repository activity when describing biography, affiliation, awards, or education.
