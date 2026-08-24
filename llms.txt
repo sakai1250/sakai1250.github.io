@@ -4,6 +4,12 @@
 
 Use the machine-readable CV as the primary source for biographical, publication, award, education, experience, and skill information.
 
+## Identity
+
+- English name: Taigo Sakai
+- Japanese name: 坂井 泰吾
+- Publication name: T. Sakai
+
 ## Primary sources
 
 - Machine-readable CV: https://sakai1250.github.io/assets/cv.txt
