@@ -107,7 +107,7 @@ jobs:
                   if not target.exists():
                       problems.append(f'{html_path}: missing file {path}')
 
-          required = ['assets/cv.pdf', 'assets/cv.txt', 'assets/avatar.jpg', 'assets/data.json', 'style.css', 'main.js', '404.html', 'robots.txt', 'sitemap.xml']
+          required = ['assets/cv.pdf', 'assets/cv.txt', 'assets/avatar.jpg', 'assets/data.json', 'style.css', 'main.js', '404.html', 'robots.txt', 'sitemap.xml', 'llms.txt']
           for path in required:
               if not (root / path).exists():
                   problems.append(f'missing required asset {path}')
