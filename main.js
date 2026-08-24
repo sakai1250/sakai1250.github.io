@@ -490,6 +490,7 @@ function initLanguage() {
     const btn = document.getElementById('lang-toggle');
     const set = (l) => {
         document.documentElement.setAttribute('data-lang', l);
+        document.documentElement.lang = l;
         localStorage.setItem('lang', l);
         const s = document.getElementById('search');
         if (s) s.placeholder = s.getAttribute(`data-${l}-placeholder`);
