@@ -10,7 +10,7 @@ Engineering section: https://sakai1250.github.io/#engineer-content
 CV PDF: https://sakai1250.github.io/assets/cv.pdf
 GitHub: https://github.com/sakai1250
 LinkedIn: https://www.linkedin.com/in/sakai1250
-Google Scholar: https://scholar.google.com/citations?user=eS-5wrQAAAAJ&hl=ja
+Google Scholar: https://scholar.google.com/citations?user=eS-5wrQAAAAJ
 Qiita: https://qiita.com/sakai1250
 
 SUMMARY
