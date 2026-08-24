@@ -6,11 +6,17 @@ on:
     paths:
       - 'index.html'
       - '404.html'
+      - 'README.md'
+      - 'llms.txt'
+      - 'assets/cv.txt'
       - '.github/workflows/external-links.yml'
   pull_request:
     paths:
       - 'index.html'
       - '404.html'
+      - 'README.md'
+      - 'llms.txt'
+      - 'assets/cv.txt'
       - '.github/workflows/external-links.yml'
   workflow_dispatch:
 
@@ -30,6 +36,7 @@ jobs:
           from pathlib import Path
           from urllib.error import HTTPError, URLError
           from urllib.request import Request, urlopen
+          import re
           import time
 
           class LinkParser(HTMLParser):
@@ -48,10 +55,15 @@ jobs:
           for path in ('index.html', '404.html'):
               parser.feed(Path(path).read_text(encoding='utf-8'))
 
-          failures = []
-          print(f'Checking {len(parser.links)} external links')
+          links = set(parser.links)
+          url_pattern = re.compile(r'https?://[^\s<>"\')\]]+')
+          for path in ('README.md', 'llms.txt', 'assets/cv.txt'):
+              links.update(url_pattern.findall(Path(path).read_text(encoding='utf-8')))
 
-          for url in sorted(parser.links):
+          failures = []
+          print(f'Checking {len(links)} external links')
+
+          for url in sorted(links):
               status = None
               error = None
               for method in ('HEAD', 'GET'):
