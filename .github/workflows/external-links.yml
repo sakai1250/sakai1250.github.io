@@ -18,6 +18,8 @@ on:
       - 'llms.txt'
       - 'assets/cv.txt'
       - '.github/workflows/external-links.yml'
+  schedule:
+    - cron: '0 0 * * 1'
   workflow_dispatch:
 
 permissions:
