@@ -9,7 +9,7 @@ Personal portfolio for Taigo Sakai, a computer vision researcher and engineer.
 - **Machine-readable CV:** https://sakai1250.github.io/assets/cv.txt
 - **Research:** https://sakai1250.github.io/#research-content
 - **Engineering:** https://sakai1250.github.io/#engineer-content
-- **Google Scholar:** https://scholar.google.com/citations?user=eS-5wrQAAAAJ&hl=ja
+- **Google Scholar:** https://scholar.google.com/citations?user=eS-5wrQAAAAJ
 - **GitHub:** https://github.com/sakai1250
 - **Qiita:** https://qiita.com/sakai1250
 - **LinkedIn:** https://www.linkedin.com/in/sakai1250
