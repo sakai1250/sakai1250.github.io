@@ -64,7 +64,7 @@ Domestic Conferences & Symposia
 13. S. Kamiya, T. Sakai, H. Kojima, K. Kuchitsu, T. Tomoi, K. Hotta. "Tip Tracking of Marchantia Rhizoids from Limited Labeled Data." DIA 2025, Fukui - Peer-reviewed Poster.
 14. T. Sakai, T. Yonekura, K. Hotta. "Unsupervised Arabidopsis Tip Tracking Using SAM2 and Mask Skeletonization." IPSJ National Convention 2025, Osaka - Oral.
 15. K. Toida, T. Sakai, et al. "Improving Multi-Object Tracking Accuracy Using Multiple Views." SSII 2025, Tokyo - Peer-reviewed Poster.
-16. T. Sakai, K. Hotta. "Long-Tailed Data Classification by Increasing and Decreasing Neurons During Training." ViEW 2024, Kanagawa - Oral.
+16. T. Sakai, K. Hotta. "Long-Tailed Data Classification by Increasing and Decreasing Neurons During Training." ViEW 2024, Kanagawa - Peer-reviewed Poster.
 17. T. Sakai, K. Hotta. "Image Classification with Deep Neural Networks Considering Neuron Similarity." Tokai-Section Joint Conference 2024 - Oral.
 18. T. Sakai, K. Hotta. "Growing Deep Neural Network Considering the Distribution of Neuron Similarity." IPSJ CVIM 2024 Bachelor Thesis Session - Oral.
 
