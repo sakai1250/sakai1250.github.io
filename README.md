@@ -38,9 +38,11 @@ Then open `http://localhost:8000`.
 - `style.css` controls the visual presentation and light/dark themes.
 - `main.js` handles filtering, language switching, statistics, and interaction.
 - `assets/cv.pdf` is the CV linked from the site header.
+- `assets/cv.txt` mirrors the core CV content for machine-readable access.
+- `llms.txt` routes machine-readable visitors to the appropriate primary sources.
 - `sitemap.xml` and `robots.txt` support search indexing.
 
-When portfolio content changes, keep the CV, visible counts, and sitemap dates consistent with the site.
+When portfolio content changes, keep `index.html`, `assets/cv.pdf`, `assets/cv.txt`, `llms.txt`, visible counts, and sitemap dates consistent.
 
 ## Deployment
 
