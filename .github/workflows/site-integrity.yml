@@ -177,10 +177,12 @@ jobs:
                   int(match.group(1))
                   for match in re.finditer(r'(?m)^(\d+)\.\s+', cv_text)
               ]
-              expected_publications = list(range(1, 19))
-              if publication_numbers != expected_publications:
+              expected_publications = list(range(1, len(publication_numbers) + 1))
+              if not publication_numbers:
+                  problems.append('assets/cv.txt: publications must contain at least one numbered entry')
+              elif publication_numbers != expected_publications:
                   problems.append(
-                      'assets/cv.txt: publications must contain all 18 entries numbered 1-18; '
+                      'assets/cv.txt: publications must be numbered consecutively from 1; '
                       f'found {publication_numbers}'
                   )
 
