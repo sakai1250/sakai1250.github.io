@@ -28,6 +28,11 @@ TECHNICAL SKILLS
 - Linux / Git / GitHub: research infrastructure and reproducible development
 - iOS / Web Development: prototype and application development
 
+SELECTED ENGINEERING PROJECTS
+- kikonAshI (iOS): custom fashion AI with daily outfit suggestions and character growth features. App Store: https://apps.apple.com/jp/app/kikonashi/id6502258139 | GitHub: https://github.com/sakai1250/hacku2023
+- 超kAI蔵 (iOS): up to 4x AI super-resolution with folder classification and note-taking for research use. App Store: https://apps.apple.com/jp/app/id6751739848 | GitHub: https://github.com/sakai1250/super_res
+- Who is GT? (iOS): image-AI-versus-user game built around visual classification. App Store: https://apps.apple.com/jp/app/id6755972438 | GitHub: https://github.com/sakai1250/Who-is-the-Ground-Truth-
+
 EXPERIENCE
 Special Assistant
 Meijo University | Apr. 2026 - Present
