@@ -182,6 +182,66 @@ function initTabAccessibility() {
     sync();
 }
 
+function initModalAccessibility() {
+    const modal = document.getElementById('app-modal');
+    const container = modal?.querySelector('.modal-container');
+    const closeButton = modal?.querySelector('.modal-close');
+    if (!modal || !container || !closeButton) return;
+
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'modal-title');
+    modal.setAttribute('aria-hidden', modal.classList.contains('open') ? 'false' : 'true');
+
+    let lastTrigger = null;
+    document.querySelectorAll('.app-card').forEach(card => {
+        card.addEventListener('click', event => {
+            if (event.target.closest('a')) return;
+            lastTrigger = card.querySelector('.app-title');
+        });
+    });
+
+    const sync = () => {
+        const open = modal.classList.contains('open');
+        modal.setAttribute('aria-hidden', String(!open));
+        if (open) {
+            closeButton.focus();
+        } else if (lastTrigger instanceof HTMLElement) {
+            lastTrigger.focus();
+            lastTrigger = null;
+        }
+    };
+
+    const observer = new MutationObserver(sync);
+    observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+
+    modal.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && modal.classList.contains('open')) {
+            event.preventDefault();
+            closeButton.click();
+            return;
+        }
+        if (event.key !== 'Tab' || !modal.classList.contains('open')) return;
+
+        const focusable = Array.from(modal.querySelectorAll(
+            'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )).filter(element => element.offsetParent !== null);
+        if (focusable.length < 2) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    });
+
+    window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
+}
+
 function initPortfolioPolish() {
     if (document.getElementById('portfolio-polish-style')) return;
 
@@ -248,6 +308,7 @@ function initPortfolioPolish() {
     });
 
     initTabAccessibility();
+    initModalAccessibility();
     syncPortfolioStats();
     window.setTimeout(syncPortfolioStats, 1700);
 }
