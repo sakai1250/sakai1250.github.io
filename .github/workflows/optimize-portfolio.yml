@@ -152,8 +152,28 @@ jobs:
               json.dump(data, f, ensure_ascii=False, indent=2)
           PY
 
+      - name: Keep app repository links aligned
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          wrong_otsuri = 'href="https://github.com/sakai1250/PresentMemo">GitHub</a>'
+          wrong_maioral = 'href="https://github.com/sakai1250/otsuri_docter">GitHub</a>'
+
+          if text.count(wrong_otsuri) != 1 or text.count(wrong_maioral) != 1:
+              raise SystemExit('Expected exactly one mismatched GitHub link for each app')
+
+          placeholder = 'href="https://github.com/sakai1250/__APP_LINK_SWAP__">GitHub</a>'
+          text = text.replace(wrong_otsuri, placeholder, 1)
+          text = text.replace(wrong_maioral, 'href="https://github.com/sakai1250/PresentMemo">GitHub</a>', 1)
+          text = text.replace(placeholder, 'href="https://github.com/sakai1250/otsuri_docter">GitHub</a>', 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update portfolio assets and optimized images"
-          file_pattern: "assets/*"
+          file_pattern: "assets/* index.html"
