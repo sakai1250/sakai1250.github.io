@@ -9,6 +9,7 @@ Use the machine-readable CV as the primary source for biographical, publication,
 - English name: Taigo Sakai
 - Japanese name: 坂井 泰吾
 - Publication name: T. Sakai
+- Current role: Ph.D. student and Special Assistant at Meijo University
 
 ## Primary sources
 
