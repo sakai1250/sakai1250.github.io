@@ -67,6 +67,11 @@ jobs:
               if not str(person.get(key, '')).strip():
                   raise SystemExit(f'Person JSON-LD is missing {key}')
 
+          job_title = str(person['jobTitle'])
+          for required_role in ('Ph.D. Student', 'Special Assistant'):
+              if required_role not in job_title:
+                  raise SystemExit(f'Person JSON-LD jobTitle is missing current role: {required_role}')
+
           if person['url'] != 'https://sakai1250.github.io/':
               raise SystemExit(f'unexpected profile URL: {person["url"]}')
 
