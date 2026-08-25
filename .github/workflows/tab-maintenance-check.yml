@@ -21,7 +21,7 @@ jobs:
       - name: Ensure tab maintenance is already applied
         run: |
           python scripts/maintain_tabs.py
-          git diff --exit-code -- main.js
+          git diff --exit-code -- main.js index.html
       - name: Validate local tab deep links
         run: |
           python - <<'PY'
