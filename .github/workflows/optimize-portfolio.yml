@@ -192,12 +192,21 @@ jobs:
 
           path = Path('index.html')
           text = path.read_text(encoding='utf-8')
-          old = '"jobTitle": "Ph.D. Student / Researcher / Engineer"'
-          new = '"jobTitle": "Ph.D. Student / Special Assistant / Researcher / Engineer"'
-          if old in text:
-              text = text.replace(old, new, 1)
-          elif new not in text:
+
+          old_title = '"jobTitle": "Ph.D. Student / Researcher / Engineer"'
+          new_title = '"jobTitle": "Ph.D. Student / Special Assistant / Researcher / Engineer"'
+          if old_title in text:
+              text = text.replace(old_title, new_title, 1)
+          elif new_title not in text:
               raise SystemExit('Could not find expected JSON-LD jobTitle')
+
+          old_affiliation = '"alumniOf": "Meijo University"'
+          new_affiliation = '"affiliation": {"@type": "CollegeOrUniversity", "name": "Meijo University"}'
+          if old_affiliation in text:
+              text = text.replace(old_affiliation, new_affiliation, 1)
+          elif new_affiliation not in text:
+              raise SystemExit('Could not find expected JSON-LD affiliation')
+
           path.write_text(text, encoding='utf-8')
           PY
 
