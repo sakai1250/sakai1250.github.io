@@ -49,12 +49,15 @@ jobs:
               raise SystemExit('Could not resolve homepage lastmod from sitemap.xml')
 
           def section_block(english_title):
-              marker = f'<span lang="en">{english_title}</span>'
-              start = text.find(marker)
-              if start == -1:
-                  raise SystemExit(f'Could not find section: {english_title}')
-              section_start = text.rfind('<section', 0, start)
-              section_end = text.find('</section>', start)
+              heading_pattern = re.compile(
+                  rf'<h2\s+class="section-title">[\s\S]*?<span\s+lang="en">{re.escape(english_title)}</span>[\s\S]*?</h2>',
+                  re.IGNORECASE,
+              )
+              heading = heading_pattern.search(text)
+              if not heading:
+                  raise SystemExit(f'Could not find section heading: {english_title}')
+              section_start = text.rfind('<section', 0, heading.start())
+              section_end = text.find('</section>', heading.end())
               if section_start == -1 or section_end == -1:
                   raise SystemExit(f'Could not isolate section: {english_title}')
               return text[section_start:section_end]
@@ -62,7 +65,7 @@ jobs:
           counts = {
               'stat-papers': len(re.findall(r'<li\b', section_block('Research Achievements'))),
               'stat-awards': len(re.findall(r'<li\b', section_block('Awards'))),
-              'stat-apps': len(re.findall(r'<div\s+class="app-card"\b', section_block('My Apps & Services'))),
+              'stat-apps': len(re.findall(r'<div\s+class="app-card"(?:\s|>)', section_block('My Apps & Services'))),
           }
           if any(value <= 0 for value in counts.values()):
               raise SystemExit(f'Unexpected zero count: {counts}')
