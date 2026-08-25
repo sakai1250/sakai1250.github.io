@@ -1,0 +1,24 @@
+name: Tab maintenance check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate tab maintenance script
+        run: python -m py_compile scripts/maintain_tabs.py
+      - name: Ensure tab maintenance is already applied
+        run: |
+          python scripts/maintain_tabs.py
+          git diff --exit-code -- main.js
