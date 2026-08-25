@@ -76,12 +76,22 @@ jobs:
               raise SystemExit(f'unexpected profile URL: {person["url"]}')
 
           same_as = person.get('sameAs')
-          if not isinstance(same_as, list) or 'https://github.com/sakai1250' not in same_as:
-              raise SystemExit('Person JSON-LD must include the GitHub profile in sameAs')
+          if not isinstance(same_as, list):
+              raise SystemExit('Person JSON-LD sameAs must be a list')
+          required_profiles = {
+              'https://github.com/sakai1250',
+              'https://qiita.com/sakai1250',
+              'https://www.linkedin.com/in/sakai1250',
+          }
+          missing_profiles = sorted(required_profiles - set(same_as))
+          if missing_profiles:
+              raise SystemExit(f'Person JSON-LD is missing professional profile links: {missing_profiles}')
 
           affiliation = person.get('affiliation')
           if not isinstance(affiliation, dict) or affiliation.get('name') != 'Meijo University':
               raise SystemExit('Person JSON-LD must identify Meijo University as the current affiliation')
+          if affiliation.get('@type') != 'CollegeOrUniversity':
+              raise SystemExit('Person JSON-LD affiliation must use CollegeOrUniversity')
 
           if 'alumniOf' in person:
               raise SystemExit('Person JSON-LD uses alumniOf for a current affiliation; use affiliation instead')
