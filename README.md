@@ -49,4 +49,4 @@ When portfolio content changes, keep `index.html`, `assets/cv.pdf`, `assets/cv.t
 
 ## Deployment
 
-GitHub Pages serves the `main` branch directly.
+`.github/workflows/static.yml` deploys the contents of the `main` branch to GitHub Pages on every push to `main`.
