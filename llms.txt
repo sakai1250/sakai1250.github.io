@@ -16,6 +16,8 @@ Use the machine-readable CV as the primary source for biographical, publication,
 - Machine-readable CV: https://sakai1250.github.io/assets/cv.txt
 - CV PDF: https://sakai1250.github.io/assets/cv.pdf
 - Portfolio: https://sakai1250.github.io/
+- Research: https://sakai1250.github.io/#research-content
+- Engineering: https://sakai1250.github.io/#engineer-content
 - Portfolio source: https://github.com/sakai1250/sakai1250.github.io
 - Google Scholar: https://scholar.google.com/citations?user=eS-5wrQAAAAJ
 - GitHub: https://github.com/sakai1250
