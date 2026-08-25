@@ -228,6 +228,21 @@ jobs:
               text = text.replace(empty, filled, 1)
           elif filled not in text:
               raise SystemExit('Could not find expected visible profile role')
+
+          old_ja = '理工学研究科 電気電子・情報・材料工学専攻<br>\n                博士後期課程'
+          new_ja = '理工学研究科 電気電子・情報・材料工学専攻<br>\n                博士後期課程 · Special Assistant'
+          if old_ja in text:
+              text = text.replace(old_ja, new_ja, 1)
+          elif new_ja not in text:
+              raise SystemExit('Could not find expected Japanese sidebar role')
+
+          old_en = 'Dept. of Electrical, Electronic, Information and Materials Engineering<br>\n                Ph.D. Course'
+          new_en = 'Dept. of Electrical, Electronic, Information and Materials Engineering<br>\n                Ph.D. Course · Special Assistant'
+          if old_en in text:
+              text = text.replace(old_en, new_en, 1)
+          elif new_en not in text:
+              raise SystemExit('Could not find expected English sidebar role')
+
           path.write_text(text, encoding='utf-8')
           PY
 
