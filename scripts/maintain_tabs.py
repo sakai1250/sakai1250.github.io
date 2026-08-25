@@ -142,14 +142,22 @@ elif new_engineer not in html:
     raise SystemExit("Could not find expected Engineering tab")
 
 for tab_id in ("research", "engineer"):
-    old_panel = f'<main id="{tab_id}-content" class="tab-content'
-    if old_panel not in html:
-        continue
-    start = html.index(old_panel)
-    tag_end = html.index('>', start)
-    tag = html[start:tag_end + 1]
-    if 'role="tabpanel"' not in tag:
-        replacement = tag[:-1] + f' role="tabpanel" aria-labelledby="{tab_id}-tab">'
-        html = html[:start] + replacement + html[tag_end + 1:]
+    marker = f'id="{tab_id}-content" class="tab-content'
+    start = html.find(marker)
+    if start == -1:
+        raise SystemExit(f"Could not find expected {tab_id} tab panel")
+    tag_start = html.rfind('<', 0, start)
+    tag_end = html.find('>', start)
+    tag = html[tag_start:tag_end + 1]
+    role = 'role="tabpanel"'
+    label = f'aria-labelledby="{tab_id}-tab"'
+    if role not in tag or label not in tag:
+        attrs = ''
+        if role not in tag:
+            attrs += f' {role}'
+        if label not in tag:
+            attrs += f' {label}'
+        replacement = tag[:-1] + attrs + '>'
+        html = html[:tag_start] + replacement + html[tag_end + 1:]
 
 html_path.write_text(html, encoding="utf-8")
