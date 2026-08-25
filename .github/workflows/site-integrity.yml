@@ -16,6 +16,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+      - name: Check JavaScript syntax
+        run: |
+          node --check main.js
+          node --check effects.js
       - name: Check links, accessibility basics, generated data, CV text, and indexing files
         run: |
           python - <<'PY'
