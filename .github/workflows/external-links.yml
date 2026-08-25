@@ -7,6 +7,8 @@ on:
       - 'index.html'
       - '404.html'
       - 'README.md'
+      - 'SECURITY.md'
+      - '.well-known/security.txt'
       - 'llms.txt'
       - 'assets/cv.txt'
       - '.github/workflows/external-links.yml'
@@ -15,6 +17,8 @@ on:
       - 'index.html'
       - '404.html'
       - 'README.md'
+      - 'SECURITY.md'
+      - '.well-known/security.txt'
       - 'llms.txt'
       - 'assets/cv.txt'
       - '.github/workflows/external-links.yml'
@@ -59,7 +63,7 @@ jobs:
 
           links = set(parser.links)
           url_pattern = re.compile(r'https?://[^\s<>"\')\]]+')
-          for path in ('README.md', 'llms.txt', 'assets/cv.txt'):
+          for path in ('README.md', 'SECURITY.md', '.well-known/security.txt', 'llms.txt', 'assets/cv.txt'):
               links.update(url_pattern.findall(Path(path).read_text(encoding='utf-8')))
 
           failures = []
