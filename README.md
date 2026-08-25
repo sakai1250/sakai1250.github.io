@@ -42,6 +42,7 @@ Then open `http://localhost:8000`.
 - `assets/cv.txt` mirrors the core CV content for machine-readable access.
 - `llms.txt` routes machine-readable visitors to the appropriate primary sources.
 - `sitemap.xml` and `robots.txt` support search indexing.
+- When editing an app card, verify that its title, App Store URL, image, and GitHub repository all refer to the same product. In particular, `PresentMemo` is the MAIORAL repository and `otsuri_docter` is the おつりDoctor repository.
 
 When portfolio content changes, keep `index.html`, `assets/cv.pdf`, `assets/cv.txt`, `llms.txt`, visible counts, and sitemap dates consistent.
 
