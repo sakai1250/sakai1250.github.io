@@ -42,6 +42,7 @@ Then open `http://localhost:8000`.
 - `assets/cv.txt` mirrors the core CV content for machine-readable access.
 - `llms.txt` routes machine-readable visitors to the appropriate primary sources.
 - `sitemap.xml` and `robots.txt` support search indexing.
+- Keep the visible role and affiliation in `index.html` aligned with `assets/cv.txt` and `llms.txt`, including current titles such as `Special Assistant`.
 - Keep the JSON-LD `Person` data in `index.html` aligned with the visible profile and CV, especially `jobTitle`, current affiliation, and `sameAs` links.
 - When editing an app card, verify that its title, App Store URL, image, and GitHub repository all refer to the same product. In particular, `PresentMemo` is the MAIORAL repository and `otsuri_docter` is the おつりDoctor repository.
 
