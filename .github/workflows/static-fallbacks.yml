@@ -29,6 +29,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import html
           import re
           import xml.etree.ElementTree as ET
 
@@ -48,19 +49,32 @@ jobs:
           if not home_lastmod or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', home_lastmod):
               raise SystemExit('Could not resolve homepage lastmod from sitemap.xml')
 
+          section_pattern = re.compile(
+              r'<section\b[^>]*class="[^"]*\bsection-card\b[^"]*"[^>]*>[\s\S]*?</section>',
+              re.IGNORECASE,
+          )
+          heading_pattern = re.compile(
+              r'<h2\b[^>]*class="[^"]*\bsection-title\b[^"]*"[^>]*>([\s\S]*?)</h2>',
+              re.IGNORECASE,
+          )
+          english_title_pattern = re.compile(
+              r'<span\s+lang="en">([\s\S]*?)</span>',
+              re.IGNORECASE,
+          )
+
+          def plain_text(fragment):
+              return html.unescape(re.sub(r'<[^>]+>', '', fragment)).strip()
+
           def section_block(english_title):
-              heading_pattern = re.compile(
-                  rf'<h2\s+class="section-title">[\s\S]*?<span\s+lang="en">{re.escape(english_title)}</span>[\s\S]*?</h2>',
-                  re.IGNORECASE,
-              )
-              heading = heading_pattern.search(text)
-              if not heading:
-                  raise SystemExit(f'Could not find section heading: {english_title}')
-              section_start = text.rfind('<section', 0, heading.start())
-              section_end = text.find('</section>', heading.end())
-              if section_start == -1 or section_end == -1:
-                  raise SystemExit(f'Could not isolate section: {english_title}')
-              return text[section_start:section_end]
+              for match in section_pattern.finditer(text):
+                  block = match.group(0)
+                  heading = heading_pattern.search(block)
+                  if not heading:
+                      continue
+                  title_match = english_title_pattern.search(heading.group(1))
+                  if title_match and plain_text(title_match.group(1)) == english_title:
+                      return block
+              raise SystemExit(f'Could not find section: {english_title}')
 
           counts = {
               'stat-papers': len(re.findall(r'<li\b', section_block('Research Achievements'))),
