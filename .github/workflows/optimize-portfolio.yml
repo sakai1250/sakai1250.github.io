@@ -92,6 +92,8 @@ jobs:
           )
           apps_content = apps_match.group(1) if apps_match else ''
 
+          # Each app is represented by one <td> block in the profile README.
+          # Parsing the whole cell keeps its title, description, image and repo together.
           app_blocks = re.findall(
               r'<td\b[^>]*>([\s\S]*?)</td>',
               apps_content,
@@ -99,6 +101,8 @@ jobs:
           )
 
           for block in app_blocks:
+              # Only accept repository URLs from anchor href values. Image sources such as
+              # github.com/user-attachments/assets/... are not repositories.
               repo_match = re.search(
                   r'<a\b[^>]*href=["\']https?://github\.com/([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+?)(?:\.git)?["\'][^>]*>',
                   block,
@@ -206,88 +210,11 @@ jobs:
           path.write_text(text, encoding='utf-8')
           PY
 
-      - name: Keep tab deep links working
-        run: |
-          python <<'PY'
-          from pathlib import Path
-
-          path = Path('main.js')
-          text = path.read_text(encoding='utf-8')
-
-          old = '''function initTabs() {
-    const tabItems = document.querySelectorAll('.tab-item');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const switchTab = (id) => {
-        tabItems.forEach(i => i.classList.toggle('active', i.getAttribute('data-tab') === id));
-        tabContents.forEach(c => {
-            const active = c.id === `${id}-content`;
-            c.classList.toggle('active', active);
-            c.style.display = active ? 'block' : 'none';
-        });
-        if (typeof updateTOC === 'function') updateTOC();
-        if (typeof updateSectionTabs === 'function') updateSectionTabs();
-    };
-    tabItems.forEach(i => {
-        const activate = () => switchTab(i.getAttribute('data-tab'));
-        i.addEventListener('click', activate);
-        i.addEventListener('keydown', (e) => {
-            if (e.key !== 'Enter' && e.key !== ' ') return;
-            e.preventDefault();
-            activate();
-        });
-    });
-}'''
-
-          new = '''function initTabs() {
-    const tabItems = document.querySelectorAll('.tab-item');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const validTabs = new Set(Array.from(tabItems, item => item.getAttribute('data-tab')));
-    const tabFromHash = () => {
-        const match = window.location.hash.match(/^#(.+)-content$/);
-        return match && validTabs.has(match[1]) ? match[1] : null;
-    };
-    const switchTab = (id, syncHash = false) => {
-        if (!validTabs.has(id)) return;
-        tabItems.forEach(i => i.classList.toggle('active', i.getAttribute('data-tab') === id));
-        tabContents.forEach(c => {
-            const active = c.id === `${id}-content`;
-            c.classList.toggle('active', active);
-            c.style.display = active ? 'block' : 'none';
-        });
-        if (syncHash) history.replaceState(null, '', `#${id}-content`);
-        if (typeof updateTOC === 'function') updateTOC();
-        if (typeof updateSectionTabs === 'function') updateSectionTabs();
-    };
-    tabItems.forEach(i => {
-        const activate = () => switchTab(i.getAttribute('data-tab'), true);
-        i.addEventListener('click', activate);
-        i.addEventListener('keydown', (e) => {
-            if (e.key !== 'Enter' && e.key !== ' ') return;
-            e.preventDefault();
-            activate();
-        });
-    });
-    const initialTab = tabFromHash();
-    if (initialTab) switchTab(initialTab);
-    window.addEventListener('hashchange', () => {
-        const id = tabFromHash();
-        if (id) switchTab(id);
-    });
-}'''
-
-          if old in text:
-              text = text.replace(old, new, 1)
-          elif new not in text:
-              raise SystemExit('Could not find expected initTabs implementation')
-
-          path.write_text(text, encoding='utf-8')
-          PY
-
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update portfolio assets and optimized images"
-          file_pattern: "assets/* index.html main.js"
+          file_pattern: "assets/* index.html"
           commit_user_name: "sakai1250"
           commit_user_email: "92532910+sakai1250@users.noreply.github.com"
           commit_author: "sakai1250 <92532910+sakai1250@users.noreply.github.com>"
