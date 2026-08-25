@@ -77,14 +77,14 @@ jobs:
                   raise SystemExit(f'Could not update {element_id}')
 
           text, ja_count = re.subn(
-              r'(最終更新:\s*)\d{4}-\d{2}-\d{2}',
-              rf'\g<1>{home_lastmod}',
+              r'(<span\s+id="last-updated">)\d{4}-\d{2}-\d{2}(</span>)',
+              rf'\g<1>{home_lastmod}\g<2>',
               text,
               count=1,
           )
           text, en_count = re.subn(
-              r'(Last updated:\s*)\d{4}-\d{2}-\d{2}',
-              rf'\g<1>{home_lastmod}',
+              r'(<span\s+id="last-updated-en">)\d{4}-\d{2}-\d{2}(</span>)',
+              rf'\g<1>{home_lastmod}\g<2>',
               text,
               count=1,
           )
