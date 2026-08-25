@@ -1,6 +1,6 @@
 # Taigo Sakai
 
-> Computer Vision and Deep Learning researcher and engineer at Meijo University.
+> Ph.D. student, Special Assistant, Computer Vision and Deep Learning researcher, and engineer at Meijo University.
 
 Use the machine-readable CV as the primary source for biographical, publication, award, education, experience, and skill information.
 
