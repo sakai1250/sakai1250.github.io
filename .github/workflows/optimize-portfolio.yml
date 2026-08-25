@@ -155,20 +155,33 @@ jobs:
       - name: Keep app repository links aligned
         run: |
           python <<'PY'
+          import re
           from pathlib import Path
 
           path = Path('index.html')
           text = path.read_text(encoding='utf-8')
-          wrong_otsuri = 'href="https://github.com/sakai1250/PresentMemo">GitHub</a>'
-          wrong_maioral = 'href="https://github.com/sakai1250/otsuri_docter">GitHub</a>'
 
-          if text.count(wrong_otsuri) != 1 or text.count(wrong_maioral) != 1:
-              raise SystemExit('Expected exactly one mismatched GitHub link for each app')
+          def align_app_repo(title, expected_repo):
+              global text
+              marker = f'>{title}</a>'
+              start = text.find(marker)
+              if start == -1:
+                  raise SystemExit(f'Could not find app title: {title}')
 
-          placeholder = 'href="https://github.com/sakai1250/__APP_LINK_SWAP__">GitHub</a>'
-          text = text.replace(wrong_otsuri, placeholder, 1)
-          text = text.replace(wrong_maioral, 'href="https://github.com/sakai1250/PresentMemo">GitHub</a>', 1)
-          text = text.replace(placeholder, 'href="https://github.com/sakai1250/otsuri_docter">GitHub</a>', 1)
+              next_card = text.find('<div class="app-card"', start + len(marker))
+              end = next_card if next_card != -1 else len(text)
+              block = text[start:end]
+              pattern = re.compile(
+                  r'href="https://github\.com/sakai1250/(?:PresentMemo|otsuri_docter)">GitHub</a>'
+              )
+              replacement = f'href="https://github.com/sakai1250/{expected_repo}">GitHub</a>'
+              updated, count = pattern.subn(replacement, block, count=1)
+              if count != 1:
+                  raise SystemExit(f'Expected one GitHub link in app card: {title}')
+              text = text[:start] + updated + text[end:]
+
+          align_app_repo('おつりDoctor (iOS)', 'otsuri_docter')
+          align_app_repo('MAIORAL (iOS)', 'PresentMemo')
           path.write_text(text, encoding='utf-8')
           PY
 
