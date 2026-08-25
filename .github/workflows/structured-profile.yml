@@ -1,0 +1,85 @@
+name: Structured profile
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate JSON-LD person metadata
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import json
+
+          class JsonLdParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.capture = False
+                  self.blocks = []
+                  self.current = []
+
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if tag == 'script' and attrs.get('type') == 'application/ld+json':
+                      self.capture = True
+                      self.current = []
+
+              def handle_data(self, data):
+                  if self.capture:
+                      self.current.append(data)
+
+              def handle_endtag(self, tag):
+                  if tag == 'script' and self.capture:
+                      self.blocks.append(''.join(self.current))
+                      self.capture = False
+                      self.current = []
+
+          parser = JsonLdParser()
+          parser.feed(Path('index.html').read_text(encoding='utf-8'))
+
+          people = []
+          for raw in parser.blocks:
+              try:
+                  data = json.loads(raw)
+              except json.JSONDecodeError as exc:
+                  raise SystemExit(f'invalid JSON-LD: {exc}')
+              items = data if isinstance(data, list) else [data]
+              people.extend(item for item in items if isinstance(item, dict) and item.get('@type') == 'Person')
+
+          if len(people) != 1:
+              raise SystemExit(f'expected exactly one Person JSON-LD object, found {len(people)}')
+
+          person = people[0]
+          required_text = ['name', 'jobTitle', 'url']
+          for key in required_text:
+              if not str(person.get(key, '')).strip():
+                  raise SystemExit(f'Person JSON-LD is missing {key}')
+
+          if person['url'] != 'https://sakai1250.github.io/':
+              raise SystemExit(f'unexpected profile URL: {person["url"]}')
+
+          same_as = person.get('sameAs')
+          if not isinstance(same_as, list) or 'https://github.com/sakai1250' not in same_as:
+              raise SystemExit('Person JSON-LD must include the GitHub profile in sameAs')
+
+          affiliation = person.get('affiliation')
+          if not isinstance(affiliation, dict) or affiliation.get('name') != 'Meijo University':
+              raise SystemExit('Person JSON-LD must identify Meijo University as the current affiliation')
+
+          if 'alumniOf' in person:
+              raise SystemExit('Person JSON-LD uses alumniOf for a current affiliation; use affiliation instead')
+
+          print('OK: Person JSON-LD is valid and contains the expected professional identity fields')
+          PY
