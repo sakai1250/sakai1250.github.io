@@ -210,6 +210,23 @@ jobs:
           path.write_text(text, encoding='utf-8')
           PY
 
+      - name: Keep visible profile fallback aligned
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          role = 'Ph.D. Student · Special Assistant · Computer Vision Researcher'
+          empty = '<span id="typing-text"></span>'
+          filled = f'<span id="typing-text">{role}</span>'
+          if empty in text:
+              text = text.replace(empty, filled, 1)
+          elif filled not in text:
+              raise SystemExit('Could not find expected visible profile role')
+          path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Keep canonical portfolio URL aligned
         run: |
           python <<'PY'
