@@ -112,7 +112,7 @@ function initTypingEffect() {
     const cursor = document.querySelector('.typing-container .cursor');
     if (!textElement) return;
 
-    textElement.textContent = 'Computer Vision · Continual Learning · Multi-View Tracking';
+    textElement.textContent = 'Ph.D. Student · Special Assistant · Computer Vision Researcher';
     if (cursor) cursor.style.display = 'none';
 }
 
