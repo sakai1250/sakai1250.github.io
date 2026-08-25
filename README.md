@@ -5,6 +5,8 @@ Personal portfolio for Taigo Sakai, a Ph.D. student, Special Assistant, computer
 ## Quick links
 
 - **Portfolio:** https://sakai1250.github.io
+- **Research:** https://sakai1250.github.io/#research-content
+- **Engineering:** https://sakai1250.github.io/#engineer-content
 - **CV:** https://sakai1250.github.io/assets/cv.pdf
 - **Machine-readable CV:** https://sakai1250.github.io/assets/cv.txt
 - **Machine-readable sources:** https://sakai1250.github.io/llms.txt
