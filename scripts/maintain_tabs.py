@@ -116,3 +116,40 @@ elif new not in text:
     raise SystemExit("Could not find expected initTabs implementation")
 
 path.write_text(text, encoding="utf-8")
+
+html_path = Path("index.html")
+html = html_path.read_text(encoding="utf-8")
+
+old_nav = '<nav class="tab-nav header-tab-nav" aria-label="Primary sections">'
+new_nav = '<nav class="tab-nav header-tab-nav" aria-label="Primary sections" role="tablist">'
+if old_nav in html:
+    html = html.replace(old_nav, new_nav, 1)
+elif new_nav not in html:
+    raise SystemExit("Could not find expected primary tab navigation")
+
+old_research = '<div class="tab-item active" data-tab="research" role="button" tabindex="0">'
+new_research = '<div class="tab-item active" id="research-tab" data-tab="research" role="tab" aria-controls="research-content" aria-selected="true" tabindex="0">'
+if old_research in html:
+    html = html.replace(old_research, new_research, 1)
+elif new_research not in html:
+    raise SystemExit("Could not find expected Research tab")
+
+old_engineer = '<div class="tab-item" data-tab="engineer" role="button" tabindex="0">'
+new_engineer = '<div class="tab-item" id="engineer-tab" data-tab="engineer" role="tab" aria-controls="engineer-content" aria-selected="false" tabindex="-1">'
+if old_engineer in html:
+    html = html.replace(old_engineer, new_engineer, 1)
+elif new_engineer not in html:
+    raise SystemExit("Could not find expected Engineering tab")
+
+for tab_id in ("research", "engineer"):
+    old_panel = f'<main id="{tab_id}-content" class="tab-content'
+    if old_panel not in html:
+        continue
+    start = html.index(old_panel)
+    tag_end = html.index('>', start)
+    tag = html[start:tag_end + 1]
+    if 'role="tabpanel"' not in tag:
+        replacement = tag[:-1] + f' role="tabpanel" aria-labelledby="{tab_id}-tab">'
+        html = html[:start] + replacement + html[tag_end + 1:]
+
+html_path.write_text(html, encoding="utf-8")
