@@ -1,0 +1,105 @@
+name: Keep static fallbacks aligned
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'sitemap.xml'
+      - '.github/workflows/static-fallbacks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: static-fallbacks-main
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync visible fallback metadata
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          import xml.etree.ElementTree as ET
+
+          index_path = Path('index.html')
+          sitemap_path = Path('sitemap.xml')
+          text = index_path.read_text(encoding='utf-8')
+
+          ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          root = ET.parse(sitemap_path).getroot()
+          home_lastmod = None
+          for url in root.findall('sm:url', ns):
+              loc = url.find('sm:loc', ns)
+              lastmod = url.find('sm:lastmod', ns)
+              if loc is not None and loc.text == 'https://sakai1250.github.io/' and lastmod is not None:
+                  home_lastmod = (lastmod.text or '').strip()
+                  break
+          if not home_lastmod or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', home_lastmod):
+              raise SystemExit('Could not resolve homepage lastmod from sitemap.xml')
+
+          def section_block(english_title):
+              marker = f'<span lang="en">{english_title}</span>'
+              start = text.find(marker)
+              if start == -1:
+                  raise SystemExit(f'Could not find section: {english_title}')
+              section_start = text.rfind('<section', 0, start)
+              section_end = text.find('</section>', start)
+              if section_start == -1 or section_end == -1:
+                  raise SystemExit(f'Could not isolate section: {english_title}')
+              return text[section_start:section_end]
+
+          counts = {
+              'stat-papers': len(re.findall(r'<li\b', section_block('Research Achievements'))),
+              'stat-awards': len(re.findall(r'<li\b', section_block('Awards'))),
+              'stat-apps': len(re.findall(r'<div\s+class="app-card"\b', section_block('My Apps & Services'))),
+          }
+          if any(value <= 0 for value in counts.values()):
+              raise SystemExit(f'Unexpected zero count: {counts}')
+
+          for element_id, value in counts.items():
+              pattern = rf'(<div\s+class="stat-value"\s+id="{re.escape(element_id)}">)[^<]*(</div>)'
+              text, replacements = re.subn(pattern, rf'\g<1>{value}\g<2>', text, count=1)
+              if replacements != 1:
+                  raise SystemExit(f'Could not update {element_id}')
+
+          text, ja_count = re.subn(
+              r'(最終更新:\s*)\d{4}-\d{2}-\d{2}',
+              rf'\g<1>{home_lastmod}',
+              text,
+              count=1,
+          )
+          text, en_count = re.subn(
+              r'(Last updated:\s*)\d{4}-\d{2}-\d{2}',
+              rf'\g<1>{home_lastmod}',
+              text,
+              count=1,
+          )
+          if ja_count != 1 or en_count != 1:
+              raise SystemExit('Could not update both footer dates')
+
+          index_path.write_text(text, encoding='utf-8')
+          print(f'Static fallbacks: {counts}; footer date: {home_lastmod}')
+          PY
+
+      - name: Commit synchronized fallbacks
+        run: |
+          git config user.name 'sakai1250'
+          git config user.email '92532910+sakai1250@users.noreply.github.com'
+          git add index.html
+          if git diff --cached --quiet; then
+            echo 'Static fallbacks already aligned.'
+            exit 0
+          fi
+          git commit -m 'Keep visible portfolio fallbacks current'
+          git push
