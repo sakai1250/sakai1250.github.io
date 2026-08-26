@@ -16,15 +16,43 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.x'
-      - name: Validate interaction maintenance scripts
+      - name: Validate maintenance scripts
         run: |
-          python -m py_compile scripts/maintain_tabs.py
-          python -m py_compile scripts/maintain_filter_accessibility.py
+          for script in \
+            scripts/maintain_tabs.py \
+            scripts/maintain_contact_form.py \
+            scripts/maintain_header_controls.py \
+            scripts/maintain_filter_accessibility.py \
+            scripts/maintain_storage_resilience.py \
+            scripts/maintain_asset_versions.py; do
+            python -m py_compile "$script"
+          done
       - name: Ensure interaction maintenance is already applied
         run: |
           python scripts/maintain_tabs.py
           python scripts/maintain_filter_accessibility.py
           git diff --exit-code -- main.js index.html
+      - name: Ensure maintenance scripts are idempotent
+        run: |
+          run_maintenance() {
+            python scripts/maintain_tabs.py
+            python scripts/maintain_contact_form.py
+            python scripts/maintain_header_controls.py
+            python scripts/maintain_filter_accessibility.py
+            python scripts/maintain_storage_resilience.py
+            python scripts/maintain_asset_versions.py
+          }
+
+          run_maintenance
+          git diff --binary -- index.html main.js effects.js style.css > /tmp/maintenance-first.diff
+          run_maintenance
+          git diff --binary -- index.html main.js effects.js style.css > /tmp/maintenance-second.diff
+
+          if ! cmp -s /tmp/maintenance-first.diff /tmp/maintenance-second.diff; then
+            echo "Maintenance scripts are not idempotent; a second run changes the generated result."
+            diff -u /tmp/maintenance-first.diff /tmp/maintenance-second.diff || true
+            exit 1
+          fi
       - name: Validate local tab deep links
         run: |
           python - <<'PY'
