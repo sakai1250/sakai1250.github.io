@@ -246,7 +246,7 @@ function initStats() {
     const researchSection = Array.from(document.querySelectorAll('#research-content .section-card'))
     .find(section => section.querySelector('.section-title')?.textContent.includes('Research Achievements'));
 const publicationCount = researchSection?.querySelectorAll('.repo-list > li').length || 18;
-[{ id: 'stat-papers', v: publicationCount }, { id: 'stat-awards', v: 18 }, { id: 'stat-apps', v: 12 }].forEach(s => {
+[{ id: 'stat-papers', v: publicationCount }, { id: 'stat-awards', v: 22 }, { id: 'stat-apps', v: 10 }].forEach(s => {
         const el = document.getElementById(s.id);
         if (el) animate(el, s.v);
     });
