@@ -292,11 +292,12 @@ jobs:
           path.write_text(text, encoding='utf-8')
           PY
 
-      - name: Keep tab deep links working
+      - name: Keep site interactions aligned
         run: |
           python scripts/maintain_tabs.py
           python scripts/maintain_contact_form.py
           python scripts/maintain_header_controls.py
+          python scripts/maintain_filter_accessibility.py
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
