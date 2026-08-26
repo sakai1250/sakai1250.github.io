@@ -86,6 +86,24 @@ if theme_button in text:
 elif theme_button_accessible not in text:
     raise SystemExit('Could not find theme toggle button')
 
+# The theme control already has an accessible name. Its moon/sun glyph is only
+# visual state decoration, so do not make screen readers announce it as text.
+theme_icon = '<span id="theme-icon">☾</span>'
+theme_icon_decorative = '<span id="theme-icon" aria-hidden="true">☾</span>'
+if theme_icon in text:
+    text = text.replace(theme_icon, theme_icon_decorative, 1)
+elif theme_icon_decorative not in text:
+    raise SystemExit('Could not find theme icon')
+
+# The loading overlay is visual feedback only and repeats the already available
+# page identity. Keep it out of the accessibility tree from the first render.
+loading_screen = '<div id="loading-screen">'
+loading_screen_decorative = '<div id="loading-screen" aria-hidden="true">'
+if loading_screen in text:
+    text = text.replace(loading_screen, loading_screen_decorative, 1)
+elif loading_screen_decorative not in text:
+    raise SystemExit('Could not find loading screen')
+
 # The header action opens the GitHub profile; it does not perform a follow action.
 # Keep the label explicit so visitors know where the link goes before clicking.
 github_follow = (
