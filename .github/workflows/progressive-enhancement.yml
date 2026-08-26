@@ -1,0 +1,42 @@
+name: Progressive enhancement
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - .github/workflows/progressive-enhancement.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ensure-no-js-fallback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Keep loading screen from blocking no-JavaScript visitors
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          fallback = '  <noscript><style>#loading-screen{display:none!important}</style></noscript>\n'
+          if fallback not in text:
+              marker = '</head>'
+              if marker not in text:
+                  raise SystemExit('Could not find </head> in index.html')
+              text = text.replace(marker, fallback + marker, 1)
+              path.write_text(text, encoding='utf-8')
+          PY
+      - name: Commit fallback when needed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Keep no-JavaScript access usable"
+          file_pattern: "index.html"
+          commit_user_name: "sakai1250"
+          commit_user_email: "92532910+sakai1250@users.noreply.github.com"
+          commit_author: "sakai1250 <92532910+sakai1250@users.noreply.github.com>"
