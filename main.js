@@ -603,13 +603,28 @@ async function initQiitaArticles() {
     try {
         const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://qiita.com/sakai1250/feed')}`);
         const d = await r.json();
-        if (d.status === 'ok') {
-            c.innerHTML = '';
+        if (d.status === 'ok' && Array.isArray(d.items)) {
+            c.replaceChildren();
             d.items.slice(0, 5).forEach(i => {
+                let url;
+                try {
+                    url = new URL(i.link);
+                } catch {
+                    return;
+                }
+                if (url.protocol !== 'https:' || url.hostname !== 'qiita.com') return;
+
                 const l = document.createElement('li');
-                l.innerHTML = `<a href="${i.link}" target="_blank">${i.title}</a>`;
+                const a = document.createElement('a');
+                a.href = url.href;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.textContent = String(i.title || 'Qiita article');
+                l.appendChild(a);
                 c.appendChild(l);
             });
         }
-    } catch { c.innerHTML = 'Error'; }
+    } catch {
+        c.textContent = 'Error';
+    }
 }
