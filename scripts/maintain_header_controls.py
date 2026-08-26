@@ -23,6 +23,20 @@ if old_og_title in text:
 elif new_og_title not in text:
     raise SystemExit('Could not find expected Open Graph title')
 
+# The default document language is Japanese, but the page can switch to English.
+# Keep the keyboard skip link consistent with the visible language as well.
+skip_link_ja_only = '<a class="skip-link" href="#main-content">本文へスキップ</a>'
+skip_link_bilingual = (
+    '<a class="skip-link" href="#main-content">'
+    '<span lang="ja">本文へスキップ</span>'
+    '<span lang="en">Skip to main content</span>'
+    '</a>'
+)
+if skip_link_ja_only in text:
+    text = text.replace(skip_link_ja_only, skip_link_bilingual, 1)
+elif skip_link_bilingual not in text:
+    raise SystemExit('Could not find skip link')
+
 language_button = '<button class="header-btn" id="lang-toggle" type="button">'
 language_button_accessible = (
     '<button class="header-btn" id="lang-toggle" type="button" '
