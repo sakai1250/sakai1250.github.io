@@ -6,6 +6,22 @@ from maintain_asset_versions import main as maintain_asset_versions
 path = Path('index.html')
 text = path.read_text(encoding='utf-8')
 
+# Make search results and shared links identify the research field immediately.
+# "Portfolio" alone is generic and wastes the most visible metadata field.
+old_title = '<title>Taigo Sakai | Portfolio</title>'
+new_title = '<title>Taigo Sakai | Computer Vision Researcher</title>'
+if old_title in text:
+    text = text.replace(old_title, new_title, 1)
+elif new_title not in text:
+    raise SystemExit('Could not find expected document title')
+
+old_og_title = '<meta property="og:title" content="Taigo Sakai | Portfolio">'
+new_og_title = '<meta property="og:title" content="Taigo Sakai | Computer Vision Researcher">'
+if old_og_title in text:
+    text = text.replace(old_og_title, new_og_title, 1)
+elif new_og_title not in text:
+    raise SystemExit('Could not find expected Open Graph title')
+
 language_button = '<button class="header-btn" id="lang-toggle" type="button">'
 language_button_accessible = (
     '<button class="header-btn" id="lang-toggle" type="button" '
