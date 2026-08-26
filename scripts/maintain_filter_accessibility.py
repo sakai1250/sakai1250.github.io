@@ -1,3 +1,5 @@
+"""Keep filter buttons' visual and screen-reader selection state aligned."""
+
 from pathlib import Path
 
 
