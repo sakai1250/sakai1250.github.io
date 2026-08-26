@@ -39,6 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // === Core Functions ===
 
+function safeStorageGet(key) {
+    try { return localStorage.getItem(key); } catch { return null; }
+}
+
+function safeStorageSet(key, value) {
+    try { localStorage.setItem(key, value); } catch {}
+}
+
 function initLoader() {
     const loader = document.getElementById('loading-screen');
     if (!loader) return;
@@ -148,7 +156,7 @@ function initTheme() {
             }
         }
         document.documentElement.setAttribute('data-theme', t);
-        localStorage.setItem('theme', t);
+        safeStorageSet('theme', t);
         if (icon) icon.textContent = t === 'dark' ? '☾' : '☀︎';
         document.querySelectorAll('#stats-langs, #stats-general').forEach(img => {
             img.src = img.src.replace(/theme=[^&]+/, `theme=${t === 'dark' ? 'dracula' : 'default'}`);
@@ -157,7 +165,7 @@ function initTheme() {
         if (metaThemeColor) metaThemeColor.setAttribute('content', t === 'dark' ? '#09131F' : '#F7F3EA');
     };
     if (btn) btn.addEventListener('click', () => set(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark', true));
-    set(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'), false);
+    set(safeStorageGet('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'), false);
 }
 
 function initSearchAndFilters() {
@@ -546,7 +554,7 @@ function initLanguage() {
     const set = (l) => {
         document.documentElement.setAttribute('data-lang', l);
         document.documentElement.lang = l;
-        localStorage.setItem('lang', l);
+        safeStorageSet('lang', l);
         const s = document.getElementById('search');
         if (s) s.placeholder = s.getAttribute(`data-${l}-placeholder`);
         
@@ -563,7 +571,7 @@ function initLanguage() {
         updateSectionTabs();
     };
     if (btn) btn.addEventListener('click', () => set(document.documentElement.getAttribute('data-lang') === 'ja' ? 'en' : 'ja'));
-    set(localStorage.getItem('lang') || 'ja');
+    set(safeStorageGet('lang') || 'ja');
 }
 
 function initContactForm() {

@@ -55,7 +55,8 @@
   <!-- Theme Initialization: Prevent Flash of Incorrect Theme -->
   <script>
     (function () {
-      const savedTheme = localStorage.getItem('theme');
+      let savedTheme = null;
+      try { savedTheme = localStorage.getItem('theme'); } catch {}
       const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
       const theme = savedTheme || systemTheme;
       document.documentElement.setAttribute('data-theme', theme);
