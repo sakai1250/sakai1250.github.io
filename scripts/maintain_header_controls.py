@@ -27,4 +27,14 @@ if theme_button in text:
 elif theme_button_accessible not in text:
     raise SystemExit('Could not find theme toggle button')
 
+# App names are already visible beside their thumbnails. Treat the thumbnails as
+# decorative so screen readers do not announce the same generic "icon" label
+# for every card.
+app_thumbnail_alt = 'class="app-thumb" alt="icon"'
+app_thumbnail_decorative = 'class="app-thumb" alt=""'
+if app_thumbnail_alt in text:
+    text = text.replace(app_thumbnail_alt, app_thumbnail_decorative)
+elif app_thumbnail_decorative not in text:
+    raise SystemExit('Could not find app thumbnail accessibility markers')
+
 path.write_text(text, encoding='utf-8')
