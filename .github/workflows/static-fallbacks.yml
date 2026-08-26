@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'main.js'
       - 'sitemap.xml'
       - '.github/workflows/static-fallbacks.yml'
   workflow_dispatch:
@@ -34,8 +35,10 @@ jobs:
           import xml.etree.ElementTree as ET
 
           index_path = Path('index.html')
+          main_path = Path('main.js')
           sitemap_path = Path('sitemap.xml')
           text = index_path.read_text(encoding='utf-8')
+          main_text = main_path.read_text(encoding='utf-8')
 
           ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
           root = ET.parse(sitemap_path).getroot()
@@ -90,6 +93,21 @@ jobs:
               if replacements != 1:
                   raise SystemExit(f'Could not update {element_id}')
 
+          main_text, awards_count = re.subn(
+              r"(\{ id: 'stat-awards', v: )\d+( \})",
+              rf"\g<1>{counts['stat-awards']}\g<2>",
+              main_text,
+              count=1,
+          )
+          main_text, apps_count = re.subn(
+              r"(\{ id: 'stat-apps', v: )\d+( \})",
+              rf"\g<1>{counts['stat-apps']}\g<2>",
+              main_text,
+              count=1,
+          )
+          if awards_count != 1 or apps_count != 1:
+              raise SystemExit('Could not update dynamic award/app counts in main.js')
+
           text, ja_count = re.subn(
               r'(<span\s+id="last-updated">)\d{4}-\d{2}-\d{2}(</span>)',
               rf'\g<1>{home_lastmod}\g<2>',
@@ -106,16 +124,17 @@ jobs:
               raise SystemExit('Could not update both footer dates')
 
           index_path.write_text(text, encoding='utf-8')
-          print(f'Static fallbacks: {counts}; footer date: {home_lastmod}')
+          main_path.write_text(main_text, encoding='utf-8')
+          print(f'Portfolio stats: {counts}; footer date: {home_lastmod}')
           PY
 
       - name: Commit synchronized fallbacks
         run: |
           git config user.name 'sakai1250'
           git config user.email '92532910+sakai1250@users.noreply.github.com'
-          git add index.html
+          git add index.html main.js
           if git diff --cached --quiet; then
-            echo 'Static fallbacks already aligned.'
+            echo 'Portfolio fallbacks already aligned.'
             exit 0
           fi
           git commit -m 'Keep visible portfolio fallbacks current'
