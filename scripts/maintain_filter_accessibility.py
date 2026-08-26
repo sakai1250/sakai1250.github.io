@@ -7,23 +7,22 @@ import re
 js_path = Path("main.js")
 text = js_path.read_text(encoding="utf-8")
 
-old_init = """    const input = document.getElementById('search');
+base_init = """    const input = document.getElementById('search');
     const chips = document.querySelectorAll('.chip');
     let activeTag = 'all', activeYear = 'all';
 """
-new_init = """    const input = document.getElementById('search');
-    const chips = document.querySelectorAll('.chip');
-    let activeTag = 'all', activeYear = 'all';
-
-    chips.forEach(chip => {
+pressed_init = """    chips.forEach(chip => {
         chip.setAttribute('aria-pressed', String(chip.classList.contains('active')));
     });
 """
 
-if old_init in text:
-    text = text.replace(old_init, new_init, 1)
-elif new_init not in text:
+if base_init not in text:
     raise SystemExit("Could not find filter initialization block")
+
+# Normalize the generated block instead of repeatedly inserting after a prefix
+# that remains present inside the generated output.
+text = text.replace("\n" + pressed_init, "")
+text = text.replace(base_init, base_init + "\n" + pressed_init, 1)
 
 old_click = """        if (t) { activeTag = t; document.querySelectorAll('.chip[data-filter]').forEach(x => x.classList.toggle('active', x === c)); }
         if (y) { activeYear = y; document.querySelectorAll('.chip[data-year]').forEach(x => x.classList.toggle('active', x === c)); }
@@ -46,10 +45,11 @@ new_click = """        if (t) {
         }
 """
 
-if old_click in text:
-    text = text.replace(old_click, new_click, 1)
-elif new_click not in text:
-    raise SystemExit("Could not find filter click block")
+if new_click not in text:
+    if old_click in text:
+        text = text.replace(old_click, new_click, 1)
+    else:
+        raise SystemExit("Could not find filter click block")
 
 js_path.write_text(text, encoding="utf-8")
 
@@ -65,6 +65,7 @@ def sync_static_pressed(match: re.Match[str]) -> str:
     if re.search(r'\saria-pressed="(?:true|false)"', tag):
         return re.sub(r'\saria-pressed="(?:true|false)"', f' aria-pressed="{value}"', tag, count=1)
     return tag[:-1] + f' aria-pressed="{value}">'
+
 
 html, count = re.subn(
     r'<button\b(?=[^>]*\bclass="[^"]*\bchip\b[^"]*")(?=[^>]*\bdata-(?:year|filter)=)[^>]*>',
