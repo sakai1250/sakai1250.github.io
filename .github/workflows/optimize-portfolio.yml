@@ -232,6 +232,7 @@ jobs:
       - name: Keep visible profile fallback aligned
         run: |
           python <<'PY'
+          import re
           from pathlib import Path
 
           path = Path('index.html')
@@ -244,19 +245,19 @@ jobs:
           elif filled not in text:
               raise SystemExit('Could not find expected visible profile role')
 
-          old_ja = '理工学研究科 電気電子・情報・材料工学専攻<br>\n                博士後期課程'
-          new_ja = '理工学研究科 電気電子・情報・材料工学専攻<br>\n                博士後期課程 · Special Assistant'
-          if old_ja in text:
-              text = text.replace(old_ja, new_ja, 1)
-          elif new_ja not in text:
-              raise SystemExit('Could not find expected Japanese sidebar role')
+          ja_pattern = re.compile(
+              r'(理工学研究科 電気電子・情報・材料工学専攻<br>\n\s*博士後期課程)(?: · Special Assistant)+'
+          )
+          text, ja_count = ja_pattern.subn(r'\1 · Special Assistant', text, count=1)
+          if ja_count != 1:
+              raise SystemExit('Could not normalize Japanese sidebar role')
 
-          old_en = 'Dept. of Electrical, Electronic, Information and Materials Engineering<br>\n                Ph.D. Course'
-          new_en = 'Dept. of Electrical, Electronic, Information and Materials Engineering<br>\n                Ph.D. Course · Special Assistant'
-          if old_en in text:
-              text = text.replace(old_en, new_en, 1)
-          elif new_en not in text:
-              raise SystemExit('Could not find expected English sidebar role')
+          en_pattern = re.compile(
+              r'(Dept\. of Electrical, Electronic, Information and Materials Engineering<br>\n\s*Ph\.D\. Course)(?: · Special Assistant)+'
+          )
+          text, en_count = en_pattern.subn(r'\1 · Special Assistant', text, count=1)
+          if en_count != 1:
+              raise SystemExit('Could not normalize English sidebar role')
 
           path.write_text(text, encoding='utf-8')
           PY
