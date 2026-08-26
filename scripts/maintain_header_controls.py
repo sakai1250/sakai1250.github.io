@@ -23,6 +23,32 @@ if old_og_title in text:
 elif new_og_title not in text:
     raise SystemExit('Could not find expected Open Graph title')
 
+# Keep social-card metadata as complete as the Open Graph metadata. This makes
+# shared portfolio links identify the person and research field without relying
+# on platform-specific fallback behavior.
+twitter_creator = '<meta name="twitter:creator" content="@ikaitaig">'
+twitter_metadata = (
+    '<meta name="twitter:creator" content="@ikaitaig">\n'
+    '  <meta name="twitter:title" content="Taigo Sakai | Computer Vision Researcher">\n'
+    '  <meta name="twitter:description" content="Ph.D. Student and Special Assistant at Meijo University researching Computer Vision, Continual Learning, and Multi-View Tracking.">\n'
+    '  <meta name="twitter:image" content="https://github.com/sakai1250.png">\n'
+    '  <meta name="twitter:image:alt" content="Portrait of Taigo Sakai">'
+)
+if '<meta name="twitter:title"' not in text:
+    if twitter_creator not in text:
+        raise SystemExit('Could not find Twitter creator metadata')
+    text = text.replace(twitter_creator, twitter_metadata, 1)
+
+og_image = '<meta property="og:image" content="https://github.com/sakai1250.png">'
+og_image_with_alt = (
+    '<meta property="og:image" content="https://github.com/sakai1250.png">\n'
+    '  <meta property="og:image:alt" content="Portrait of Taigo Sakai">'
+)
+if '<meta property="og:image:alt"' not in text:
+    if og_image not in text:
+        raise SystemExit('Could not find Open Graph image metadata')
+    text = text.replace(og_image, og_image_with_alt, 1)
+
 # The default document language is Japanese, but the page can switch to English.
 # Keep the keyboard skip link consistent with the visible language as well.
 skip_link_ja_only = '<a class="skip-link" href="#main-content">本文へスキップ</a>'
