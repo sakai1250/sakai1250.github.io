@@ -1,4 +1,4 @@
-name: Tab maintenance check
+name: Interaction maintenance check
 
 on:
   push:
@@ -16,11 +16,14 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.x'
-      - name: Validate tab maintenance script
-        run: python -m py_compile scripts/maintain_tabs.py
-      - name: Ensure tab maintenance is already applied
+      - name: Validate interaction maintenance scripts
+        run: |
+          python -m py_compile scripts/maintain_tabs.py
+          python -m py_compile scripts/maintain_filter_accessibility.py
+      - name: Ensure interaction maintenance is already applied
         run: |
           python scripts/maintain_tabs.py
+          python scripts/maintain_filter_accessibility.py
           git diff --exit-code -- main.js index.html
       - name: Validate local tab deep links
         run: |
