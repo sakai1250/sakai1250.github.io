@@ -384,7 +384,9 @@ img { max-width: 100%; height: auto; }
 
 .tab-item {
   padding: 9px 17px;
+  border: 0;
   border-radius: 999px;
+  background: transparent;
   color: var(--muted);
   font-family: var(--font-ui);
   font-size: 12px;
