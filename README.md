@@ -52,4 +52,4 @@ When portfolio content changes, keep `index.html`, `assets/cv.pdf`, `assets/cv.t
 
 ## Deployment
 
-`.github/workflows/static.yml` deploys the contents of the `main` branch to GitHub Pages on every push to `main`.
+`.github/workflows/optimize-portfolio.yml` prepares and commits the finalized portfolio state. After that workflow completes successfully, `.github/workflows/static.yml` checks out the latest `main` branch and deploys it to GitHub Pages.
