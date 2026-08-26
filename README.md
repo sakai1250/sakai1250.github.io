@@ -38,6 +38,8 @@ Then open `http://localhost:8000`.
 - `index.html` contains the portfolio content and page structure.
 - `style.css` controls the visual presentation and light/dark themes.
 - `main.js` handles filtering, language switching, statistics, and interaction.
+- `effects.js` contains restrained visual effects plus accessibility and presentation helpers layered on top of the core interactions.
+- `scripts/*.py` contains repeatable maintenance transforms used by GitHub Actions; keep these transforms idempotent so repeated runs do not alter already-correct content.
 - `assets/cv.pdf` is the CV linked from the site header.
 - `assets/cv.txt` mirrors the core CV content for machine-readable access.
 - `llms.txt` routes machine-readable visitors to the appropriate primary sources.
