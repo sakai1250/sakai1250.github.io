@@ -4,7 +4,7 @@ from pathlib import Path
 path = Path('main.js')
 text = path.read_text(encoding='utf-8')
 
-replacement = r'''function initContactForm() {
+contact_replacement = r'''function initContactForm() {
     const f = document.getElementById('contact-form');
     if (!f) return;
 
@@ -45,15 +45,52 @@ replacement = r'''function initContactForm() {
             button.innerHTML = originalButtonHTML;
         }
     });
-}
+}'''
 
-async function initQiitaArticles() {'''
-
-pattern = re.compile(
-    r'function initContactForm\(\) \{[\s\S]*?\n\}\n\nasync function initQiitaArticles\(\) \{'
+contact_pattern = re.compile(
+    r'function initContactForm\(\) \{[\s\S]*?\n\}\n\n(?=async function initQiitaArticles\(\) \{)'
 )
-updated, count = pattern.subn(replacement, text, count=1)
-if count != 1:
+text, contact_count = contact_pattern.subn(contact_replacement + '\n\n', text, count=1)
+if contact_count != 1:
     raise SystemExit('Could not find contact form function')
 
-path.write_text(updated, encoding='utf-8')
+qiita_replacement = r'''async function initQiitaArticles() {
+    const c = document.getElementById('qiita-list');
+    if (!c) return;
+    try {
+        const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://qiita.com/sakai1250/feed')}`);
+        const d = await r.json();
+        if (d.status === 'ok' && Array.isArray(d.items)) {
+            c.replaceChildren();
+            d.items.slice(0, 5).forEach(i => {
+                let url;
+                try {
+                    url = new URL(i.link);
+                } catch {
+                    return;
+                }
+                if (url.protocol !== 'https:' || url.hostname !== 'qiita.com') return;
+
+                const l = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = url.href;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.textContent = String(i.title || 'Qiita article');
+                l.appendChild(a);
+                c.appendChild(l);
+            });
+        }
+    } catch {
+        c.textContent = 'Error';
+    }
+}'''
+
+qiita_pattern = re.compile(
+    r'async function initQiitaArticles\(\) \{[\s\S]*?\n\}',
+)
+text, qiita_count = qiita_pattern.subn(qiita_replacement, text, count=1)
+if qiita_count != 1:
+    raise SystemExit('Could not find Qiita article function')
+
+path.write_text(text, encoding='utf-8')
