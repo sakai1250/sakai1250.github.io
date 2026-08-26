@@ -169,10 +169,6 @@ function initSearchAndFilters() {
         chip.setAttribute('aria-pressed', String(chip.classList.contains('active')));
     });
 
-    chips.forEach(chip => {
-        chip.setAttribute('aria-pressed', String(chip.classList.contains('active')));
-    });
-
     const apply = () => {
         const q = input ? input.value.toLowerCase().trim() : '';
         const activeContent = document.querySelector('.tab-content.active') || document;
