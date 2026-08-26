@@ -267,9 +267,9 @@ jobs:
               raise SystemExit('Could not normalize Japanese sidebar role')
 
           en_pattern = re.compile(
-              r'(Dept\. of Electrical, Electronic, Information and Materials Engineering<br>\n\s*Ph\.D\. Course)(?: · Special Assistant)+'
+              r'(Dept\. of Electrical, Electronic, Information and Materials Engineering<br>\n\s*)Ph\.D\. (?:Course|Student)(?: · Special Assistant)+'
           )
-          text, en_count = en_pattern.subn(r'\1 · Special Assistant', text, count=1)
+          text, en_count = en_pattern.subn(r'\1Ph.D. Student · Special Assistant', text, count=1)
           if en_count != 1:
               raise SystemExit('Could not normalize English sidebar role')
 
