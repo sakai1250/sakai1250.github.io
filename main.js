@@ -165,6 +165,14 @@ function initSearchAndFilters() {
     const chips = document.querySelectorAll('.chip');
     let activeTag = 'all', activeYear = 'all';
 
+    chips.forEach(chip => {
+        chip.setAttribute('aria-pressed', String(chip.classList.contains('active')));
+    });
+
+    chips.forEach(chip => {
+        chip.setAttribute('aria-pressed', String(chip.classList.contains('active')));
+    });
+
     const apply = () => {
         const q = input ? input.value.toLowerCase().trim() : '';
         const activeContent = document.querySelector('.tab-content.active') || document;
@@ -200,8 +208,22 @@ function initSearchAndFilters() {
     if (input) input.addEventListener('input', apply);
     chips.forEach(c => c.addEventListener('click', () => {
         const t = c.getAttribute('data-filter'), y = c.getAttribute('data-year');
-        if (t) { activeTag = t; document.querySelectorAll('.chip[data-filter]').forEach(x => x.classList.toggle('active', x === c)); }
-        if (y) { activeYear = y; document.querySelectorAll('.chip[data-year]').forEach(x => x.classList.toggle('active', x === c)); }
+        if (t) {
+            activeTag = t;
+            document.querySelectorAll('.chip[data-filter]').forEach(x => {
+                const active = x === c;
+                x.classList.toggle('active', active);
+                x.setAttribute('aria-pressed', String(active));
+            });
+        }
+        if (y) {
+            activeYear = y;
+            document.querySelectorAll('.chip[data-year]').forEach(x => {
+                const active = x === c;
+                x.classList.toggle('active', active);
+                x.setAttribute('aria-pressed', String(active));
+            });
+        }
         apply();
     }));
 }
