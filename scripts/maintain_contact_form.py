@@ -83,7 +83,10 @@ qiita_replacement = r'''async function initQiitaArticles() {
             });
         }
     } catch {
-        c.textContent = 'Error';
+        const lang = document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'ja';
+        c.textContent = lang === 'en'
+            ? 'Could not load Qiita articles.'
+            : 'Qiita記事を読み込めませんでした。';
     }
 }'''
 
