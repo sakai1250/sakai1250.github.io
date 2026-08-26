@@ -215,9 +215,14 @@ jobs:
               raise SystemExit('Could not find expected JSON-LD schema context')
 
           scholar_url = 'https://scholar.google.com/citations?user=eS-5wrQAAAAJ'
-          if scholar_url not in text:
+          jsonld_start = text.find('<script type="application/ld+json">')
+          jsonld_end = text.find('</script>', jsonld_start)
+          if jsonld_start == -1 or jsonld_end == -1:
+              raise SystemExit('Could not find JSON-LD profile block')
+          jsonld = text[jsonld_start:jsonld_end]
+          if scholar_url not in jsonld:
               marker = '      "https://www.linkedin.com/in/sakai1250"\n'
-              if marker not in text:
+              if marker not in jsonld:
                   raise SystemExit('Could not find JSON-LD profile-link insertion point')
               text = text.replace(
                   marker,
