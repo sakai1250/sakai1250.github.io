@@ -298,6 +298,7 @@ jobs:
           python scripts/maintain_contact_form.py
           python scripts/maintain_header_controls.py
           python scripts/maintain_filter_accessibility.py
+          python scripts/maintain_storage_resilience.py
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
