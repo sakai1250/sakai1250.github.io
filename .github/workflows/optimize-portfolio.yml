@@ -96,8 +96,6 @@ jobs:
           )
           apps_content = apps_match.group(1) if apps_match else ''
 
-          # Each app is represented by one <td> block in the profile README.
-          # Parsing the whole cell keeps its title, description, image and repo together.
           app_blocks = re.findall(
               r'<td\b[^>]*>([\s\S]*?)</td>',
               apps_content,
@@ -105,8 +103,6 @@ jobs:
           )
 
           for block in app_blocks:
-              # Only accept repository URLs from anchor href values. Image sources such as
-              # github.com/user-attachments/assets/... are not repositories.
               repo_match = re.search(
                   r'<a\b[^>]*href=["\']https?://github\.com/([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+?)(?:\.git)?["\'][^>]*>',
                   block,
@@ -279,7 +275,9 @@ jobs:
           PY
 
       - name: Keep tab deep links working
-        run: python scripts/maintain_tabs.py
+        run: |
+          python scripts/maintain_tabs.py
+          python scripts/maintain_contact_form.py
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
