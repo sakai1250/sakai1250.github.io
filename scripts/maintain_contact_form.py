@@ -1,4 +1,5 @@
 import re
+import runpy
 from pathlib import Path
 
 path = Path('main.js')
@@ -94,3 +95,4 @@ if qiita_count != 1:
     raise SystemExit('Could not find Qiita article function')
 
 path.write_text(text, encoding='utf-8')
+runpy.run_path('scripts/maintain_external_links.py', run_name='__main__')
