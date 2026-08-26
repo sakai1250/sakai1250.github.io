@@ -27,6 +27,7 @@ jobs:
             scripts/maintain_header_controls.py \
             scripts/maintain_filter_accessibility.py \
             scripts/maintain_storage_resilience.py \
+            scripts/maintain_external_links.py \
             scripts/maintain_asset_versions.py; do
             python -m py_compile "$script"
           done
@@ -38,22 +39,25 @@ jobs:
             python scripts/maintain_header_controls.py
             python scripts/maintain_filter_accessibility.py
             python scripts/maintain_storage_resilience.py
+            python scripts/maintain_external_links.py
             python scripts/maintain_asset_versions.py
           }
 
+          tracked_site_files=(index.html 404.html main.js effects.js style.css)
+
           run_maintenance
-          if ! git diff --quiet -- index.html main.js effects.js style.css; then
+          if ! git diff --quiet -- "${tracked_site_files[@]}"; then
             echo "Portfolio maintenance is not fully applied to tracked site files."
-            git diff -- index.html main.js effects.js style.css
+            git diff -- "${tracked_site_files[@]}"
             exit 1
           fi
 
           # A second pass must also remain clean. This catches scripts that
           # append or duplicate output on repeated runs.
           run_maintenance
-          if ! git diff --quiet -- index.html main.js effects.js style.css; then
+          if ! git diff --quiet -- "${tracked_site_files[@]}"; then
             echo "Portfolio maintenance scripts are not idempotent."
-            git diff -- index.html main.js effects.js style.css
+            git diff -- "${tracked_site_files[@]}"
             exit 1
           fi
       - name: Validate local tab deep links
