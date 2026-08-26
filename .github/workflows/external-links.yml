@@ -73,6 +73,8 @@ jobs:
           for url in sorted(links):
               status = None
               error = None
+              success = False
+
               for method in ('HEAD', 'GET'):
                   for attempt in range(2):
                       try:
@@ -84,15 +86,23 @@ jobs:
                           with urlopen(request, timeout=15) as response:
                               status = response.status
                           error = None
+                          success = 200 <= status < 400
                           break
                       except HTTPError as exc:
                           status = exc.code
-                          # 401/403/429 usually mean the page exists but rejects automation.
+                          error = str(exc)
+
+                          # These responses usually mean the page exists but rejects automation.
                           if status in (401, 403, 429):
                               error = None
+                              success = True
                               break
-                          error = str(exc)
-                          # 404/410 are deterministic; server errors get one retry.
+
+                          # A server may reject HEAD while still serving GET normally.
+                          if method == 'HEAD' and status in (400, 405, 501):
+                              break
+
+                          # These are deterministic broken-link responses.
                           if status in (404, 410):
                               break
                       except (URLError, TimeoutError) as exc:
@@ -102,13 +112,13 @@ jobs:
                       if attempt == 0:
                           time.sleep(0.75)
 
-                  if status is not None and (status < 500 or status in (401, 403, 429)):
+                  if success or status in (404, 410):
                       break
                   if method == 'HEAD':
                       status = None
                       error = None
 
-              if status in (404, 410) or (status is not None and status >= 500) or status is None:
+              if not success:
                   failures.append((url, status, error))
                   print(f'FAIL {status or "ERR"}: {url} {error or ""}')
               else:
