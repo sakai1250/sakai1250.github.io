@@ -27,12 +27,7 @@ jobs:
             scripts/maintain_asset_versions.py; do
             python -m py_compile "$script"
           done
-      - name: Ensure interaction maintenance is already applied
-        run: |
-          python scripts/maintain_tabs.py
-          python scripts/maintain_filter_accessibility.py
-          git diff --exit-code -- main.js index.html
-      - name: Ensure maintenance scripts are idempotent
+      - name: Ensure all maintenance is already applied
         run: |
           run_maintenance() {
             python scripts/maintain_tabs.py
@@ -44,13 +39,18 @@ jobs:
           }
 
           run_maintenance
-          git diff --binary -- index.html main.js effects.js style.css > /tmp/maintenance-first.diff
-          run_maintenance
-          git diff --binary -- index.html main.js effects.js style.css > /tmp/maintenance-second.diff
+          if ! git diff --quiet -- index.html main.js effects.js style.css; then
+            echo "Portfolio maintenance is not fully applied to tracked site files."
+            git diff -- index.html main.js effects.js style.css
+            exit 1
+          fi
 
-          if ! cmp -s /tmp/maintenance-first.diff /tmp/maintenance-second.diff; then
-            echo "Maintenance scripts are not idempotent; a second run changes the generated result."
-            diff -u /tmp/maintenance-first.diff /tmp/maintenance-second.diff || true
+          # A second pass must also remain clean. This catches scripts that
+          # append or duplicate output on repeated runs.
+          run_maintenance
+          if ! git diff --quiet -- index.html main.js effects.js style.css; then
+            echo "Portfolio maintenance scripts are not idempotent."
+            git diff -- index.html main.js effects.js style.css
             exit 1
           fi
       - name: Validate local tab deep links
