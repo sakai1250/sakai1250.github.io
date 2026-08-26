@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from maintain_asset_versions import main as maintain_asset_versions
+
 
 path = Path('index.html')
 text = path.read_text(encoding='utf-8')
@@ -57,3 +59,7 @@ elif app_thumbnail_decorative not in text:
     raise SystemExit('Could not find app thumbnail accessibility markers')
 
 path.write_text(text, encoding='utf-8')
+
+# Keep browser cache keys tied to the current file contents. The optimization
+# workflow already runs this helper whenever maintained site assets change.
+maintain_asset_versions()
