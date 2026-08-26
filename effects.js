@@ -140,48 +140,6 @@ function syncPortfolioStats() {
     });
 }
 
-function initTabAccessibility() {
-    const nav = document.querySelector('.header-tab-nav');
-    const tabs = Array.from(document.querySelectorAll('.header-tab-nav .tab-item'));
-    if (!nav || !tabs.length) return;
-
-    nav.setAttribute('role', 'tablist');
-
-    const sync = () => {
-        tabs.forEach((tab, index) => {
-            const tabId = tab.dataset.tab;
-            const panel = document.getElementById(`${tabId}-content`);
-            const active = tab.classList.contains('active');
-            const id = `primary-tab-${tabId || index}`;
-
-            tab.id = id;
-            tab.setAttribute('role', 'tab');
-            tab.setAttribute('aria-selected', String(active));
-            tab.setAttribute('aria-controls', panel?.id || '');
-            tab.tabIndex = active ? 0 : -1;
-
-            if (panel) {
-                panel.setAttribute('role', 'tabpanel');
-                panel.setAttribute('aria-labelledby', id);
-            }
-        });
-    };
-
-    tabs.forEach((tab, index) => {
-        tab.addEventListener('click', () => setTimeout(sync, 0));
-        tab.addEventListener('keydown', (event) => {
-            if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-            event.preventDefault();
-            const direction = event.key === 'ArrowRight' ? 1 : -1;
-            const next = tabs[(index + direction + tabs.length) % tabs.length];
-            next.focus();
-            next.click();
-        });
-    });
-
-    sync();
-}
-
 function initModalAccessibility() {
     const modal = document.getElementById('app-modal');
     const container = modal?.querySelector('.modal-container');
@@ -307,7 +265,6 @@ function initPortfolioPolish() {
         if (tab.dataset.tab === 'engineer') ja.textContent = '開発';
     });
 
-    initTabAccessibility();
     initModalAccessibility();
     syncPortfolioStats();
     window.setTimeout(syncPortfolioStats, 1700);
