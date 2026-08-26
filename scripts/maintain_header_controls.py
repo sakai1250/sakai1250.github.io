@@ -27,6 +27,25 @@ if theme_button in text:
 elif theme_button_accessible not in text:
     raise SystemExit('Could not find theme toggle button')
 
+# The header action opens the GitHub profile; it does not perform a follow action.
+# Keep the label explicit so visitors know where the link goes before clicking.
+github_follow = (
+    '<a href="https://github.com/sakai1250" class="header-btn primary">\n'
+    '              <span lang="ja">フォロー</span>\n'
+    '              <span lang="en">Follow</span>\n'
+    '            </a>'
+)
+github_profile = (
+    '<a href="https://github.com/sakai1250" class="header-btn primary">\n'
+    '              <span lang="ja">GitHub</span>\n'
+    '              <span lang="en">GitHub</span>\n'
+    '            </a>'
+)
+if github_follow in text:
+    text = text.replace(github_follow, github_profile, 1)
+elif github_profile not in text:
+    raise SystemExit('Could not find GitHub profile header action')
+
 # App names are already visible beside their thumbnails. Treat the thumbnails as
 # decorative so screen readers do not announce the same generic "icon" label
 # for every card.
