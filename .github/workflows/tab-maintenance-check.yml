@@ -31,7 +31,7 @@ jobs:
             scripts/maintain_asset_versions.py; do
             python -m py_compile "$script"
           done
-      - name: Ensure all maintenance is already applied
+      - name: Validate maintenance state and idempotence
         run: |
           run_maintenance() {
             python scripts/maintain_tabs.py
@@ -44,20 +44,28 @@ jobs:
           }
 
           tracked_site_files=(index.html 404.html main.js effects.js style.css)
+          first_diff="$(mktemp)"
+          second_diff="$(mktemp)"
 
           run_maintenance
-          if ! git diff --quiet -- "${tracked_site_files[@]}"; then
-            echo "Portfolio maintenance is not fully applied to tracked site files."
-            git diff -- "${tracked_site_files[@]}"
-            exit 1
+          git diff --binary -- "${tracked_site_files[@]}" > "$first_diff"
+
+          if [[ -s "$first_diff" ]]; then
+            if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+              echo "Portfolio maintenance is not fully applied to tracked site files."
+              cat "$first_diff"
+              exit 1
+            fi
+            echo "::notice::Portfolio maintenance produced changes on this push; Optimize Portfolio Assets will apply them to main."
           fi
 
-          # A second pass must also remain clean. This catches scripts that
-          # append or duplicate output on repeated runs.
+          # Compare the complete diff after a second pass with the first-pass diff.
+          # If they differ, at least one maintenance script is not idempotent.
           run_maintenance
-          if ! git diff --quiet -- "${tracked_site_files[@]}"; then
+          git diff --binary -- "${tracked_site_files[@]}" > "$second_diff"
+          if ! cmp -s "$first_diff" "$second_diff"; then
             echo "Portfolio maintenance scripts are not idempotent."
-            git diff -- "${tracked_site_files[@]}"
+            diff -u "$first_diff" "$second_diff" || true
             exit 1
           fi
       - name: Validate local tab deep links
