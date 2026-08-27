@@ -12,16 +12,20 @@ permissions:
   contents: read
 
 jobs:
-  ensure-no-js-fallback:
+  ensure-static-content-visible:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
-      - name: Verify no-JavaScript fallback
+      - name: Verify portfolio is visible without JavaScript
         run: |
-          if ! grep -Fq '<noscript><style>#loading-screen{display:none!important}</style></noscript>' index.html; then
-            echo 'Missing no-JavaScript fallback: loading screen may block the portfolio.' >&2
+          if grep -Fq 'id="loading-screen"' index.html; then
+            echo 'Blocking loading screen detected. Static portfolio content must remain visible even if JavaScript fails.' >&2
+            exit 1
+          fi
+          if ! grep -Fq 'id="main-content"' index.html; then
+            echo 'Static main content is missing from index.html.' >&2
             exit 1
           fi
