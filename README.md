@@ -53,4 +53,4 @@ When portfolio content changes, keep `index.html`, `assets/cv.pdf`, `assets/cv.t
 
 ## Deployment
 
-`.github/workflows/optimize-portfolio.yml` prepares and commits the finalized portfolio state. After that workflow completes successfully, `.github/workflows/static.yml` checks out the latest `main` branch and deploys it to GitHub Pages.
+`.github/workflows/optimize-portfolio.yml` prepares and, when possible, commits the finalized portfolio state. `.github/workflows/static.yml` runs after that workflow completes regardless of its conclusion, checks out the latest `main` branch, and deploys that valid state to GitHub Pages. This keeps a transient optimization or external-fetch failure from blocking an otherwise valid portfolio update.
