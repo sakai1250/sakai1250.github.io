@@ -13,3 +13,17 @@ updates:
       - "dependencies"
     commit-message:
       prefix: "chore"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 2
+    groups:
+      maintenance-python:
+        patterns:
+          - "*"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
