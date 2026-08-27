@@ -133,6 +133,15 @@ if github_follow in text:
 elif github_profile not in text:
     raise SystemExit('Could not find GitHub profile header action')
 
+# The portrait sits immediately beside the visible name and identity. Announcing
+# the same name again for the image adds noise without conveying new content.
+header_avatar = 'class="header-avatar" src="assets/avatar.jpg" alt="Taigo Sakai"'
+header_avatar_decorative = 'class="header-avatar" src="assets/avatar.jpg" alt=""'
+if header_avatar in text:
+    text = text.replace(header_avatar, header_avatar_decorative, 1)
+elif header_avatar_decorative not in text:
+    raise SystemExit('Could not find header avatar accessibility marker')
+
 # App names are already visible beside their thumbnails. Treat the thumbnails as
 # decorative so screen readers do not announce the same generic "icon" label
 # for every card.
