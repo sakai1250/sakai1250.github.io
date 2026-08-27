@@ -6,6 +6,7 @@ on:
     paths:
       - index.html
       - style.css
+      - main.js
       - .github/workflows/progressive-enhancement.yml
   workflow_dispatch:
 
@@ -24,6 +25,14 @@ jobs:
         run: |
           if grep -Fq 'id="loading-screen"' index.html; then
             echo 'Blocking loading screen detected. Static portfolio content must remain visible even if JavaScript fails.' >&2
+            exit 1
+          fi
+          if grep -Fq 'initLoader' main.js; then
+            echo 'JavaScript loader logic detected. Core portfolio content must not depend on JavaScript removing an overlay.' >&2
+            exit 1
+          fi
+          if grep -Fq "classList.add('reveal-item')" main.js || grep -Fq 'classList.add("reveal-item")' main.js; then
+            echo 'JavaScript hides core content for reveal effects. Core portfolio content must be visible before JavaScript runs.' >&2
             exit 1
           fi
           if ! grep -Fq 'id="main-content"' index.html; then
