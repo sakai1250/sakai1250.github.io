@@ -364,7 +364,12 @@ function updateActiveSectionTab() {
             activeIndex = index;
         }
     });
-    tabs.forEach((tab, index) => tab.classList.toggle('active', index === activeIndex));
+    tabs.forEach((tab, index) => {
+        const active = index === activeIndex;
+        tab.classList.toggle('active', active);
+        if (active) tab.setAttribute('aria-current', 'true');
+        else tab.removeAttribute('aria-current');
+    });
 }
 
 function updateSectionTabs() {
