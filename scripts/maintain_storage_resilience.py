@@ -80,6 +80,17 @@ def update_style() -> None:
     )
     if "#loading-screen" in text or ".spinner" in text or "quietPulse" in text:
         raise SystemExit("Could not remove obsolete loader styles")
+
+    # Do not make a core recruiter-facing action depend on JavaScript. The CV
+    # link is marked primary in the static HTML, so hiding every primary header
+    # button on mobile makes the CV disappear whenever effects.js does not run.
+    text = text.replace(
+        "  .header-actions .header-btn.primary { display: none; }\n",
+        "",
+    )
+    if ".header-actions .header-btn.primary { display: none; }" in text:
+        raise SystemExit("Mobile CSS still hides the primary CV action")
+
     STYLE.write_text(text, encoding="utf-8")
 
 
