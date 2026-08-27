@@ -42,8 +42,10 @@ jobs:
         shell: python
         run: |
           from html.parser import HTMLParser
+          from http.client import InvalidURL
           from pathlib import Path
           from urllib.error import HTTPError, URLError
+          from urllib.parse import urlsplit
           from urllib.request import Request, urlopen
           import re
           import time
@@ -65,9 +67,18 @@ jobs:
               parser.feed(Path(path).read_text(encoding='utf-8'))
 
           links = set(parser.links)
-          url_pattern = re.compile(r'https?://[^\s<>"\')\]]+')
+          url_pattern = re.compile(r'https?://[^\s<>"\'`)\]]+')
           for path in ('README.md', 'SECURITY.md', '.well-known/security.txt', 'llms.txt', 'assets/cv.txt'):
               links.update(url_pattern.findall(Path(path).read_text(encoding='utf-8')))
+
+          def is_local_url(url):
+              try:
+                  host = (urlsplit(url).hostname or '').lower()
+              except ValueError:
+                  return False
+              return host in {'localhost', '127.0.0.1', '::1'}
+
+          links = {url for url in links if not is_local_url(url)}
 
           failures = []
           print(f'Checking {len(links)} external links')
@@ -107,7 +118,7 @@ jobs:
                           # These are deterministic broken-link responses.
                           if status in (404, 410):
                               break
-                      except (URLError, TimeoutError) as exc:
+                      except (URLError, TimeoutError, InvalidURL, ValueError) as exc:
                           status = None
                           error = str(exc)
 
