@@ -20,8 +20,9 @@ for marker in required_runtime_markers:
     if marker not in js:
         raise SystemExit(f"Missing runtime tab accessibility marker: {marker}")
 
-# Anchors already activate with Enter. Arrow keys remain the custom tab behavior
-# after JavaScript upgrades the static page links into a tab interface.
+# Without JavaScript these controls are ordinary page links. Once JavaScript
+# upgrades them into tabs, prevent the anchor's default jump so switching tabs
+# does not unexpectedly move the viewport, especially on mobile.
 legacy_keyboard = """        const activate = () => switchTab(id, true);
         i.addEventListener('click', activate);
         i.addEventListener('keydown', (e) => {
@@ -31,13 +32,21 @@ legacy_keyboard = """        const activate = () => switchTab(id, true);
                 return;
             }
 """
-native_keyboard = """        i.addEventListener('click', () => switchTab(id, true));
+plain_anchor_click = """        i.addEventListener('click', () => switchTab(id, true));
+        i.addEventListener('keydown', (e) => {
+"""
+enhanced_anchor_click = """        i.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchTab(id, true);
+        });
         i.addEventListener('keydown', (e) => {
 """
 if legacy_keyboard in js:
-    js = js.replace(legacy_keyboard, native_keyboard, 1)
-elif native_keyboard not in js:
-    raise SystemExit("Could not find expected primary tab keyboard handling")
+    js = js.replace(legacy_keyboard, enhanced_anchor_click, 1)
+elif plain_anchor_click in js:
+    js = js.replace(plain_anchor_click, enhanced_anchor_click, 1)
+elif enhanced_anchor_click not in js:
+    raise SystemExit("Could not find expected primary tab click handling")
 
 old_section_state = "    tabs.forEach((tab, index) => tab.classList.toggle('active', index === activeIndex));"
 new_section_state = """    tabs.forEach((tab, index) => {
