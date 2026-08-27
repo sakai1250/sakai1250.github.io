@@ -1077,31 +1077,6 @@ textarea.form-control { min-height: 130px; resize: vertical; }
 .modal-desc { color: var(--text-sub); }
 .modal-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
 
-/* Loading and retained CV detail */
-#loading-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg);
-  transition: opacity 0.45s ease, visibility 0.45s;
-}
-
-#loading-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-
-.spinner {
-  color: var(--primary);
-  font-family: var(--font-display);
-  font-size: 32px;
-  font-weight: 600;
-  letter-spacing: 0.015em;
-  animation: quietPulse 1.6s ease-in-out infinite;
-}
-
-@keyframes quietPulse { 50% { opacity: 0.52; } }
-
 .header-profile::before {
   content: "";
   position: absolute;
