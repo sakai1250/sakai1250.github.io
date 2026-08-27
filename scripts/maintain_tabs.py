@@ -1,50 +1,28 @@
 from pathlib import Path
+import re
 
 
-path = Path("main.js")
-text = path.read_text(encoding="utf-8")
+js_path = Path("main.js")
+js = js_path.read_text(encoding="utf-8")
 
-old = """function initTabs() {
-    const tabItems = document.querySelectorAll('.tab-item');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const tabNav = document.querySelector('.tab-nav');
-    const validTabs = new Set(Array.from(tabItems, item => item.getAttribute('data-tab')).filter(Boolean));
-    if (tabNav) tabNav.setAttribute('role', 'tablist');
-    tabItems.forEach(i => {
-        const id = i.getAttribute('data-tab');
-        i.setAttribute('role', 'tab');
-        i.setAttribute('aria-controls', `${id}-content`);
-    });
-    tabContents.forEach(c => {
-        c.setAttribute('role', 'tabpanel');
-        c.setAttribute('aria-labelledby', `${c.id.replace(/-content$/, '')}-tab`);
-    });
-    const tabFromHash = () => {
-        const match = window.location.hash.match(/^#([a-z0-9-]+)-content$/i);
-        return match && validTabs.has(match[1]) ? match[1] : null;
-    };
-    const switchTab = (id, updateHash = false) => {
-        if (!validTabs.has(id)) return;
-        tabItems.forEach(i => {
-            const active = i.getAttribute('data-tab') === id;
-            i.classList.toggle('active', active);
-            i.setAttribute('aria-selected', String(active));
-            i.tabIndex = active ? 0 : -1;
-        });
-        tabContents.forEach(c => {
-            const active = c.id === `${id}-content`;
-            c.classList.toggle('active', active);
-            c.style.display = active ? 'block' : 'none';
-            c.hidden = !active;
-        });
-        if (updateHash) history.replaceState(null, '', `#${id}-content`);
-        if (typeof updateTOC === 'function') updateTOC();
-        if (typeof updateSectionTabs === 'function') updateSectionTabs();
-    };
-    tabItems.forEach(i => {
-        const id = i.getAttribute('data-tab');
-        i.id = `${id}-tab`;
-        const activate = () => switchTab(id, true);
+# Once JavaScript is running, the Research / Engineering controls become a real
+# tab interface. Keep the ARIA semantics and selected state in the runtime code,
+# where they accurately describe what the page is doing.
+required_runtime_markers = (
+    "if (tabNav) tabNav.setAttribute('role', 'tablist');",
+    "i.setAttribute('role', 'tab');",
+    "i.setAttribute('aria-controls', `${id}-content`);",
+    "c.setAttribute('role', 'tabpanel');",
+    "i.setAttribute('aria-selected', String(active));",
+    "c.hidden = !active;",
+)
+for marker in required_runtime_markers:
+    if marker not in js:
+        raise SystemExit(f"Missing runtime tab accessibility marker: {marker}")
+
+# Native buttons already handle Enter and Space. Retain only the custom arrow-key
+# behavior so the tab interaction does not have duplicate activation logic.
+legacy_keyboard = """        const activate = () => switchTab(id, true);
         i.addEventListener('click', activate);
         i.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -52,92 +30,14 @@ old = """function initTabs() {
                 activate();
                 return;
             }
-            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-            e.preventDefault();
-            const items = Array.from(tabItems);
-            const current = items.indexOf(i);
-            const next = e.key === 'ArrowRight'
-                ? (current + 1) % items.length
-                : (current - 1 + items.length) % items.length;
-            items[next].focus();
-            switchTab(items[next].getAttribute('data-tab'), true);
-        });
-    });
-    const initialTab = tabFromHash() || Array.from(tabItems).find(i => i.classList.contains('active'))?.getAttribute('data-tab');
-    if (initialTab) switchTab(initialTab);
-    window.addEventListener('hashchange', () => {
-        const tab = tabFromHash();
-        if (tab) switchTab(tab);
-    });
-}
 """
-
-new = """function initTabs() {
-    const tabItems = document.querySelectorAll('.tab-item');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const tabNav = document.querySelector('.tab-nav');
-    const validTabs = new Set(Array.from(tabItems, item => item.getAttribute('data-tab')).filter(Boolean));
-    if (tabNav) tabNav.setAttribute('role', 'tablist');
-    tabItems.forEach(i => {
-        const id = i.getAttribute('data-tab');
-        i.setAttribute('role', 'tab');
-        i.setAttribute('aria-controls', `${id}-content`);
-    });
-    tabContents.forEach(c => {
-        c.setAttribute('role', 'tabpanel');
-        c.setAttribute('aria-labelledby', `${c.id.replace(/-content$/, '')}-tab`);
-    });
-    const tabFromHash = () => {
-        const match = window.location.hash.match(/^#([a-z0-9-]+)-content$/i);
-        return match && validTabs.has(match[1]) ? match[1] : null;
-    };
-    const switchTab = (id, updateHash = false) => {
-        if (!validTabs.has(id)) return;
-        tabItems.forEach(i => {
-            const active = i.getAttribute('data-tab') === id;
-            i.classList.toggle('active', active);
-            i.setAttribute('aria-selected', String(active));
-            i.tabIndex = active ? 0 : -1;
-        });
-        tabContents.forEach(c => {
-            const active = c.id === `${id}-content`;
-            c.classList.toggle('active', active);
-            c.style.display = active ? 'block' : 'none';
-            c.hidden = !active;
-        });
-        if (updateHash) history.replaceState(null, '', `#${id}-content`);
-        if (typeof updateTOC === 'function') updateTOC();
-        if (typeof updateSectionTabs === 'function') updateSectionTabs();
-    };
-    tabItems.forEach(i => {
-        const id = i.getAttribute('data-tab');
-        i.id = `${id}-tab`;
-        i.addEventListener('click', () => switchTab(id, true));
+native_keyboard = """        i.addEventListener('click', () => switchTab(id, true));
         i.addEventListener('keydown', (e) => {
-            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-            e.preventDefault();
-            const items = Array.from(tabItems);
-            const current = items.indexOf(i);
-            const next = e.key === 'ArrowRight'
-                ? (current + 1) % items.length
-                : (current - 1 + items.length) % items.length;
-            items[next].focus();
-            switchTab(items[next].getAttribute('data-tab'), true);
-        });
-    });
-    const initialTab = tabFromHash() || Array.from(tabItems).find(i => i.classList.contains('active'))?.getAttribute('data-tab');
-    if (initialTab) switchTab(initialTab);
-    window.addEventListener('hashchange', () => {
-        const tab = tabFromHash();
-        if (tab) switchTab(tab);
-    });
-}
 """
-
-if old in text:
-    text = text.replace(old, new, 1)
-elif new not in text:
-    raise SystemExit("Could not find expected initTabs implementation")
+if legacy_keyboard in js:
+    js = js.replace(legacy_keyboard, native_keyboard, 1)
+elif native_keyboard not in js:
+    raise SystemExit("Could not find expected primary tab keyboard handling")
 
 old_section_state = "    tabs.forEach((tab, index) => tab.classList.toggle('active', index === activeIndex));"
 new_section_state = """    tabs.forEach((tab, index) => {
@@ -146,67 +46,51 @@ new_section_state = """    tabs.forEach((tab, index) => {
         if (active) tab.setAttribute('aria-current', 'true');
         else tab.removeAttribute('aria-current');
     });"""
-if old_section_state in text:
-    text = text.replace(old_section_state, new_section_state, 1)
-elif new_section_state not in text:
+if old_section_state in js:
+    js = js.replace(old_section_state, new_section_state, 1)
+elif new_section_state not in js:
     raise SystemExit("Could not find expected section tab state update")
 
-path.write_text(text, encoding="utf-8")
+js_path.write_text(js, encoding="utf-8")
 
 html_path = Path("index.html")
 html = html_path.read_text(encoding="utf-8")
 
-old_nav = '<nav class="tab-nav header-tab-nav" aria-label="Primary sections">'
-new_nav = '<nav class="tab-nav header-tab-nav" aria-label="Primary sections" role="tablist">'
-if old_nav in html:
-    html = html.replace(old_nav, new_nav, 1)
-elif new_nav not in html:
-    raise SystemExit("Could not find expected primary tab navigation")
-
-old_research = '''<div class="tab-item active" id="research-tab" data-tab="research" role="tab" aria-controls="research-content" aria-selected="true" tabindex="0">
-              <span lang="ja">研究</span>
-              <span lang="en">Research</span>
-            </div>'''
-new_research = '''<button class="tab-item active" id="research-tab" data-tab="research" role="tab" aria-controls="research-content" aria-selected="true" tabindex="0" type="button">
-              <span lang="ja">研究</span>
-              <span lang="en">Research</span>
-            </button>'''
-if old_research in html:
-    html = html.replace(old_research, new_research, 1)
-elif new_research not in html:
-    raise SystemExit("Could not find expected Research tab")
-
-old_engineer = '''<div class="tab-item" id="engineer-tab" data-tab="engineer" role="tab" aria-controls="engineer-content" aria-selected="false" tabindex="-1">
-              <span lang="ja">開発</span>
-              <span lang="en">Engineering</span>
-            </div>'''
-new_engineer = '''<button class="tab-item" id="engineer-tab" data-tab="engineer" role="tab" aria-controls="engineer-content" aria-selected="false" tabindex="-1" type="button">
-              <span lang="ja">開発</span>
-              <span lang="en">Engineering</span>
-            </button>'''
-if old_engineer in html:
-    html = html.replace(old_engineer, new_engineer, 1)
-elif new_engineer not in html:
-    raise SystemExit("Could not find expected Engineering tab")
+# Without JavaScript both primary sections remain visible. Do not claim that the
+# static document is already a tab interface: aria-selected=false would conflict
+# with Engineering content that is intentionally visible as a fallback. Runtime
+# JavaScript adds the tab semantics only after it starts hiding inactive panels.
+html = re.sub(
+    r'(<nav class="tab-nav header-tab-nav" aria-label="Primary sections") role="tablist"(>)',
+    r'\1\2',
+    html,
+    count=1,
+)
 
 for tab_id in ("research", "engineer"):
-    marker = f'id="{tab_id}-content" class="tab-content'
-    start = html.find(marker)
-    if start == -1:
-        raise SystemExit(f"Could not find expected {tab_id} tab panel")
-    tag_start = html.rfind('<', 0, start)
-    tag_end = html.find('>', start)
-    tag = html[tag_start:tag_end + 1]
-    role = 'role="tabpanel"'
-    label = f'aria-labelledby="{tab_id}-tab"'
-    if role not in tag or label not in tag:
-        attrs = ''
-        if role not in tag:
-            attrs += f' {role}'
-        if label not in tag:
-            attrs += f' {label}'
-        replacement = tag[:-1] + attrs + '>'
-        html = html[:tag_start] + replacement + html[tag_end + 1:]
+    pattern = re.compile(rf'<button\s+([^>]*\bid="{tab_id}-tab"[^>]*)>')
+    match = pattern.search(html)
+    if not match:
+        raise SystemExit(f"Could not find expected {tab_id} tab button")
+    attrs = match.group(1)
+    for attr_pattern in (
+        r'\s+role="tab"',
+        r'\s+aria-controls="[^"]+"',
+        r'\s+aria-selected="(?:true|false)"',
+        r'\s+tabindex="-?\d+"',
+    ):
+        attrs = re.sub(attr_pattern, '', attrs)
+    html = html[:match.start()] + f'<button {attrs}>' + html[match.end():]
+
+for tab_id in ("research", "engineer"):
+    pattern = re.compile(rf'<div\s+([^>]*\bid="{tab_id}-content"[^>]*)>')
+    match = pattern.search(html)
+    if not match:
+        raise SystemExit(f"Could not find expected {tab_id} content panel")
+    attrs = match.group(1)
+    attrs = re.sub(r'\s+role="tabpanel"', '', attrs)
+    attrs = re.sub(r'\s+aria-labelledby="[^"]+"', '', attrs)
+    html = html[:match.start()] + f'<div {attrs}>' + html[match.end():]
 
 html_path.write_text(html, encoding="utf-8")
 
