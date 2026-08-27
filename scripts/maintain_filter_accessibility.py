@@ -1,4 +1,4 @@
-"""Keep filter buttons' visual and screen-reader selection state aligned."""
+"""Keep filter buttons' visual, language, and screen-reader state aligned."""
 
 from pathlib import Path
 import re
@@ -74,5 +74,35 @@ html, count = re.subn(
 )
 if count == 0:
     raise SystemExit("Could not find static filter buttons")
+
+# Keep the Engineering filter understandable in either page language.
+engineer_filter_label = (
+    '<span class="filter-label">'
+    '<span lang="ja">フィルター</span>'
+    '<span lang="en">Filter</span>'
+    '</span>'
+)
+html = re.sub(
+    r'<span class="filter-label">(?:フィルター|\s*<span lang="ja">フィルター</span>\s*<span lang="en">Filter</span>\s*)</span>',
+    engineer_filter_label,
+    html,
+    count=1,
+)
+
+all_filter_button = (
+    '<button class="chip active" data-filter="all" type="button" aria-pressed="true">'
+    '<span lang="ja">すべて</span>'
+    '<span lang="en">All</span>'
+    '</button>'
+)
+html = re.sub(
+    r'<button class="chip active" data-filter="all" type="button" aria-pressed="true">(?:すべて|\s*<span lang="ja">すべて</span>\s*<span lang="en">All</span>\s*)</button>',
+    all_filter_button,
+    html,
+    count=1,
+)
+
+if engineer_filter_label not in html or all_filter_button not in html:
+    raise SystemExit("Could not normalize Engineering filter language labels")
 
 html_path.write_text(html, encoding="utf-8")
