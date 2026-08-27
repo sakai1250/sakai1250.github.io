@@ -122,14 +122,23 @@ github_follow = (
     '              <span lang="en">Follow</span>\n'
     '            </a>'
 )
-github_profile = (
+github_profile_same_tab = (
     '<a href="https://github.com/sakai1250" class="header-btn primary">\n'
+    '              <span lang="ja">GitHub</span>\n'
+    '              <span lang="en">GitHub</span>\n'
+    '            </a>'
+)
+github_profile = (
+    '<a href="https://github.com/sakai1250" target="_blank" '
+    'class="header-btn primary" rel="noopener noreferrer">\n'
     '              <span lang="ja">GitHub</span>\n'
     '              <span lang="en">GitHub</span>\n'
     '            </a>'
 )
 if github_follow in text:
     text = text.replace(github_follow, github_profile, 1)
+elif github_profile_same_tab in text:
+    text = text.replace(github_profile_same_tab, github_profile, 1)
 elif github_profile not in text:
     raise SystemExit('Could not find GitHub profile header action')
 
