@@ -83,7 +83,10 @@ function initTabs() {
     tabItems.forEach(i => {
         const id = i.getAttribute('data-tab');
         i.id = `${id}-tab`;
-        i.addEventListener('click', () => switchTab(id, true));
+        i.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchTab(id, true);
+        });
         i.addEventListener('keydown', (e) => {
             if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
             e.preventDefault();
