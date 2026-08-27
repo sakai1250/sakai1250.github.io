@@ -1290,7 +1290,6 @@ html[data-lang="en"] [lang="ja"] { display: none !important; }
 @media (max-width: 768px) {
   .main-content { order: 1; }
   .profile-sidebar { order: 2; }
-  .header-actions .header-btn.primary { display: none; }
   .header-tab-row .year-filter {
     flex-wrap: nowrap;
     overflow-x: auto;
