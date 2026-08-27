@@ -133,6 +133,20 @@ if app_thumbnail_alt in text:
 elif app_thumbnail_decorative not in text:
     raise SystemExit('Could not find app thumbnail accessibility markers')
 
+# Utility controls sit outside the main language-toggle labels. Give each one a
+# bilingual accessible name so screen-reader users do not encounter a mixed
+# Japanese/English control surface after switching the visible language.
+utility_labels = {
+    'aria-label="Back to top"': 'aria-label="Back to top / トップへ戻る"',
+    'aria-label="目次"': 'aria-label="Table of contents / 目次"',
+    'aria-label="Close"': 'aria-label="Close / 閉じる"',
+}
+for old_label, bilingual_label in utility_labels.items():
+    if old_label in text:
+        text = text.replace(old_label, bilingual_label, 1)
+    elif bilingual_label not in text:
+        raise SystemExit(f'Could not find utility control label: {old_label}')
+
 path.write_text(text, encoding='utf-8')
 
 # Keep browser cache keys tied to the current file contents. The optimization
