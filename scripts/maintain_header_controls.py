@@ -132,6 +132,31 @@ loading_markup = (
 if loading_markup in text:
     text = text.replace(loading_markup, '', 1)
 
+# The research record is the strongest evidence for both research visitors and
+# recruiters. Keep it before education in the source HTML, not only after a
+# JavaScript DOM reorder, so the information priority survives script failures.
+def find_research_section(english_heading):
+    research_start = text.find('<div id="research-content"')
+    if research_start == -1:
+        raise SystemExit('Could not find research content')
+    heading = f'<span lang="en">{english_heading}</span>'
+    heading_pos = text.find(heading, research_start)
+    if heading_pos == -1:
+        raise SystemExit(f'Could not find research section: {english_heading}')
+    section_start = text.rfind('<section class="section-card">', research_start, heading_pos)
+    section_end = text.find('</section>', heading_pos)
+    if section_start == -1 or section_end == -1:
+        raise SystemExit(f'Could not bound research section: {english_heading}')
+    return section_start, section_end + len('</section>')
+
+education_start, education_end = find_research_section('Education')
+achievements_start, achievements_end = find_research_section('Research Achievements')
+if education_start < achievements_start:
+    achievements_block = text[achievements_start:achievements_end]
+    text = text[:achievements_start] + text[achievements_end:]
+    education_start, _ = find_research_section('Education')
+    text = text[:education_start] + achievements_block + '\n\n' + text[education_start:]
+
 # The header action opens the GitHub profile; it does not perform a follow action.
 # Keep the label explicit so visitors know where the link goes before clicking.
 github_follow = (
