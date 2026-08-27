@@ -1,8 +1,10 @@
 from pathlib import Path
+import re
 
 
 INDEX = Path("index.html")
 MAIN = Path("main.js")
+STYLE = Path("style.css")
 
 
 def update_index() -> None:
@@ -13,6 +15,15 @@ def update_index() -> None:
         text = text.replace(old, new, 1)
     elif new not in text:
         raise SystemExit("Could not find theme storage initialization")
+
+    # The portfolio must remain visible even when JavaScript fails. A stale
+    # no-script exception for the removed full-screen loader only suggests that
+    # the loader is still part of the supported page behavior.
+    text = text.replace(
+        '  <noscript><style>#loading-screen{display:none!important}</style></noscript>\n',
+        '',
+        1,
+    )
     INDEX.write_text(text, encoding="utf-8")
 
 
@@ -39,8 +50,39 @@ def update_main() -> None:
         elif new not in text:
             raise SystemExit(f"Could not find expected resilient access: {old}")
 
+    # The blocking loader was removed from the HTML after it caused mobile
+    # visitors to see only the page background. Remove the dead JavaScript too,
+    # so future edits cannot accidentally restore a JS-dependent entrance gate.
+    text = text.replace("    // Basic Loader\n    initLoader();\n\n", "", 1)
+    text, count = re.subn(
+        r"\nfunction initLoader\(\) \{.*?\n\}\n\n(?=function initTabs\(\))",
+        "\n",
+        text,
+        count=1,
+        flags=re.DOTALL,
+    )
+    if "function initLoader()" in text or "initLoader();" in text:
+        raise SystemExit("Could not remove obsolete loader JavaScript")
+
     MAIN.write_text(text, encoding="utf-8")
+
+
+def update_style() -> None:
+    text = STYLE.read_text(encoding="utf-8")
+    # Keep no CSS for a full-screen element that no longer exists. This makes
+    # the non-blocking behavior obvious from both markup and styles.
+    text, _ = re.subn(
+        r"/\* Loading and retained CV detail \*/\n#loading-screen \{.*?@keyframes quietPulse \{ 50% \{ opacity: 0\.52; \} \}\n\n",
+        "",
+        text,
+        count=1,
+        flags=re.DOTALL,
+    )
+    if "#loading-screen" in text or ".spinner" in text or "quietPulse" in text:
+        raise SystemExit("Could not remove obsolete loader styles")
+    STYLE.write_text(text, encoding="utf-8")
 
 
 update_index()
 update_main()
+update_style()
