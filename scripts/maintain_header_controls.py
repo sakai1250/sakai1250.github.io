@@ -105,14 +105,16 @@ if theme_icon in text:
 elif theme_icon_decorative not in text:
     raise SystemExit('Could not find theme icon')
 
-# The loading overlay is visual feedback only and repeats the already available
-# page identity. Keep it out of the accessibility tree from the first render.
-loading_screen = '<div id="loading-screen">'
-loading_screen_decorative = '<div id="loading-screen" aria-hidden="true">'
-if loading_screen in text:
-    text = text.replace(loading_screen, loading_screen_decorative, 1)
-elif loading_screen_decorative not in text:
-    raise SystemExit('Could not find loading screen')
+# Never place a full-screen loader in front of the portfolio. If JavaScript fails
+# or a mobile browser stops execution early, a blocking overlay turns a valid
+# static page into a blank screen. The page is useful immediately without it.
+loading_markup = (
+    '  <div id="loading-screen" aria-hidden="true">\n'
+    '    <div class="spinner">Taigo Sakai</div>\n'
+    '  </div>\n'
+)
+if loading_markup in text:
+    text = text.replace(loading_markup, '', 1)
 
 # The header action opens the GitHub profile; it does not perform a follow action.
 # Keep the label explicit so visitors know where the link goes before clicking.
