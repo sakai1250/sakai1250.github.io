@@ -29,17 +29,24 @@ contact_replacement = r'''function initContactForm() {
         button.setAttribute('aria-busy', 'true');
         button.textContent = labels.sending;
 
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(() => controller.abort(), 10000);
+
+        if (status) status.textContent = '';
+
         try {
             const response = await fetch(f.action, {
                 method: f.method,
                 body: new FormData(f),
-                headers: { 'Accept': 'application/json' }
+                headers: { 'Accept': 'application/json' },
+                signal: controller.signal
             });
             if (status) status.textContent = response.ok ? labels.success : labels.error;
             if (response.ok) f.reset();
         } catch {
             if (status) status.textContent = labels.error;
         } finally {
+            window.clearTimeout(timeoutId);
             button.disabled = false;
             button.removeAttribute('aria-busy');
             button.innerHTML = originalButtonHTML;
