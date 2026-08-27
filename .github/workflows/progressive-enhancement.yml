@@ -55,6 +55,14 @@ jobs:
             echo 'CSS hides primary tab content before JavaScript runs.' >&2
             exit 1
           fi
+          if ! grep -Fq 'id="research-tab" data-tab="research" href="#research-content"' index.html; then
+            echo 'Research primary navigation is not a usable static page link.' >&2
+            exit 1
+          fi
+          if ! grep -Fq 'id="engineer-tab" data-tab="engineer" href="#engineer-content"' index.html; then
+            echo 'Engineering primary navigation is not a usable static page link.' >&2
+            exit 1
+          fi
           if ! grep -Fq 'href="assets/cv.pdf"' index.html; then
             echo 'Static CV link is missing from index.html.' >&2
             exit 1
