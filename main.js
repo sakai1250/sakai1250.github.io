@@ -620,34 +620,56 @@ function initContactForm() {
 async function initQiitaArticles() {
     const c = document.getElementById('qiita-list');
     if (!c) return;
-    try {
-        const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://qiita.com/sakai1250/feed')}`);
-        const d = await r.json();
-        if (d.status === 'ok' && Array.isArray(d.items)) {
-            c.replaceChildren();
-            d.items.slice(0, 5).forEach(i => {
-                let url;
-                try {
-                    url = new URL(i.link);
-                } catch {
-                    return;
-                }
-                if (url.protocol !== 'https:' || url.hostname !== 'qiita.com') return;
 
-                const l = document.createElement('li');
-                const a = document.createElement('a');
-                a.href = url.href;
-                a.target = '_blank';
-                a.rel = 'noopener noreferrer';
-                a.textContent = String(i.title || 'Qiita article');
-                l.appendChild(a);
-                c.appendChild(l);
-            });
-        }
-    } catch {
+    const showError = () => {
         const lang = document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'ja';
         c.textContent = lang === 'en'
             ? 'Could not load Qiita articles.'
             : 'Qiita記事を読み込めませんでした。';
+    };
+
+    try {
+        const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://qiita.com/sakai1250/feed')}`);
+        if (!r.ok) {
+            showError();
+            return;
+        }
+
+        const d = await r.json();
+        if (d.status !== 'ok' || !Array.isArray(d.items)) {
+            showError();
+            return;
+        }
+
+        const articles = [];
+        d.items.slice(0, 5).forEach(i => {
+            let url;
+            try {
+                url = new URL(i.link);
+            } catch {
+                return;
+            }
+            if (url.protocol !== 'https:' || url.hostname !== 'qiita.com') return;
+            articles.push({ url: url.href, title: String(i.title || 'Qiita article') });
+        });
+
+        if (!articles.length) {
+            showError();
+            return;
+        }
+
+        c.replaceChildren();
+        articles.forEach(article => {
+            const l = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = article.url;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.textContent = article.title;
+            l.appendChild(a);
+            c.appendChild(l);
+        });
+    } catch {
+        showError();
     }
 }
