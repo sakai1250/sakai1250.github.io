@@ -98,4 +98,18 @@ if qiita_count != 1:
     raise SystemExit('Could not find Qiita article function')
 
 path.write_text(text, encoding='utf-8')
+
+html_path = Path('index.html')
+html = html_path.read_text(encoding='utf-8')
+contact_fields = {
+    'name': 'name',
+    'email': 'email',
+}
+for field_id, autocomplete in contact_fields.items():
+    pattern = re.compile(rf'(<(?:input|textarea)\b(?=[^>]*\bid="{re.escape(field_id)}")[^>]*?)(?:\s+autocomplete="[^"]*")?\s*>')
+    html, count = pattern.subn(rf'\1 autocomplete="{autocomplete}">', html, count=1)
+    if count != 1:
+        raise SystemExit(f'Could not find contact field: {field_id}')
+html_path.write_text(html, encoding='utf-8')
+
 runpy.run_path('scripts/maintain_external_links.py', run_name='__main__')
