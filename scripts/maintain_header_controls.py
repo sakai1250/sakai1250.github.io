@@ -105,6 +105,22 @@ if theme_icon in text:
 elif theme_icon_decorative not in text:
     raise SystemExit('Could not find theme icon')
 
+# Primer CSS was only used for the footer share button. Reuse the site's own
+# button style instead so initial rendering does not depend on an extra CDN CSS
+# request, especially on slower mobile connections.
+primer_css = '  <link rel="stylesheet" href="https://unpkg.com/@primer/css@22.0.2/dist/primer.css">\n'
+if primer_css in text:
+    text = text.replace(primer_css, '', 1)
+elif 'unpkg.com/@primer/css' in text:
+    raise SystemExit('Unexpected Primer CSS reference')
+
+share_primer_class = 'target="_blank" class="btn btn-sm"'
+share_local_class = 'target="_blank" class="header-btn"'
+if share_primer_class in text:
+    text = text.replace(share_primer_class, share_local_class, 1)
+elif share_local_class not in text:
+    raise SystemExit('Could not find footer share button style marker')
+
 # Never place a full-screen loader in front of the portfolio. If JavaScript fails
 # or a mobile browser stops execution early, a blocking overlay turns a valid
 # static page into a blank screen. The page is useful immediately without it.
