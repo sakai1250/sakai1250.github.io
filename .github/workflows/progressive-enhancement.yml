@@ -30,6 +30,22 @@ jobs:
             echo 'Static main content is missing from index.html.' >&2
             exit 1
           fi
+          if ! grep -Fq 'id="research-content" class="tab-content active"' index.html; then
+            echo 'Research content is not statically visible by default.' >&2
+            exit 1
+          fi
+          if ! grep -Fq 'id="engineer-content" class="tab-content"' index.html; then
+            echo 'Engineering content is missing from the static document.' >&2
+            exit 1
+          fi
+          if grep -Eq 'id="(research|engineer)-content"[^>]*[[:space:]]hidden([[:space:]=]|>)' index.html; then
+            echo 'A primary content panel is hidden in static HTML and would disappear when JavaScript fails.' >&2
+            exit 1
+          fi
+          if grep -Eq '\.tab-content[^}]*display[[:space:]]*:[[:space:]]*none' style.css; then
+            echo 'CSS hides primary tab content before JavaScript runs.' >&2
+            exit 1
+          fi
           if ! grep -Fq 'href="assets/cv.pdf"' index.html; then
             echo 'Static CV link is missing from index.html.' >&2
             exit 1
