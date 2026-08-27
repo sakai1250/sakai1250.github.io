@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(initQiitaArticles, 'QiitaArticles');
     safeInit(initContactForm, 'ContactForm');
     safeInit(initStickyHeader, 'StickyHeader');
-    safeInit(initScrollReveal, 'ScrollReveal');
     safeInit(initReadingProgress, 'ReadingProgress');
     safeInit(initCommandPalette, 'CommandPalette');
     safeInit(initLanguage, 'Language');
@@ -402,76 +401,6 @@ function initStickyHeader() {
     window.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
     update();
-}
-
-function initScrollReveal() {
-    const targets = document.querySelectorAll('.section-card, .app-card');
-    if (!('IntersectionObserver' in window)) {
-        targets.forEach(el => el.classList.add('reveal-active'));
-        return;
-    }
-    const obs = new IntersectionObserver((es) => {
-        es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('reveal-active'); obs.unobserve(e.target); } });
-    }, { threshold: 0.05, rootMargin: '0px 0px -8% 0px' });
-    targets.forEach(el => {
-        el.classList.add('reveal-item'); obs.observe(el);
-    });
-    // Safety net: never leave content permanently invisible
-    window.setTimeout(() => {
-        document.querySelectorAll('.reveal-item:not(.reveal-active)').forEach(el => {
-            const rect = el.getBoundingClientRect();
-            if (rect.top < window.innerHeight && rect.bottom > 0) el.classList.add('reveal-active');
-        });
-    }, 1200);
-}
-
-function resolveCssColor(element, property) {
-    const value = getComputedStyle(element).getPropertyValue(property).trim();
-    const match = value.match(/^var\((--[^),\s]+)/);
-    if (!match) return value;
-    return getComputedStyle(document.documentElement).getPropertyValue(match[1]).trim() || value;
-}
-
-function updateSectionBackgroundTone() {
-    const cards = Array.from(document.querySelectorAll('.tab-content.active .section-card'))
-        .filter(card => card.offsetParent !== null);
-    if (!cards.length) return;
-
-    const viewportCenter = window.innerHeight / 2;
-    let activeCard = cards[0];
-    let nearest = Infinity;
-
-    cards.forEach(card => {
-        const rect = card.getBoundingClientRect();
-        if (rect.bottom < 0 || rect.top > window.innerHeight) return;
-        const cardCenter = rect.top + rect.height / 2;
-        const distance = Math.abs(cardCenter - viewportCenter);
-        if (distance < nearest) {
-            nearest = distance;
-            activeCard = card;
-        }
-    });
-
-    document.documentElement.style.setProperty('--page-bg-accent', resolveCssColor(activeCard, '--section-accent'));
-}
-
-function initSectionBackgroundTone() {
-    let ticking = false;
-    const requestUpdate = () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => {
-            updateSectionBackgroundTone();
-            ticking = false;
-        });
-    };
-
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
-    document.querySelectorAll('.tab-item').forEach(item => {
-        item.addEventListener('click', () => setTimeout(updateSectionBackgroundTone, 0));
-    });
-    updateSectionBackgroundTone();
 }
 
 function initReadingProgress() {
