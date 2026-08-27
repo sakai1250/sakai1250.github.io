@@ -46,6 +46,7 @@ Then open `http://localhost:8000`.
 - `sitemap.xml` and `robots.txt` support search indexing.
 - Keep the visible role and affiliation in `index.html` aligned with `assets/cv.txt` and `llms.txt`, including current titles such as `Special Assistant`.
 - Keep the JSON-LD `Person` data in `index.html` aligned with the visible profile and CV, especially `jobTitle`, current affiliation, and `sameAs` links.
+- Keep the primary portfolio content visible without JavaScript. Do not place a full-screen loader or other overlay in front of the page that requires JavaScript to disappear; optional effects may fail without blocking research, CV, contact, or GitHub navigation.
 - When editing an app card, verify that its title, App Store URL, image, and GitHub repository all refer to the same product. In particular, `PresentMemo` is the MAIORAL repository and `otsuri_docter` is the おつりDoctor repository.
 
 When portfolio content changes, keep `index.html`, `assets/cv.pdf`, `assets/cv.txt`, `llms.txt`, visible counts, and sitemap dates consistent.
