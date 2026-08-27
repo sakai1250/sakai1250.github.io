@@ -30,12 +30,14 @@ def update_main() -> None:
         "set(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'), false);": "set(safeStorageGet('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'), false);",
         "localStorage.setItem('lang', l);": "safeStorageSet('lang', l);",
         "set(localStorage.getItem('lang') || 'ja');": "set(safeStorageGet('lang') || 'ja');",
+        "safeInit(window.initBackgroundParticles || initBackgroundParticles, 'BackgroundParticles');": "safeInit(window.initBackgroundParticles, 'BackgroundParticles');",
+        "safeInit(window.initTypingEffect || initTypingEffect, 'TypingEffect');": "safeInit(window.initTypingEffect, 'TypingEffect');",
     }
     for old, new in replacements.items():
         if old in text:
             text = text.replace(old, new, 1)
         elif new not in text:
-            raise SystemExit(f"Could not find expected storage access: {old}")
+            raise SystemExit(f"Could not find expected resilient access: {old}")
 
     MAIN.write_text(text, encoding="utf-8")
 
