@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(initLanguage, 'Language');
 
     // Visual Effects (From effects.js)
-    safeInit(window.initBackgroundParticles || initBackgroundParticles, 'BackgroundParticles');
-    safeInit(window.initTypingEffect || initTypingEffect, 'TypingEffect');
+    safeInit(window.initBackgroundParticles, 'BackgroundParticles');
+    safeInit(window.initTypingEffect, 'TypingEffect');
 });
 
 // === Core Functions ===
