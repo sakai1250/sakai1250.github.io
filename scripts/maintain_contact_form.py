@@ -138,4 +138,18 @@ for field_id, autocomplete in contact_fields.items():
     html, count = pattern.subn(rf'\1 autocomplete="{autocomplete}">', html, count=1)
     if count != 1:
         raise SystemExit(f'Could not find contact field: {field_id}')
+
+# The result of the contact submission is important user feedback, not visual
+# decoration. Keep its live-region semantics in the static HTML so assistive
+# technology can understand the region without relying on initialization code.
+status_plain = '<div id="form-status" class="form-status"></div>'
+status_accessible = (
+    '<div id="form-status" class="form-status" role="status" '
+    'aria-live="polite" aria-atomic="true"></div>'
+)
+if status_plain in html:
+    html = html.replace(status_plain, status_accessible, 1)
+elif status_accessible not in html:
+    raise SystemExit('Could not find contact form status region')
+
 html_path.write_text(html, encoding='utf-8')
