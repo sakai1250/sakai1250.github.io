@@ -1,4 +1,4 @@
-name: Progressive enhancement
+name: Progressive enhancement check
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   ensure-no-js-fallback:
@@ -17,26 +17,17 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - name: Keep loading screen from blocking no-JavaScript visitors
+        with:
+          persist-credentials: false
+      - name: Verify no-JavaScript fallback
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          path = Path('index.html')
-          text = path.read_text(encoding='utf-8')
-          fallback = '  <noscript><style>#loading-screen{display:none!important}</style></noscript>\n'
+          text = Path('index.html').read_text(encoding='utf-8')
+          fallback = '<noscript><style>#loading-screen{display:none!important}</style></noscript>'
           if fallback not in text:
-              marker = '</head>'
-              if marker not in text:
-                  raise SystemExit('Could not find </head> in index.html')
-              text = text.replace(marker, fallback + marker, 1)
-              path.write_text(text, encoding='utf-8')
+              raise SystemExit(
+                  'Missing no-JavaScript fallback: loading screen may block the portfolio.'
+              )
           PY
-      - name: Commit fallback when needed
-        uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5
-        with:
-          commit_message: "Keep no-JavaScript access usable"
-          file_pattern: "index.html"
-          commit_user_name: "sakai1250"
-          commit_user_email: "92532910+sakai1250@users.noreply.github.com"
-          commit_author: "sakai1250 <92532910+sakai1250@users.noreply.github.com>"
