@@ -20,8 +20,8 @@ for marker in required_runtime_markers:
     if marker not in js:
         raise SystemExit(f"Missing runtime tab accessibility marker: {marker}")
 
-# Native buttons already handle Enter and Space. Retain only the custom arrow-key
-# behavior so the tab interaction does not have duplicate activation logic.
+# Anchors already activate with Enter. Arrow keys remain the custom tab behavior
+# after JavaScript upgrades the static page links into a tab interface.
 legacy_keyboard = """        const activate = () => switchTab(id, true);
         i.addEventListener('click', activate);
         i.addEventListener('keydown', (e) => {
@@ -56,10 +56,10 @@ js_path.write_text(js, encoding="utf-8")
 html_path = Path("index.html")
 html = html_path.read_text(encoding="utf-8")
 
-# Without JavaScript both primary sections remain visible. Do not claim that the
-# static document is already a tab interface: aria-selected=false would conflict
-# with Engineering content that is intentionally visible as a fallback. Runtime
-# JavaScript adds the tab semantics only after it starts hiding inactive panels.
+# Without JavaScript both primary sections remain visible. Keep these controls as
+# real page links so Research / Engineering navigation still works when scripts
+# fail. Runtime JavaScript adds tab semantics only after it starts hiding inactive
+# panels.
 html = re.sub(
     r'(<nav class="tab-nav header-tab-nav" aria-label="Primary sections") role="tablist"(>)',
     r'\1\2',
@@ -68,19 +68,25 @@ html = re.sub(
 )
 
 for tab_id in ("research", "engineer"):
-    pattern = re.compile(rf'<button\s+([^>]*\bid="{tab_id}-tab"[^>]*)>')
+    pattern = re.compile(
+        rf'<(?:button|a)\s+([^>]*\bid="{tab_id}-tab"[^>]*)>([\s\S]*?)</(?:button|a)>'
+    )
     match = pattern.search(html)
     if not match:
-        raise SystemExit(f"Could not find expected {tab_id} tab button")
+        raise SystemExit(f"Could not find expected {tab_id} primary navigation control")
     attrs = match.group(1)
+    body = match.group(2)
     for attr_pattern in (
         r'\s+role="tab"',
         r'\s+aria-controls="[^"]+"',
         r'\s+aria-selected="(?:true|false)"',
         r'\s+tabindex="-?\d+"',
+        r'\s+type="button"',
+        r'\s+href="[^"]+"',
     ):
         attrs = re.sub(attr_pattern, '', attrs)
-    html = html[:match.start()] + f'<button {attrs}>' + html[match.end():]
+    replacement = f'<a {attrs} href="#{tab_id}-content">{body}</a>'
+    html = html[:match.start()] + replacement + html[match.end():]
 
 for tab_id in ("research", "engineer"):
     pattern = re.compile(rf'<div\s+([^>]*\bid="{tab_id}-content"[^>]*)>')
