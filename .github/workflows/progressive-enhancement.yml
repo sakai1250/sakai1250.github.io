@@ -29,3 +29,15 @@ jobs:
             echo 'Static main content is missing from index.html.' >&2
             exit 1
           fi
+          if ! grep -Fq 'href="assets/cv.pdf"' index.html; then
+            echo 'Static CV link is missing from index.html.' >&2
+            exit 1
+          fi
+          if ! grep -Fq 'href="https://github.com/sakai1250"' index.html; then
+            echo 'Static GitHub profile link is missing from index.html.' >&2
+            exit 1
+          fi
+          if ! grep -Fq 'href="https://scholar.google.com/citations?user=eS-5wrQAAAAJ' index.html; then
+            echo 'Static Google Scholar link is missing from index.html.' >&2
+            exit 1
+          fi
