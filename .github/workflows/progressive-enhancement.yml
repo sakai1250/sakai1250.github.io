@@ -21,13 +21,7 @@ jobs:
           persist-credentials: false
       - name: Verify no-JavaScript fallback
         run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          text = Path('index.html').read_text(encoding='utf-8')
-          fallback = '<noscript><style>#loading-screen{display:none!important}</style></noscript>'
-          if fallback not in text:
-              raise SystemExit(
-                  'Missing no-JavaScript fallback: loading screen may block the portfolio.'
-              )
-          PY
+          if ! grep -Fq '<noscript><style>#loading-screen{display:none!important}</style></noscript>' index.html; then
+            echo 'Missing no-JavaScript fallback: loading screen may block the portfolio.' >&2
+            exit 1
+          fi
