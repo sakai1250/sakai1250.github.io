@@ -1,4 +1,7 @@
-# Deploy the finalized portfolio after optimization has completed.
+# Deploy the latest main branch after portfolio optimization finishes.
+# Deployment must not depend on optimization succeeding: that workflow fetches
+# external resources, and a transient network failure must not block a valid
+# main-branch update from reaching the public site.
 name: Deploy static content to Pages
 
 on:
@@ -18,14 +21,13 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout finalized main branch
+      - name: Checkout latest main branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: main
