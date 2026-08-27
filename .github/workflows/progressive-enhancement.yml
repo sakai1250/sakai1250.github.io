@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - index.html
+      - style.css
       - .github/workflows/progressive-enhancement.yml
   workflow_dispatch:
 
@@ -31,6 +32,10 @@ jobs:
           fi
           if ! grep -Fq 'href="assets/cv.pdf"' index.html; then
             echo 'Static CV link is missing from index.html.' >&2
+            exit 1
+          fi
+          if grep -Fq '.header-actions .header-btn.primary { display: none; }' style.css; then
+            echo 'Mobile CSS hides the primary CV action and makes it depend on JavaScript.' >&2
             exit 1
           fi
           if ! grep -Fq 'href="https://github.com/sakai1250"' index.html; then
