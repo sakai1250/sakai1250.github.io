@@ -139,6 +139,18 @@ if old in text:
 elif new not in text:
     raise SystemExit("Could not find expected initTabs implementation")
 
+old_section_state = "    tabs.forEach((tab, index) => tab.classList.toggle('active', index === activeIndex));"
+new_section_state = """    tabs.forEach((tab, index) => {
+        const active = index === activeIndex;
+        tab.classList.toggle('active', active);
+        if (active) tab.setAttribute('aria-current', 'true');
+        else tab.removeAttribute('aria-current');
+    });"""
+if old_section_state in text:
+    text = text.replace(old_section_state, new_section_state, 1)
+elif new_section_state not in text:
+    raise SystemExit("Could not find expected section tab state update")
+
 path.write_text(text, encoding="utf-8")
 
 html_path = Path("index.html")
