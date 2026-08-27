@@ -54,7 +54,7 @@ def update_main() -> None:
     # visitors to see only the page background. Remove the dead JavaScript too,
     # so future edits cannot accidentally restore a JS-dependent entrance gate.
     text = text.replace("    // Basic Loader\n    initLoader();\n\n", "", 1)
-    text, count = re.subn(
+    text, _ = re.subn(
         r"\nfunction initLoader\(\) \{.*?\n\}\n\n(?=function initTabs\(\))",
         "\n",
         text,
@@ -63,6 +63,22 @@ def update_main() -> None:
     )
     if "function initLoader()" in text or "initLoader();" in text:
         raise SystemExit("Could not remove obsolete loader JavaScript")
+
+    # Scroll reveal is decoration, not content. It temporarily hides every
+    # section card and depends on IntersectionObserver to show it again. If a
+    # mobile browser stops that path after classes are added, useful content can
+    # disappear even though the HTML is valid. Keep core content visible by
+    # default and remove this JavaScript-dependent reveal step entirely.
+    text = text.replace("    safeInit(initScrollReveal, 'ScrollReveal');\n", "", 1)
+    text, _ = re.subn(
+        r"\nfunction initScrollReveal\(\) \{.*?\n\}\n\n(?=function initReadingProgress\(\))",
+        "\n",
+        text,
+        count=1,
+        flags=re.DOTALL,
+    )
+    if "initScrollReveal" in text:
+        raise SystemExit("Could not remove JavaScript-dependent scroll reveal")
 
     MAIN.write_text(text, encoding="utf-8")
 
@@ -90,6 +106,26 @@ def update_style() -> None:
     )
     if ".header-actions .header-btn.primary { display: none; }" in text:
         raise SystemExit("Mobile CSS still hides the primary CV action")
+
+    # Remove styles whose only purpose is to hide content before the scroll
+    # observer restores it. Important portfolio sections should never start at
+    # opacity zero just to provide an entrance animation.
+    text, _ = re.subn(
+        r"\.reveal-item \{\n  opacity: 0;\n  transform: translateY\(12px\);\n  transition: opacity 0\.52s ease, transform 0\.52s var\(--ease-organic\);\n\}\n\.reveal-active \{ opacity: 1; transform: translateY\(0\); \}\n\n",
+        "",
+        text,
+        count=1,
+    )
+    text = text.replace(
+        "  .reveal-item { opacity: 1 !important; transform: none !important; }\n",
+        "",
+    )
+    text = text.replace(
+        "  .reveal-item { opacity: 1; transform: none; }\n",
+        "",
+    )
+    if ".reveal-item" in text or ".reveal-active" in text:
+        raise SystemExit("Could not remove scroll reveal styles")
 
     STYLE.write_text(text, encoding="utf-8")
 
