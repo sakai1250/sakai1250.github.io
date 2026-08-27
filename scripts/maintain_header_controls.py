@@ -49,6 +49,16 @@ if '<meta property="og:image:alt"' not in text:
         raise SystemExit('Could not find Open Graph image metadata')
     text = text.replace(og_image, og_image_with_alt, 1)
 
+# Keep social previews on the same origin as the portfolio. Using the local
+# avatar avoids making Open Graph/Twitter previews depend on GitHub's profile
+# image endpoint, which can change independently of this site.
+legacy_social_image = 'content="https://github.com/sakai1250.png"'
+local_social_image = 'content="https://sakai1250.github.io/assets/avatar.jpg"'
+if legacy_social_image in text:
+    text = text.replace(legacy_social_image, local_social_image)
+elif text.count(local_social_image) < 2:
+    raise SystemExit('Could not find expected social preview image metadata')
+
 # The default document language is Japanese, but the page can switch to English.
 # Keep the keyboard skip link consistent with the visible language as well.
 skip_link_ja_only = '<a class="skip-link" href="#main-content">本文へスキップ</a>'
