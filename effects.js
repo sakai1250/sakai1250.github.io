@@ -73,7 +73,10 @@ function initModalAccessibility() {
     document.querySelectorAll('.app-card').forEach(card => {
         card.addEventListener('click', event => {
             if (event.target.closest('a')) return;
-            lastTrigger = card.querySelector('.app-title');
+            const activeElement = document.activeElement;
+            lastTrigger = activeElement instanceof HTMLElement && card.contains(activeElement)
+                ? activeElement
+                : card.querySelector('.app-title');
         });
     });
 
