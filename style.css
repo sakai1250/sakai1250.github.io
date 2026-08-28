@@ -1023,7 +1023,8 @@ textarea.form-control { min-height: 130px; resize: vertical; }
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
-.toc-link:hover::after { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0); }
+.toc-link:hover::after,
+.toc-link:focus-visible::after { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0); }
 
 .modal-overlay {
   position: fixed;
