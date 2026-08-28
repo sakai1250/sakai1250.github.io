@@ -50,6 +50,19 @@ def update_main() -> None:
         elif new not in text:
             raise SystemExit(f"Could not find expected resilient access: {old}")
 
+    # Keep the toggle's programmatic state aligned with the applied theme. The
+    # moon/sun glyph is intentionally hidden from screen readers, so without a
+    # pressed state assistive technology cannot tell whether dark mode is active.
+    theme_icon_update = "        if (icon) icon.textContent = t === 'dark' ? '☾' : '☀︎';"
+    theme_state_update = (
+        theme_icon_update
+        + "\n        if (btn) btn.setAttribute('aria-pressed', String(t === 'dark'));"
+    )
+    if theme_state_update not in text:
+        if theme_icon_update not in text:
+            raise SystemExit("Could not find theme state update point")
+        text = text.replace(theme_icon_update, theme_state_update, 1)
+
     # The blocking loader was removed from the HTML after it caused mobile
     # visitors to see only the page background. Remove the dead JavaScript too,
     # so future edits cannot accidentally restore a JS-dependent entrance gate.
