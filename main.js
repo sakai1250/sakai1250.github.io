@@ -200,21 +200,45 @@ function initSearchAndFilters() {
 function initModals() {
     const modal = document.getElementById('app-modal');
     if (!modal) return;
+    const dialog = modal.querySelector('.modal-container');
     const img = document.getElementById('modal-img'), title = document.getElementById('modal-title'), desc = document.getElementById('modal-desc'), links = document.getElementById('modal-links');
+    let opener = null;
+
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'modal-title');
+
+    const close = () => {
+        if (!modal.classList.contains('open')) return;
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        opener?.focus();
+        opener = null;
+    };
+
     document.querySelectorAll('.app-card').forEach(card => {
         card.addEventListener('click', (e) => {
             if (e.target.closest('a')) return;
-            img.src = card.querySelector('.app-thumb').src;
-            title.textContent = card.querySelector('.app-title').textContent;
-            desc.textContent = card.querySelector('.app-desc').textContent;
+            const thumb = card.querySelector('.app-thumb');
+            const cardTitle = card.querySelector('.app-title');
+            if (!thumb || !cardTitle) return;
+            opener = card;
+            img.src = thumb.src;
+            title.textContent = cardTitle.textContent;
+            desc.textContent = card.querySelector('.app-desc')?.textContent || '';
             links.innerHTML = card.querySelector('.app-links')?.innerHTML || '';
             modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden';
+            dialog?.focus();
         });
     });
-    const close = () => { modal.classList.remove('open'); document.body.style.overflow = ''; };
     modal.querySelector('.modal-close')?.addEventListener('click', close);
     modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('open')) close();
+    });
 }
 
 function initStats() {
