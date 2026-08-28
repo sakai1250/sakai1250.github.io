@@ -50,6 +50,7 @@ for script in \
   scripts/maintain_asset_versions.py; do
   python3 "$script"
 done
+python3 scripts/check_app_repo_links.py
 git diff --exit-code -- index.html 404.html main.js effects.js style.css
 ```
 
