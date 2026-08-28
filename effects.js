@@ -41,6 +41,23 @@ function syncPortfolioStats() {
     });
 }
 
+function initAppCardKeyboardAccess() {
+    document.querySelectorAll('.app-card').forEach(card => {
+        const trigger = card.querySelector('.app-thumb');
+        const title = card.querySelector('.app-title')?.textContent.trim();
+        if (!trigger || !title) return;
+
+        trigger.tabIndex = 0;
+        trigger.setAttribute('role', 'button');
+        trigger.setAttribute('aria-label', `詳細を開く: ${title} / Open details: ${title}`);
+        trigger.addEventListener('keydown', event => {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            event.preventDefault();
+            card.click();
+        });
+    });
+}
+
 function initModalAccessibility() {
     const modal = document.getElementById('app-modal');
     const container = modal?.querySelector('.modal-container');
@@ -113,6 +130,11 @@ function initPortfolioPolish() {
             display: none !important;
         }
 
+        .app-thumb[role="button"]:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
         @media (min-width: 769px) {
             .header-stats {
                 transform: translate(-50%, -8px) !important;
@@ -163,6 +185,7 @@ function initPortfolioPolish() {
         if (tab.dataset.tab === 'engineer') ja.textContent = '開発';
     });
 
+    initAppCardKeyboardAccess();
     initModalAccessibility();
     syncPortfolioStats();
     window.setTimeout(syncPortfolioStats, 1700);
