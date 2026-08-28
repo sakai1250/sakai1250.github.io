@@ -1176,7 +1176,7 @@ textarea.form-control { min-height: 130px; resize: vertical; }
 }
 
 [lang="en"] { display: none !important; }
-html[data-lang="en"] [lang="en"] { display: block !important; }
+html[data-lang="en"] [lang="en"] { display: revert !important; }
 html[data-lang="en"] [lang="ja"] { display: none !important; }
 
 ::-webkit-scrollbar { width: 9px; height: 9px; }
