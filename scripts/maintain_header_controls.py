@@ -218,6 +218,19 @@ for old_label, bilingual_label in utility_labels.items():
     elif bilingual_label not in text:
         raise SystemExit(f'Could not find utility control label: {old_label}')
 
+# Name navigation landmarks by their purpose rather than their visual contents.
+# "Cards" does not tell screen-reader users that this control moves between
+# portfolio sections such as research, awards, and engineering work.
+section_nav_generic = '<nav id="section-tab-nav" class="section-tab-nav" aria-label="Cards"></nav>'
+section_nav_descriptive = (
+    '<nav id="section-tab-nav" class="section-tab-nav" '
+    'aria-label="Portfolio sections / ポートフォリオ内の項目"></nav>'
+)
+if section_nav_generic in text:
+    text = text.replace(section_nav_generic, section_nav_descriptive, 1)
+elif section_nav_descriptive not in text:
+    raise SystemExit('Could not find section navigation landmark')
+
 path.write_text(text, encoding='utf-8')
 
 # Keep browser cache keys tied to the current file contents. The optimization
