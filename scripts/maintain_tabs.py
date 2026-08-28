@@ -62,7 +62,7 @@ elif new_section_state not in js:
 
 # The app detail overlay must behave like a dialog once JavaScript opens it.
 # Keep its hidden state synchronized for assistive technology, allow Escape to
-# close it, move focus into the dialog, and return focus to the invoking card.
+# close it, keep keyboard focus inside it, and return focus to the invoking card.
 old_modal = """function initModals() {
     const modal = document.getElementById('app-modal');
     if (!modal) return;
@@ -83,7 +83,7 @@ old_modal = """function initModals() {
     modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
 }
 """
-new_modal = """function initModals() {
+accessible_modal = """function initModals() {
     const modal = document.getElementById('app-modal');
     if (!modal) return;
     const dialog = modal.querySelector('.modal-container');
@@ -127,9 +127,80 @@ new_modal = """function initModals() {
     });
 }
 """
+focus_trapped_modal = """function initModals() {
+    const modal = document.getElementById('app-modal');
+    if (!modal) return;
+    const dialog = modal.querySelector('.modal-container');
+    const img = document.getElementById('modal-img'), title = document.getElementById('modal-title'), desc = document.getElementById('modal-desc'), links = document.getElementById('modal-links');
+    let opener = null;
+
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'modal-title');
+
+    const close = () => {
+        if (!modal.classList.contains('open')) return;
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        opener?.focus();
+        opener = null;
+    };
+
+    document.querySelectorAll('.app-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('a')) return;
+            const thumb = card.querySelector('.app-thumb');
+            const cardTitle = card.querySelector('.app-title');
+            if (!thumb || !cardTitle) return;
+            opener = card;
+            img.src = thumb.src;
+            title.textContent = cardTitle.textContent;
+            desc.textContent = card.querySelector('.app-desc')?.textContent || '';
+            links.innerHTML = card.querySelector('.app-links')?.innerHTML || '';
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            dialog?.focus();
+        });
+    });
+    modal.querySelector('.modal-close')?.addEventListener('click', close);
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+    document.addEventListener('keydown', (e) => {
+        if (!modal.classList.contains('open')) return;
+        if (e.key === 'Escape') {
+            close();
+            return;
+        }
+        if (e.key !== 'Tab') return;
+
+        const focusable = Array.from(modal.querySelectorAll(
+            'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )).filter(el => !el.hasAttribute('hidden') && el.offsetParent !== null);
+        if (!focusable.length) {
+            e.preventDefault();
+            dialog?.focus();
+            return;
+        }
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey && (active === first || active === dialog || !modal.contains(active))) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && (active === last || !modal.contains(active))) {
+            e.preventDefault();
+            first.focus();
+        }
+    });
+}
+"""
 if old_modal in js:
-    js = js.replace(old_modal, new_modal, 1)
-elif new_modal not in js:
+    js = js.replace(old_modal, focus_trapped_modal, 1)
+elif accessible_modal in js:
+    js = js.replace(accessible_modal, focus_trapped_modal, 1)
+elif focus_trapped_modal not in js:
     raise SystemExit("Could not find expected app modal behavior")
 
 js_path.write_text(js, encoding="utf-8")
