@@ -38,6 +38,7 @@ jobs:
           problems = []
           total_ids = 0
           total_refs = 0
+          html_ids = {}
 
           class Parser(HTMLParser):
               def __init__(self):
@@ -96,6 +97,7 @@ jobs:
                   problems.append(f'{html_path}: form controls missing matching <label for> {unlabeled}')
 
               ids = set(parser.ids)
+              html_ids[html_path.name] = ids
               total_ids += len(ids)
               total_refs += len(parser.refs)
 
@@ -113,6 +115,20 @@ jobs:
                   target = root / path.lstrip('/')
                   if not target.exists():
                       problems.append(f'{html_path}: missing file {path}')
+
+          readme_path = root / 'README.md'
+          if readme_path.exists():
+              readme_text = readme_path.read_text(encoding='utf-8')
+              portfolio_fragments = sorted(set(re.findall(
+                  r'https://sakai1250\.github\.io/#([A-Za-z0-9_-]+)',
+                  readme_text,
+              )))
+              index_ids = html_ids.get('index.html', set())
+              for fragment in portfolio_fragments:
+                  if fragment not in index_ids:
+                      problems.append(
+                          f'README.md: portfolio deep link #{fragment} has no matching id in index.html'
+                      )
 
           required = ['assets/cv.pdf', 'assets/cv.txt', 'assets/avatar.jpg', 'assets/data.json', 'style.css', 'main.js', '404.html', 'robots.txt', 'sitemap.xml', 'llms.txt']
           for path in required:
