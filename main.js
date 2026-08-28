@@ -157,7 +157,7 @@ function initSearchAndFilters() {
             const tags = (item.getAttribute('data-tags') || '').split(' ');
             const year = item.getAttribute('data-year') || '';
             const tagMatch = !item.classList.contains('app-card') || activeTag === 'all' || tags.includes(activeTag);
-            const yearMatch = !year || activeYear === 'all' || year === activeYear;
+            const yearMatch = activeYear === 'all' || year === activeYear;
             const match = (!q || text.includes(q)) && tagMatch && yearMatch;
             item.style.display = match ? '' : 'none';
             if (match) count++;
