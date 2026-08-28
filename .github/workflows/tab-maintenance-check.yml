@@ -28,7 +28,8 @@ jobs:
             scripts/maintain_filter_accessibility.py \
             scripts/maintain_storage_resilience.py \
             scripts/maintain_external_links.py \
-            scripts/maintain_asset_versions.py; do
+            scripts/maintain_asset_versions.py \
+            scripts/check_app_repo_links.py; do
             python -m py_compile "$script"
           done
       - name: Validate maintenance state and idempotence
@@ -68,6 +69,8 @@ jobs:
             diff -u "$first_diff" "$second_diff" || true
             exit 1
           fi
+      - name: Validate app repository mappings
+        run: python scripts/check_app_repo_links.py
       - name: Validate local tab deep links
         run: |
           python - <<'PY'
