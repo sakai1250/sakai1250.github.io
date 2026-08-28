@@ -92,6 +92,22 @@ function initModalAccessibility() {
     window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
 }
 
+function initTocAccessibility() {
+    const button = document.getElementById('toc-fab');
+    const menu = document.getElementById('toc-menu');
+    if (!button || !menu) return;
+
+    button.setAttribute('aria-controls', 'toc-menu');
+    const sync = () => {
+        button.setAttribute('aria-expanded', String(menu.classList.contains('show')));
+    };
+    sync();
+
+    const observer = new MutationObserver(sync);
+    observer.observe(menu, { attributes: true, attributeFilter: ['class'] });
+    window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
+}
+
 function initPortfolioPolish() {
     if (document.getElementById('portfolio-polish-style')) return;
 
@@ -161,6 +177,7 @@ function initPortfolioPolish() {
 
     initAppCardKeyboardAccess();
     initModalAccessibility();
+    initTocAccessibility();
     syncPortfolioStats();
     window.setTimeout(syncPortfolioStats, 1700);
 }
