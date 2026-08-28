@@ -49,6 +49,8 @@ function initAppCardKeyboardAccess() {
 
         trigger.tabIndex = 0;
         trigger.setAttribute('role', 'button');
+        trigger.setAttribute('aria-haspopup', 'dialog');
+        trigger.setAttribute('aria-controls', 'app-modal');
         trigger.setAttribute('aria-label', `詳細を開く: ${title} / Open details: ${title}`);
         trigger.addEventListener('keydown', event => {
             if (event.key !== 'Enter' && event.key !== ' ') return;
