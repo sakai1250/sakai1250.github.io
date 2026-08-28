@@ -271,4 +271,15 @@ if old_css in css:
 elif new_css not in css:
     raise SystemExit("Could not find expected tab styling")
 
+# The floating table-of-contents links expose their section names on pointer
+# hover. Show the same label for keyboard focus so an icon-only control is not
+# ambiguous to sighted keyboard users.
+old_toc_tooltip = ".toc-link:hover::after { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0); }"
+new_toc_tooltip = """.toc-link:hover::after,
+.toc-link:focus-visible::after { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0); }"""
+if old_toc_tooltip in css:
+    css = css.replace(old_toc_tooltip, new_toc_tooltip, 1)
+elif new_toc_tooltip not in css:
+    raise SystemExit("Could not find expected TOC tooltip styling")
+
 css_path.write_text(css, encoding="utf-8")
