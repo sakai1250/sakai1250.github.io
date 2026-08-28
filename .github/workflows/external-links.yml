@@ -87,6 +87,7 @@ jobs:
               status = None
               error = None
               success = False
+              host = (urlsplit(url).hostname or '').lower()
 
               for method in ('HEAD', 'GET'):
                   for attempt in range(2):
@@ -106,7 +107,9 @@ jobs:
                           error = str(exc)
 
                           # These responses usually mean the page exists but rejects automation.
-                          if status in (401, 403, 429):
+                          if status in (401, 403, 429) or (
+                              status == 999 and (host == 'linkedin.com' or host.endswith('.linkedin.com'))
+                          ):
                               error = None
                               success = True
                               break
