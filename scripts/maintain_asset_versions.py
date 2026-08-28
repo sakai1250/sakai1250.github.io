@@ -7,6 +7,8 @@ from pathlib import Path
 
 INDEX = Path("index.html")
 ASSETS = ("style.css", "effects.js", "main.js")
+FAVICON = "assets/avatar.jpg"
+LEGACY_FAVICON = "1770375438872~2.png"
 
 
 def digest(path: Path) -> str:
@@ -27,6 +29,17 @@ def main() -> None:
         text, count = pattern.subn(replacement, text, count=1)
         if count != 1:
             raise SystemExit(f"Expected one versioned reference for {asset}")
+
+    favicon = Path(FAVICON)
+    if not favicon.is_file():
+        raise SystemExit(f"Missing favicon asset: {FAVICON}")
+
+    legacy_tag = f'<link rel="icon" href="{LEGACY_FAVICON}">'
+    favicon_tag = f'<link rel="icon" href="{FAVICON}" type="image/jpeg">'
+    if legacy_tag in text:
+        text = text.replace(legacy_tag, favicon_tag, 1)
+    elif favicon_tag not in text:
+        raise SystemExit("Could not find expected favicon reference")
 
     INDEX.write_text(text, encoding="utf-8")
 
