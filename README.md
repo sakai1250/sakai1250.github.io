@@ -33,6 +33,28 @@ python3 -m http.server 8000
 
 Then open `http://localhost:8000`.
 
+## Local validation
+
+Before opening a pull request, install the maintenance dependency and run the same transforms checked by CI:
+
+```bash
+python3 -m pip install -r requirements-maintenance.txt
+python3 -m py_compile scripts/*.py
+for script in \
+  scripts/maintain_tabs.py \
+  scripts/maintain_contact_form.py \
+  scripts/maintain_header_controls.py \
+  scripts/maintain_filter_accessibility.py \
+  scripts/maintain_storage_resilience.py \
+  scripts/maintain_external_links.py \
+  scripts/maintain_asset_versions.py; do
+  python3 "$script"
+done
+git diff --exit-code -- index.html 404.html main.js effects.js style.css
+```
+
+If the final command reports changes, include the generated maintenance updates in the same branch before pushing.
+
 ## Maintenance
 
 - `index.html` contains the portfolio content and page structure.
