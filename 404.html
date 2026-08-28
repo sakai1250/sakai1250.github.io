@@ -59,6 +59,12 @@
       font-size: clamp(30px, 7vw, 48px);
       line-height: 1.1;
     }
+    h1 [lang="en"] {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.56em;
+      font-weight: 600;
+    }
     p {
       margin: 18px 0 26px;
       color: var(--muted);
@@ -94,9 +100,9 @@
 <body>
   <main>
     <div class="code">404</div>
-    <h1 lang="en">Page not found</h1>
-    <p>このページは見つからない。研究、開発、CVなどの入口から目的の情報へ移動できる。<br><span lang="en">Use the links below to continue to Research, Engineering, the CV, GitHub, or direct contact.</span></p>
-    <nav lang="en" aria-label="Portfolio destinations">
+    <h1><span lang="ja">ページが見つかりません</span><span lang="en">Page not found</span></h1>
+    <p>このページは見つかりません。研究、開発、CVなどの入口から目的の情報へ移動できます。<br><span lang="en">Use the links below to continue to Research, Engineering, the CV, GitHub, or direct contact.</span></p>
+    <nav aria-label="主な移動先 / Portfolio destinations">
       <a class="primary" href="/">Portfolio</a>
       <a href="/#research-content">Research</a>
       <a href="/#engineer-content">Engineering</a>
