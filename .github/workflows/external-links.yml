@@ -47,6 +47,7 @@ jobs:
           from urllib.error import HTTPError, URLError
           from urllib.parse import urlsplit
           from urllib.request import Request, urlopen
+          import os
           import re
           import time
 
@@ -71,14 +72,26 @@ jobs:
           for path in ('README.md', 'SECURITY.md', '.well-known/security.txt', 'llms.txt', 'assets/cv.txt'):
               links.update(url_pattern.findall(Path(path).read_text(encoding='utf-8')))
 
-          def is_local_url(url):
+          def hostname(url):
               try:
-                  host = (urlsplit(url).hostname or '').lower()
+                  return (urlsplit(url).hostname or '').lower()
               except ValueError:
-                  return False
-              return host in {'localhost', '127.0.0.1', '::1'}
+                  return ''
 
-          links = {url for url in links if not is_local_url(url)}
+          event_name = os.environ.get('GITHUB_EVENT_NAME', '')
+          deployment_host = 'sakai1250.github.io'
+
+          def should_check(url):
+              host = hostname(url)
+              if host in {'localhost', '127.0.0.1', '::1'}:
+                  return False
+              # A PR or push can reference content that Pages has not deployed yet.
+              # Scheduled/manual runs verify the live site once deployment has settled.
+              if host == deployment_host and event_name in {'push', 'pull_request'}:
+                  return False
+              return True
+
+          links = {url for url in links if should_check(url)}
 
           failures = []
           print(f'Checking {len(links)} external links')
@@ -87,7 +100,7 @@ jobs:
               status = None
               error = None
               success = False
-              host = (urlsplit(url).hostname or '').lower()
+              host = hostname(url)
 
               for method in ('HEAD', 'GET'):
                   for attempt in range(2):
