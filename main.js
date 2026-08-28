@@ -237,7 +237,32 @@ function initModals() {
     modal.querySelector('.modal-close')?.addEventListener('click', close);
     modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('open')) close();
+        if (!modal.classList.contains('open')) return;
+        if (e.key === 'Escape') {
+            close();
+            return;
+        }
+        if (e.key !== 'Tab') return;
+
+        const focusable = Array.from(modal.querySelectorAll(
+            'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )).filter(el => !el.hasAttribute('hidden') && el.offsetParent !== null);
+        if (!focusable.length) {
+            e.preventDefault();
+            dialog?.focus();
+            return;
+        }
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey && (active === first || active === dialog || !modal.contains(active))) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && (active === last || !modal.contains(active))) {
+            e.preventDefault();
+            first.focus();
+        }
     });
 }
 
