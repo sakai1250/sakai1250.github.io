@@ -17,6 +17,9 @@ PAPER_HOSTS = (
     'scitepress.org/',
 )
 PROGRAM_HOSTS = ('cars-int.org/scientific-program/',)
+STALE_PROFILE_HREFS = (
+    'https://www.kaggle.com/sakaitt',
+)
 
 
 def secure_anchor(tag: str) -> str:
@@ -45,10 +48,21 @@ def clarify_resource_label(match: re.Match[str]) -> str:
     return f"{match.group('open')}{label}{match.group('close')}"
 
 
+def remove_stale_profile_links(text: str) -> str:
+    for href in STALE_PROFILE_HREFS:
+        pattern = re.compile(
+            rf'<a\b[^>]*\bhref=(["\']){re.escape(href)}\1[^>]*>.*?</a>\s*',
+            re.IGNORECASE | re.DOTALL,
+        )
+        text = pattern.sub('', text)
+    return text
+
+
 for path in TARGET_FILES:
     if not path.exists():
         continue
     text = path.read_text(encoding='utf-8')
-    updated = ANCHOR_RE.sub(lambda match: secure_anchor(match.group(0)), text)
+    updated = remove_stale_profile_links(text)
+    updated = ANCHOR_RE.sub(lambda match: secure_anchor(match.group(0)), updated)
     updated = GENERIC_LINK_RE.sub(clarify_resource_label, updated)
     path.write_text(updated, encoding='utf-8')
