@@ -107,6 +107,17 @@ def update_style() -> None:
     if ".header-actions .header-btn.primary { display: none; }" in text:
         raise SystemExit("Mobile CSS still hides the primary CV action")
 
+    # English translations appear in both inline elements such as button labels
+    # and block elements such as profile text. Restoring every English element as
+    # display:block changes layout semantics after a language switch. Let each
+    # element return to its native display type instead.
+    forced_english_block = 'html[data-lang="en"] [lang="en"] { display: block !important; }'
+    semantic_english_display = 'html[data-lang="en"] [lang="en"] { display: revert !important; }'
+    if forced_english_block in text:
+        text = text.replace(forced_english_block, semantic_english_display, 1)
+    elif semantic_english_display not in text:
+        raise SystemExit("Could not find English language display rule")
+
     # Remove styles whose only purpose is to hide content before the scroll
     # observer restores it. Important portfolio sections should never start at
     # opacity zero just to provide an entrance animation.
