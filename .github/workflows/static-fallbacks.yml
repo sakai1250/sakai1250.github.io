@@ -6,6 +6,8 @@ on:
     paths:
       - 'index.html'
       - 'main.js'
+      - 'style.css'
+      - 'effects.js'
       - 'sitemap.xml'
       - '.github/workflows/static-fallbacks.yml'
   workflow_dispatch:
@@ -33,6 +35,7 @@ jobs:
           from pathlib import Path
           import html
           import re
+          import subprocess
           import xml.etree.ElementTree as ET
 
           index_path = Path('index.html')
@@ -41,17 +44,40 @@ jobs:
           text = index_path.read_text(encoding='utf-8')
           main_text = main_path.read_text(encoding='utf-8')
 
-          ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
-          root = ET.parse(sitemap_path).getroot()
+          tracked_page_files = ['index.html', 'main.js', 'style.css', 'effects.js']
+          source_dates = []
+          for tracked_file in tracked_page_files:
+              result = subprocess.run(
+                  ['git', 'log', '-1', '--format=%cs', '--', tracked_file],
+                  check=True,
+                  capture_output=True,
+                  text=True,
+              )
+              value = result.stdout.strip()
+              if value:
+                  source_dates.append(value)
+          if not source_dates:
+              raise SystemExit('Could not resolve a source update date')
+          source_lastmod = max(source_dates)
+          if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', source_lastmod):
+              raise SystemExit(f'Unexpected source update date: {source_lastmod}')
+
+          ns_uri = 'http://www.sitemaps.org/schemas/sitemap/0.9'
+          ET.register_namespace('', ns_uri)
+          ns = {'sm': ns_uri}
+          tree = ET.parse(sitemap_path)
+          root = tree.getroot()
           home_lastmod = None
           for url in root.findall('sm:url', ns):
               loc = url.find('sm:loc', ns)
               lastmod = url.find('sm:lastmod', ns)
               if loc is not None and loc.text == 'https://sakai1250.github.io/' and lastmod is not None:
-                  home_lastmod = (lastmod.text or '').strip()
+                  lastmod.text = source_lastmod
+                  home_lastmod = source_lastmod
                   break
-          if not home_lastmod or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', home_lastmod):
-              raise SystemExit('Could not resolve homepage lastmod from sitemap.xml')
+          if not home_lastmod:
+              raise SystemExit('Could not resolve homepage lastmod in sitemap.xml')
+          tree.write(sitemap_path, encoding='UTF-8', xml_declaration=True)
 
           section_pattern = re.compile(
               r'<section\b[^>]*class="[^"]*\bsection-card\b[^"]*"[^>]*>[\s\S]*?</section>',
@@ -126,14 +152,14 @@ jobs:
 
           index_path.write_text(text, encoding='utf-8')
           main_path.write_text(main_text, encoding='utf-8')
-          print(f'Portfolio stats: {counts}; footer date: {home_lastmod}')
+          print(f'Portfolio stats: {counts}; source/footer/sitemap date: {home_lastmod}')
           PY
 
       - name: Commit synchronized fallbacks
         run: |
           git config user.name 'sakai1250'
           git config user.email '92532910+sakai1250@users.noreply.github.com'
-          git add index.html main.js
+          git add index.html main.js sitemap.xml
           if git diff --cached --quiet; then
             echo 'Portfolio fallbacks already aligned.'
             exit 0
