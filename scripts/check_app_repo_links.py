@@ -12,15 +12,20 @@ EXPECTED_REPOS = {
 REPO_LINK = re.compile(
     r'href="https://github\.com/sakai1250/([A-Za-z0-9_.-]+)">GitHub</a>'
 )
+APP_CARD_MARKER = '<div class="app-card"'
 
 
 def app_card(text: str, title: str) -> str:
-    marker = f">{title}</a>"
-    start = text.find(marker)
-    if start == -1:
+    title_marker = f">{title}</a>"
+    title_pos = text.find(title_marker)
+    if title_pos == -1:
         raise SystemExit(f"Could not find app title: {title}")
 
-    next_card = text.find('<div class="app-card"', start + len(marker))
+    start = text.rfind(APP_CARD_MARKER, 0, title_pos)
+    if start == -1:
+        raise SystemExit(f"Could not find app card for: {title}")
+
+    next_card = text.find(APP_CARD_MARKER, title_pos + len(title_marker))
     end = next_card if next_card != -1 else len(text)
     return text[start:end]
 
