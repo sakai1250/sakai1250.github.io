@@ -123,6 +123,7 @@ function initTheme() {
         document.documentElement.setAttribute('data-theme', t);
         safeStorageSet('theme', t);
         if (icon) icon.textContent = t === 'dark' ? '☾' : '☀︎';
+        if (btn) btn.setAttribute('aria-pressed', String(t === 'dark'));
         document.querySelectorAll('#stats-langs, #stats-general').forEach(img => {
             img.src = img.src.replace(/theme=[^&]+/, `theme=${t === 'dark' ? 'dracula' : 'default'}`);
         });
