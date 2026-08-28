@@ -218,6 +218,19 @@ for old_label, bilingual_label in utility_labels.items():
     elif bilingual_label not in text:
         raise SystemExit(f'Could not find utility control label: {old_label}')
 
+# Name the top-level tab list by what it actually switches. "Primary sections"
+# is vague when announced without visual context; this identifies the two views
+# directly for screen-reader users.
+primary_nav_generic = '<nav class="tab-nav header-tab-nav" aria-label="Primary sections">'
+primary_nav_descriptive = (
+    '<nav class="tab-nav header-tab-nav" '
+    'aria-label="Research and engineering / 研究と開発">'
+)
+if primary_nav_generic in text:
+    text = text.replace(primary_nav_generic, primary_nav_descriptive, 1)
+elif primary_nav_descriptive not in text:
+    raise SystemExit('Could not find primary tab navigation landmark')
+
 # Name navigation landmarks by their purpose rather than their visual contents.
 # "Cards" does not tell screen-reader users that this control moves between
 # portfolio sections such as research, awards, and engineering work.
