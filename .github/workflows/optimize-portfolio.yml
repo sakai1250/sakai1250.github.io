@@ -173,9 +173,13 @@ jobs:
               end = next_card if next_card != -1 else len(text)
               block = text[start:end]
               pattern = re.compile(
-                  r'href="https://github\.com/sakai1250/(?:PresentMemo|otsuri_docter)">GitHub</a>'
+                  r'href="https://github\.com/sakai1250/(?:PresentMemo|otsuri_docter)"(?P<attrs>[^>]*)>GitHub</a>'
               )
-              replacement = f'href="https://github.com/sakai1250/{expected_repo}">GitHub</a>'
+              def replacement(match):
+                  return (
+                      f'href="https://github.com/sakai1250/{expected_repo}"'
+                      f'{match.group("attrs")}>GitHub</a>'
+                  )
               updated, count = pattern.subn(replacement, block, count=1)
               if count != 1:
                   raise SystemExit(f'Expected one GitHub link in app card: {title}')
