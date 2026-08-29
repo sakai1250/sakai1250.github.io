@@ -12,6 +12,10 @@ def normalize_text(value: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", value)).strip()
 
 
+def normalize_publication_title(value: str) -> str:
+    return normalize_text(value).rstrip(" ,.;:")
+
+
 def set_aria_label(anchor: str, label: str) -> str:
     escaped = escape(label, quote=True)
     opening_end = anchor.find(">")
@@ -43,7 +47,7 @@ def update_publication_links(text: str) -> tuple[str, int]:
         title_match = re.search(r'“\s*([^”]+?)\s*”', item)
         if not title_match:
             return item
-        title = normalize_text(title_match.group(1))
+        title = normalize_publication_title(title_match.group(1))
         if not title:
             return item
 
