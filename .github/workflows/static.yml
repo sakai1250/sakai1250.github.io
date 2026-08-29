@@ -42,6 +42,8 @@ jobs:
             style.css \
             main.js \
             effects.js \
+            robots.txt \
+            sitemap.xml \
             assets/cv.pdf \
             assets/cv.txt \
             llms.txt \
