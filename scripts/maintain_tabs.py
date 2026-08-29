@@ -248,6 +248,18 @@ if new_toc_link_close not in js:
     else:
         raise SystemExit("Could not find expected TOC link close behavior")
 
+# The visible TOC controls intentionally show only the first character of each
+# section. Give assistive technology the full localized section title instead of
+# announcing ambiguous names such as just "R" or "A".
+toc_data_title = "        a.setAttribute('data-title', text);"
+toc_accessible_name = """        a.setAttribute('data-title', text);
+        a.setAttribute('aria-label', text);"""
+if toc_accessible_name not in js:
+    if toc_data_title in js:
+        js = js.replace(toc_data_title, toc_accessible_name, 1)
+    else:
+        raise SystemExit("Could not find expected TOC link label setup")
+
 js_path.write_text(js, encoding="utf-8")
 
 html_path = Path("index.html")
