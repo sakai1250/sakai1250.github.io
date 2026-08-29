@@ -151,6 +151,37 @@ def update_style() -> None:
     if ".reveal-item" in text or ".reveal-active" in text:
         raise SystemExit("Could not remove scroll reveal styles")
 
+    # Mobile browsers do not need decorative viewport compositing to read the
+    # portfolio. A fixed full-screen pseudo-element plus backdrop filters can
+    # trigger expensive GPU layers and has previously correlated with the page
+    # getting stuck on its background in mobile Chrome. Keep the mobile path
+    # deliberately simple while preserving the desktop design.
+    mobile_marker = "/* Mobile rendering safety: keep core content off decorative compositing layers. */"
+    mobile_rules = """
+
+/* Mobile rendering safety: keep core content off decorative compositing layers. */
+@media (max-width: 768px) {
+  body::before { display: none !important; }
+  .header-bar,
+  .modal-overlay {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .header-bar { background: var(--bg-2) !important; }
+}
+"""
+    if mobile_marker not in text:
+        text = text.rstrip() + mobile_rules
+
+    required_mobile_rules = (
+        "body::before { display: none !important; }",
+        "-webkit-backdrop-filter: none !important;",
+        "backdrop-filter: none !important;",
+        ".header-bar { background: var(--bg-2) !important; }",
+    )
+    if any(rule not in text for rule in required_mobile_rules):
+        raise SystemExit("Mobile rendering safety rules are incomplete")
+
     STYLE.write_text(text, encoding="utf-8")
 
 
