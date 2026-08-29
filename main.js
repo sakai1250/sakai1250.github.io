@@ -78,6 +78,7 @@ function initTabs() {
         if (updateHash) history.replaceState(null, '', `#${id}-content`);
         if (typeof updateTOC === 'function') updateTOC();
         if (typeof updateSectionTabs === 'function') updateSectionTabs();
+        window.dispatchEvent(new Event('portfolio:tabchange'));
     };
     tabItems.forEach(i => {
         const id = i.getAttribute('data-tab');
@@ -200,6 +201,7 @@ function initSearchAndFilters() {
         }
         apply();
     }));
+    window.addEventListener('portfolio:tabchange', apply);
     apply();
 }
 
