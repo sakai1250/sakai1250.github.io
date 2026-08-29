@@ -41,6 +41,26 @@ function syncPortfolioStats() {
     });
 }
 
+function initPublicationLinkAccessibility() {
+    const researchSection = getSectionByEnglishTitle('Research Achievements');
+    if (!researchSection) return;
+
+    researchSection.querySelectorAll('.repo-list > li').forEach(item => {
+        const link = Array.from(item.querySelectorAll('a')).find(anchor => {
+            const label = anchor.textContent.trim();
+            return label === '[Paper]' || label === '[Program]';
+        });
+        if (!link) return;
+
+        const rawText = item.textContent.replace(/\s+/g, ' ').trim();
+        const titleMatch = rawText.match(/[“"]\s*([^”"]+?)\s*[,”"]/);
+        if (!titleMatch) return;
+
+        const resource = link.textContent.trim().slice(1, -1);
+        link.setAttribute('aria-label', `${resource}: ${titleMatch[1].trim()}`);
+    });
+}
+
 function initAppCardKeyboardAccess() {
     document.querySelectorAll('.app-card').forEach(card => {
         const trigger = card.querySelector('.app-thumb');
@@ -175,6 +195,7 @@ function initPortfolioPolish() {
         if (tab.dataset.tab === 'engineer') ja.textContent = '開発';
     });
 
+    initPublicationLinkAccessibility();
     initAppCardKeyboardAccess();
     initModalAccessibility();
     initTocAccessibility();
