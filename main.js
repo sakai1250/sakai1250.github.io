@@ -145,7 +145,7 @@ function initSearchAndFilters() {
 
     const yearFilterRow = document.querySelector('.year-filter');
     const syncYearFilterForTab = (activeContent) => {
-        const engineeringActive = activeContent?.id === 'engineering-content';
+        const engineeringActive = activeContent?.id === 'engineer-content';
         if (yearFilterRow) yearFilterRow.hidden = engineeringActive;
         if (!engineeringActive || activeYear === 'all') return;
 
@@ -156,6 +156,8 @@ function initSearchAndFilters() {
             x.setAttribute('aria-pressed', String(active));
         });
     };
+
+
 
     const apply = () => {
         const q = input ? input.value.toLowerCase().trim() : '';
