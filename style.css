@@ -1296,3 +1296,14 @@ html[data-lang="en"] [lang="ja"] { display: none !important; }
   .header-tab-row .year-filter .filter-label { width: auto; }
   .header-tab-row .year-filter .chip { min-height: 36px; }
 }
+
+/* Mobile rendering safety: keep core content off decorative compositing layers. */
+@media (max-width: 768px) {
+  body::before { display: none !important; }
+  .header-bar,
+  .modal-overlay {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .header-bar { background: var(--bg-2) !important; }
+}
