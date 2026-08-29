@@ -61,6 +61,19 @@ function initPublicationLinkAccessibility() {
     });
 }
 
+function initAppResourceLinkAccessibility() {
+    document.querySelectorAll('.app-card').forEach(card => {
+        const title = card.querySelector('.app-title')?.textContent.replace(/\s+/g, ' ').trim();
+        if (!title) return;
+
+        card.querySelectorAll('.app-links a').forEach(link => {
+            const resource = link.textContent.replace(/\s+/g, ' ').trim();
+            if (!resource) return;
+            link.setAttribute('aria-label', `${resource}: ${title}`);
+        });
+    });
+}
+
 function initAppCardKeyboardAccess() {
     document.querySelectorAll('.app-card').forEach(card => {
         const trigger = card.querySelector('.app-thumb');
@@ -196,6 +209,7 @@ function initPortfolioPolish() {
     });
 
     initPublicationLinkAccessibility();
+    initAppResourceLinkAccessibility();
     initAppCardKeyboardAccess();
     initModalAccessibility();
     initTocAccessibility();
