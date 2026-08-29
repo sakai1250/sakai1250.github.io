@@ -371,6 +371,7 @@ function updateTOC() {
         const a = document.createElement('a');
         a.className = 'toc-link';
         a.setAttribute('data-title', text);
+        a.setAttribute('aria-label', text);
         a.textContent = [...text.replace(/[^\w\s]/g, '').trim() || text][0];
         a.href = `#${s.id}`;
         a.addEventListener('click', (e) => {
