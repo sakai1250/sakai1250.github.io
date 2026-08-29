@@ -203,6 +203,51 @@ elif accessible_modal in js:
 elif focus_trapped_modal not in js:
     raise SystemExit("Could not find expected app modal behavior")
 
+# The floating table of contents becomes an interactive disclosure only after
+# JavaScript initializes it. Expose its controlled element and expanded state at
+# that same point, then keep the state synchronized for every close path.
+old_toc = """function initTOC() {
+    const fab = document.getElementById('toc-fab'), menu = document.getElementById('toc-menu');
+    if (fab && menu) {
+        fab.addEventListener('click', () => menu.classList.toggle('show'));
+        document.addEventListener('click', (e) => { if (!menu.contains(e.target) && !fab.contains(e.target)) menu.classList.remove('show'); });
+        updateTOC();
+        updateSectionTabs();
+    }
+}
+"""
+accessible_toc = """function initTOC() {
+    const fab = document.getElementById('toc-fab'), menu = document.getElementById('toc-menu');
+    if (fab && menu) {
+        const setOpen = (open) => {
+            menu.classList.toggle('show', open);
+            fab.setAttribute('aria-expanded', String(open));
+        };
+        fab.setAttribute('aria-controls', 'toc-menu');
+        setOpen(menu.classList.contains('show'));
+        fab.addEventListener('click', () => setOpen(!menu.classList.contains('show')));
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target) && !fab.contains(e.target)) setOpen(false);
+        });
+        updateTOC();
+        updateSectionTabs();
+    }
+}
+"""
+if old_toc in js:
+    js = js.replace(old_toc, accessible_toc, 1)
+elif accessible_toc not in js:
+    raise SystemExit("Could not find expected TOC disclosure behavior")
+
+old_toc_link_close = "            document.getElementById('toc-menu').classList.remove('show');"
+new_toc_link_close = """            document.getElementById('toc-menu').classList.remove('show');
+            document.getElementById('toc-fab')?.setAttribute('aria-expanded', 'false');"""
+if new_toc_link_close not in js:
+    if old_toc_link_close in js:
+        js = js.replace(old_toc_link_close, new_toc_link_close, 1)
+    else:
+        raise SystemExit("Could not find expected TOC link close behavior")
+
 js_path.write_text(js, encoding="utf-8")
 
 html_path = Path("index.html")
