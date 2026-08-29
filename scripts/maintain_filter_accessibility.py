@@ -29,21 +29,24 @@ tab_year_sync = """    const yearFilterRow = document.querySelector('.year-filte
         });
     };
 """
+expected_generated_init = base_init + "\n" + pressed_init + "\n" + tab_year_sync
 
 if base_init not in text:
     raise SystemExit("Could not find filter initialization block")
 
-# Normalize the generated blocks instead of repeatedly inserting after prefixes
-# that remain present inside the generated output.
-text = text.replace("\n" + pressed_init, "")
-text = re.sub(
-    r"\n    const yearFilterRow = document\.querySelector\('\.year-filter'\);\n"
-    r"    const syncYearFilterForTab = \(activeContent\) => \{[\s\S]*?\n    \};\n",
-    "\n",
-    text,
-    count=1,
-)
-text = text.replace(base_init, base_init + "\n" + pressed_init + "\n" + tab_year_sync, 1)
+# Do not rewrite an already-correct generated block. Repeatedly deleting and
+# reinserting it leaves surrounding blank lines behind, which makes every
+# maintenance pass change main.js even though behavior is already correct.
+if expected_generated_init not in text:
+    text = text.replace("\n" + pressed_init, "")
+    text = re.sub(
+        r"\n    const yearFilterRow = document\.querySelector\('\.year-filter'\);\n"
+        r"    const syncYearFilterForTab = \(activeContent\) => \{[\s\S]*?\n    \};\n",
+        "\n",
+        text,
+        count=1,
+    )
+    text = text.replace(base_init, expected_generated_init, 1)
 
 old_apply_head = """    const apply = () => {
         const q = input ? input.value.toLowerCase().trim() : '';
