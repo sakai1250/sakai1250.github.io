@@ -203,6 +203,50 @@ elif accessible_modal in js:
 elif focus_trapped_modal not in js:
     raise SystemExit("Could not find expected app modal behavior")
 
+# The floating table of contents is a disclosure control. Keep its expanded
+# state synchronized for screen readers whenever pointer or keyboard actions
+# open or close the menu.
+old_toc = """function initTOC() {
+    const fab = document.getElementById('toc-fab'), menu = document.getElementById('toc-menu');
+    if (fab && menu) {
+        fab.addEventListener('click', () => menu.classList.toggle('show'));
+        document.addEventListener('click', (e) => { if (!menu.contains(e.target) && !fab.contains(e.target)) menu.classList.remove('show'); });
+        updateTOC();
+        updateSectionTabs();
+    }
+}
+"""
+accessible_toc = """function initTOC() {
+    const fab = document.getElementById('toc-fab'), menu = document.getElementById('toc-menu');
+    if (fab && menu) {
+        const setOpen = (open) => {
+            menu.classList.toggle('show', open);
+            fab.setAttribute('aria-expanded', String(open));
+        };
+        fab.setAttribute('aria-controls', 'toc-menu');
+        setOpen(menu.classList.contains('show'));
+        fab.addEventListener('click', () => setOpen(!menu.classList.contains('show')));
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target) && !fab.contains(e.target)) setOpen(false);
+        });
+        updateTOC();
+        updateSectionTabs();
+    }
+}
+"""
+if old_toc in js:
+    js = js.replace(old_toc, accessible_toc, 1)
+elif accessible_toc not in js:
+    raise SystemExit("Could not find expected TOC disclosure behavior")
+
+old_toc_link_close = "            document.getElementById('toc-menu').classList.remove('show');"
+new_toc_link_close = """            document.getElementById('toc-menu').classList.remove('show');
+            document.getElementById('toc-fab')?.setAttribute('aria-expanded', 'false');"""
+if old_toc_link_close in js:
+    js = js.replace(old_toc_link_close, new_toc_link_close, 1)
+elif new_toc_link_close not in js:
+    raise SystemExit("Could not find expected TOC link close behavior")
+
 js_path.write_text(js, encoding="utf-8")
 
 html_path = Path("index.html")
@@ -249,6 +293,18 @@ for tab_id in ("research", "engineer"):
     attrs = re.sub(r'\s+role="tabpanel"', '', attrs)
     attrs = re.sub(r'\s+aria-labelledby="[^"]+"', '', attrs)
     html = html[:match.start()] + f'<div {attrs}>' + html[match.end():]
+
+# Expose the disclosure relationship before JavaScript runs. Runtime code keeps
+# aria-expanded synchronized with the actual visual state.
+toc_button_plain = '<button id="toc-fab" type="button" aria-label="Table of contents / 目次">'
+toc_button_accessible = (
+    '<button id="toc-fab" type="button" aria-label="Table of contents / 目次" '
+    'aria-controls="toc-menu" aria-expanded="false">'
+)
+if toc_button_plain in html:
+    html = html.replace(toc_button_plain, toc_button_accessible, 1)
+elif toc_button_accessible not in html:
+    raise SystemExit("Could not find expected TOC button markup")
 
 html_path.write_text(html, encoding="utf-8")
 
