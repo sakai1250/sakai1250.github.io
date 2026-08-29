@@ -17,7 +17,7 @@ pressed_init = """    chips.forEach(chip => {
 """
 tab_year_sync = """    const yearFilterRow = document.querySelector('.year-filter');
     const syncYearFilterForTab = (activeContent) => {
-        const engineeringActive = activeContent?.id === 'engineering-content';
+        const engineeringActive = activeContent?.id === 'engineer-content';
         if (yearFilterRow) yearFilterRow.hidden = engineeringActive;
         if (!engineeringActive || activeYear === 'all') return;
 
@@ -36,7 +36,13 @@ if base_init not in text:
 # Normalize the generated blocks instead of repeatedly inserting after prefixes
 # that remain present inside the generated output.
 text = text.replace("\n" + pressed_init, "")
-text = text.replace("\n" + tab_year_sync, "")
+text = re.sub(
+    r"\n    const yearFilterRow = document\.querySelector\('\.year-filter'\);\n"
+    r"    const syncYearFilterForTab = \(activeContent\) => \{[\s\S]*?\n    \};\n",
+    "\n",
+    text,
+    count=1,
+)
 text = text.replace(base_init, base_init + "\n" + pressed_init + "\n" + tab_year_sync, 1)
 
 old_apply_head = """    const apply = () => {
@@ -135,6 +141,11 @@ if new_tab_update not in text:
         text = text.replace(old_tab_update, new_tab_update, 1)
     else:
         raise SystemExit("Could not find tab update block")
+
+if "engineering-content" in text:
+    raise SystemExit("Stale Engineering tab id remains in generated filter code")
+if "activeContent?.id === 'engineer-content'" not in text:
+    raise SystemExit("Engineering year-filter synchronization was not generated")
 
 js_path.write_text(text, encoding="utf-8")
 
