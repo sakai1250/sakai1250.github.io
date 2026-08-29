@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(initContactForm, 'ContactForm');
     safeInit(initStickyHeader, 'StickyHeader');
     safeInit(initReadingProgress, 'ReadingProgress');
-    safeInit(initCommandPalette, 'CommandPalette');
     safeInit(initLanguage, 'Language');
 
     // Visual Effects (From effects.js)
@@ -474,29 +473,6 @@ function initReadingProgress() {
         const p = (h.scrollTop || b.scrollTop) / (h.scrollHeight - h.clientHeight);
         circle.style.strokeDashoffset = c - (p * c);
     }, { passive: true });
-}
-
-function initCommandPalette() {
-    const p = document.getElementById('command-palette');
-    const input = document.getElementById('palette-input'), res = document.getElementById('palette-results');
-    if (!p || !input) return;
-    const toggle = (s) => { p.classList.toggle('active', s); if (s) { input.value = ''; update(''); input.focus(); } };
-    const update = (q) => {
-        res.innerHTML = '';
-        document.querySelectorAll('.section-title').forEach(t => {
-            if (t.textContent.toLowerCase().includes(q.toLowerCase())) {
-                const d = document.createElement('div');
-                d.className = 'palette-item'; d.textContent = t.textContent;
-                d.addEventListener('click', () => { t.scrollIntoView({ behavior: 'smooth' }); toggle(false); });
-                res.appendChild(d);
-            }
-        });
-    };
-    input.addEventListener('input', (e) => update(e.target.value));
-    document.addEventListener('keydown', (e) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); toggle(!p.classList.contains('active')); }
-        if (e.key === 'Escape') toggle(false);
-    });
 }
 
 function initLanguage() {
