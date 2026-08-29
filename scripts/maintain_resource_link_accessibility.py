@@ -5,6 +5,7 @@ import re
 
 INDEX = Path("index.html")
 PUBLICATION_LINKS = {"[Paper]", "[Program]"}
+APP_CARD_MARKER = '<div class="app-card"'
 
 
 def normalize_text(value: str) -> str:
@@ -62,29 +63,34 @@ def update_publication_links(text: str) -> tuple[str, int]:
 
 
 def update_app_links(text: str) -> tuple[str, int]:
-    card_pattern = re.compile(
-        r'(<div class="app-card"\b[\s\S]*?)(?=\n\s*<div class="app-card"\b|\n\s*</div>\n\s*</section>)'
-    )
     links_pattern = re.compile(
         r'(<div class="app-links">)([\s\S]*?)(</div>)'
     )
     anchor_pattern = re.compile(r'<a\b[^>]*>[\s\S]*?</a>')
-    updated_count = 0
+    parts = text.split(APP_CARD_MARKER)
+    if len(parts) == 1:
+        return text, 0
 
-    def update_card(match: re.Match[str]) -> str:
-        nonlocal updated_count
-        card = match.group(1)
+    updated_count = 0
+    updated_parts = [parts[0]]
+
+    for remainder in parts[1:]:
+        card = APP_CARD_MARKER + remainder
         title_match = re.search(
             r'<a\b[^>]*class="app-title"[^>]*>([\s\S]*?)</a>',
             card,
         )
         if not title_match:
-            return card
+            updated_parts.append(card)
+            continue
+
         title = normalize_text(title_match.group(1))
         if not title:
-            return card
+            updated_parts.append(card)
+            continue
 
         def update_links(links_match: re.Match[str]) -> str:
+            nonlocal updated_count
             prefix, links, suffix = links_match.groups()
 
             def update_anchor(anchor_match: re.Match[str]) -> str:
@@ -98,9 +104,9 @@ def update_app_links(text: str) -> tuple[str, int]:
 
             return prefix + anchor_pattern.sub(update_anchor, links) + suffix
 
-        return links_pattern.sub(update_links, card, count=1)
+        updated_parts.append(links_pattern.sub(update_links, card, count=1))
 
-    return card_pattern.sub(update_card, text), updated_count
+    return "".join(updated_parts), updated_count
 
 
 def main() -> None:
