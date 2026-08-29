@@ -34,6 +34,18 @@ jobs:
           persist-credentials: false
       - name: Setup Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+      - name: Validate deployable portfolio essentials
+        run: |
+          for path in \
+            index.html \
+            404.html \
+            assets/cv.pdf \
+            .well-known/security.txt; do
+            if [[ ! -s "$path" ]]; then
+              echo "Missing or empty deploy-critical file: $path" >&2
+              exit 1
+            fi
+          done
       - name: Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
