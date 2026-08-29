@@ -242,10 +242,11 @@ elif accessible_toc not in js:
 old_toc_link_close = "            document.getElementById('toc-menu').classList.remove('show');"
 new_toc_link_close = """            document.getElementById('toc-menu').classList.remove('show');
             document.getElementById('toc-fab')?.setAttribute('aria-expanded', 'false');"""
-if old_toc_link_close in js:
-    js = js.replace(old_toc_link_close, new_toc_link_close, 1)
-elif new_toc_link_close not in js:
-    raise SystemExit("Could not find expected TOC link close behavior")
+if new_toc_link_close not in js:
+    if old_toc_link_close in js:
+        js = js.replace(old_toc_link_close, new_toc_link_close, 1)
+    else:
+        raise SystemExit("Could not find expected TOC link close behavior")
 
 js_path.write_text(js, encoding="utf-8")
 
