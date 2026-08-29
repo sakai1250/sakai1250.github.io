@@ -105,6 +105,32 @@ if theme_icon in text:
 elif theme_icon_decorative not in text:
     raise SystemExit('Could not find theme icon')
 
+# Google Fonts is optional visual polish, not a prerequisite for the portfolio.
+# A normal external stylesheet in <head> can hold first paint while a mobile
+# browser waits on fonts.googleapis.com. Load it with print media first so the
+# page renders immediately using the existing system-font fallbacks, then apply
+# the web fonts only after the stylesheet has arrived.
+google_fonts_url = (
+    'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&'
+    'family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap'
+)
+blocking_google_fonts = (
+    '  <link\n'
+    f'    href="{google_fonts_url}"\n'
+    '    rel="stylesheet">'
+)
+nonblocking_google_fonts = (
+    '  <link\n'
+    f'    href="{google_fonts_url}"\n'
+    '    rel="stylesheet" media="print" onload="this.media=\'all\'">'
+)
+if blocking_google_fonts in text:
+    text = text.replace(blocking_google_fonts, nonblocking_google_fonts, 1)
+elif nonblocking_google_fonts not in text:
+    raise SystemExit('Could not find expected Google Fonts stylesheet')
+if f'href="{google_fonts_url}"' in text and 'media="print" onload="this.media=\'all\'"' not in text:
+    raise SystemExit('Google Fonts must remain non-render-blocking')
+
 # Primer CSS was only used for the footer share button. Reuse the site's own
 # button style instead so initial rendering does not depend on an extra CDN CSS
 # request, especially on slower mobile connections.
