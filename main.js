@@ -342,8 +342,16 @@ function initResearchPriority() {
 function initTOC() {
     const fab = document.getElementById('toc-fab'), menu = document.getElementById('toc-menu');
     if (fab && menu) {
-        fab.addEventListener('click', () => menu.classList.toggle('show'));
-        document.addEventListener('click', (e) => { if (!menu.contains(e.target) && !fab.contains(e.target)) menu.classList.remove('show'); });
+        const setOpen = (open) => {
+            menu.classList.toggle('show', open);
+            fab.setAttribute('aria-expanded', String(open));
+        };
+        fab.setAttribute('aria-controls', 'toc-menu');
+        setOpen(menu.classList.contains('show'));
+        fab.addEventListener('click', () => setOpen(!menu.classList.contains('show')));
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target) && !fab.contains(e.target)) setOpen(false);
+        });
         updateTOC();
         updateSectionTabs();
     }
@@ -370,6 +378,7 @@ function updateTOC() {
             const h = document.querySelector('.header-bar').offsetHeight;
             window.scrollTo({ top: s.getBoundingClientRect().top + window.scrollY - h - 20, behavior: 'smooth' });
             document.getElementById('toc-menu').classList.remove('show');
+            document.getElementById('toc-fab')?.setAttribute('aria-expanded', 'false');
         });
         nav.appendChild(a);
     });
