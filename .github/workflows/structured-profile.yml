@@ -71,7 +71,8 @@ jobs:
                   raise SystemExit(f'Person JSON-LD is missing {key}')
 
           job_title = str(person['jobTitle'])
-          for required_role in ('Ph.D. Student', 'Special Assistant'):
+          required_roles = ('Ph.D. Student', 'Special Assistant')
+          for required_role in required_roles:
               if required_role not in job_title:
                   raise SystemExit(f'Person JSON-LD jobTitle is missing current role: {required_role}')
 
@@ -100,5 +101,22 @@ jobs:
           if 'alumniOf' in person:
               raise SystemExit('Person JSON-LD uses alumniOf for a current affiliation; use affiliation instead')
 
-          print('OK: Person JSON-LD is valid and contains the expected professional identity fields')
+          cv_text = Path('assets/cv.txt').read_text(encoding='utf-8')
+          if person['name'].upper() not in cv_text.upper():
+              raise SystemExit('assets/cv.txt is missing the JSON-LD person name')
+          for required_role in required_roles:
+              if required_role not in cv_text:
+                  raise SystemExit(f'assets/cv.txt is missing current role: {required_role}')
+          if affiliation['name'] not in cv_text:
+              raise SystemExit('assets/cv.txt is missing the current affiliation')
+          if person['url'] not in cv_text:
+              raise SystemExit('assets/cv.txt is missing the canonical portfolio URL')
+          missing_cv_profiles = sorted(profile for profile in required_profiles if profile not in cv_text)
+          if missing_cv_profiles:
+              raise SystemExit(
+                  'assets/cv.txt is missing professional profile links from JSON-LD: '
+                  + ', '.join(missing_cv_profiles)
+              )
+
+          print('OK: Person JSON-LD and assets/cv.txt contain a consistent professional identity')
           PY
