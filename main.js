@@ -302,10 +302,19 @@ function initStats() {
         };
         requestAnimationFrame(step);
     };
-    const researchSection = Array.from(document.querySelectorAll('#research-content .section-card'))
-    .find(section => section.querySelector('.section-title')?.textContent.includes('Research Achievements'));
-const publicationCount = researchSection?.querySelectorAll('.repo-list > li').length || 18;
-[{ id: 'stat-papers', v: publicationCount }, { id: 'stat-awards', v: 22 }, { id: 'stat-apps', v: 10 }].forEach(s => {
+    const researchSections = Array.from(document.querySelectorAll('#research-content .section-card'));
+    const findResearchSection = (englishTitle) => researchSections.find(section =>
+        section.querySelector('.section-title [lang="en"]')?.textContent.trim() === englishTitle
+    );
+    const publicationCount = findResearchSection('Research Achievements')?.querySelectorAll('.repo-list > li').length ?? 0;
+    const awardCount = findResearchSection('Awards')?.querySelectorAll('.repo-list > li').length ?? 0;
+    const appCount = document.querySelectorAll('#engineer-content .app-card').length;
+
+    [
+        { id: 'stat-papers', v: publicationCount },
+        { id: 'stat-awards', v: awardCount },
+        { id: 'stat-apps', v: appCount }
+    ].forEach(s => {
         const el = document.getElementById(s.id);
         if (el) animate(el, s.v);
     });
