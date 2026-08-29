@@ -51,6 +51,38 @@ if new_click not in text:
     else:
         raise SystemExit("Could not find filter click block")
 
+old_count = """        const countEl = document.getElementById('search-count');
+        if (countEl) countEl.textContent = count;
+"""
+new_count = """        const countEl = document.getElementById('search-count');
+        if (countEl) {
+            const ja = countEl.querySelector('[lang="ja"]');
+            const en = countEl.querySelector('[lang="en"]');
+            if (ja) ja.textContent = `${count}件`;
+            if (en) en.textContent = `${count} items`;
+        }
+"""
+if new_count not in text:
+    if old_count in text:
+        text = text.replace(old_count, new_count, 1)
+    else:
+        raise SystemExit("Could not find filter result count block")
+
+old_listener_end = """        apply();
+    }));
+}
+"""
+new_listener_end = """        apply();
+    }));
+    apply();
+}
+"""
+if new_listener_end not in text:
+    if old_listener_end in text:
+        text = text.replace(old_listener_end, new_listener_end, 1)
+    else:
+        raise SystemExit("Could not find filter listener block")
+
 js_path.write_text(text, encoding="utf-8")
 
 html_path = Path("index.html")
@@ -104,5 +136,26 @@ html = re.sub(
 
 if engineer_filter_label not in html or all_filter_button not in html:
     raise SystemExit("Could not normalize Engineering filter language labels")
+
+status_html = (
+    '<span id="search-count" class="filter-label" role="status" '
+    'aria-live="polite" aria-atomic="true">'
+    '<span lang="ja"></span>'
+    '<span lang="en"></span>'
+    '</span>'
+)
+if status_html not in html:
+    year_filter = re.search(r'(<div class="filter-row year-filter">[\s\S]*?)(\n\s*</div>)', html)
+    if not year_filter:
+        raise SystemExit("Could not find year filter row for result status")
+    block = year_filter.group(1)
+    if 'id="search-count"' in block:
+        block = re.sub(r'<span id="search-count"[\s\S]*?</span>\s*</span>', status_html, block, count=1)
+    else:
+        block += "\n            " + status_html
+    html = html[:year_filter.start(1)] + block + html[year_filter.end(1):]
+
+if html.count('id="search-count"') != 1:
+    raise SystemExit("Expected exactly one filter result status element")
 
 html_path.write_text(html, encoding="utf-8")
