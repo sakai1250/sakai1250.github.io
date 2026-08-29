@@ -93,6 +93,70 @@ def update_main() -> None:
     if "initScrollReveal" in text:
         raise SystemExit("Could not remove JavaScript-dependent scroll reveal")
 
+    # Clipboard permission and API support vary across mobile browsers. Do not
+    # let the visible Copy action fail silently when navigator.clipboard is
+    # unavailable or rejects a write. Use a conservative textarea fallback and
+    # surface the existing error label if both paths fail.
+    resilient_copy = """function initCopyButtons() {
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const value = btn.getAttribute('data-copy') || '';
+            const lang = document.documentElement.getAttribute('data-lang') || 'ja';
+            const success = btn.getAttribute(`data-${lang}-success`) || 'Copied!';
+            const error = btn.getAttribute('data-error') || 'Error';
+            const spans = btn.querySelectorAll('span');
+            const originals = Array.from(spans).map(s => s.textContent);
+
+            const fallbackCopy = () => {
+                const textarea = document.createElement('textarea');
+                textarea.value = value;
+                textarea.setAttribute('readonly', '');
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                textarea.setSelectionRange(0, textarea.value.length);
+                let copied = false;
+                try { copied = document.execCommand('copy'); } catch {}
+                textarea.remove();
+                return copied;
+            };
+
+            let copied = false;
+            try {
+                if (navigator.clipboard?.writeText) {
+                    await navigator.clipboard.writeText(value);
+                    copied = true;
+                } else {
+                    copied = fallbackCopy();
+                }
+            } catch {
+                copied = fallbackCopy();
+            }
+
+            spans.forEach(s => s.textContent = copied ? success : error);
+            btn.classList.toggle('success', copied);
+            setTimeout(() => {
+                spans.forEach((s, i) => s.textContent = originals[i]);
+                btn.classList.remove('success');
+            }, 2000);
+        });
+    });
+}
+"""
+    current_copy_pattern = re.compile(
+        r"function initCopyButtons\(\) \{.*?\n\}\n\n(?=function initStickyHeader\(\))",
+        re.DOTALL,
+    )
+    copy_match = current_copy_pattern.search(text)
+    if not copy_match:
+        raise SystemExit("Could not find copy-button handler")
+    if copy_match.group(0).rstrip() != resilient_copy.rstrip():
+        text = current_copy_pattern.sub(resilient_copy + "\n", text, count=1)
+
+    if "navigator.clipboard?.writeText" not in text or "fallbackCopy" not in text:
+        raise SystemExit("Clipboard resilience is incomplete")
+
     MAIN.write_text(text, encoding="utf-8")
 
 
