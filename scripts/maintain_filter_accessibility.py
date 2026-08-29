@@ -15,14 +15,46 @@ pressed_init = """    chips.forEach(chip => {
         chip.setAttribute('aria-pressed', String(chip.classList.contains('active')));
     });
 """
+tab_year_sync = """    const yearFilterRow = document.querySelector('.year-filter');
+    const syncYearFilterForTab = (activeContent) => {
+        const engineeringActive = activeContent?.id === 'engineering-content';
+        if (yearFilterRow) yearFilterRow.hidden = engineeringActive;
+        if (!engineeringActive || activeYear === 'all') return;
+
+        activeYear = 'all';
+        document.querySelectorAll('.chip[data-year]').forEach(x => {
+            const active = x.getAttribute('data-year') === 'all';
+            x.classList.toggle('active', active);
+            x.setAttribute('aria-pressed', String(active));
+        });
+    };
+"""
 
 if base_init not in text:
     raise SystemExit("Could not find filter initialization block")
 
-# Normalize the generated block instead of repeatedly inserting after a prefix
-# that remains present inside the generated output.
+# Normalize the generated blocks instead of repeatedly inserting after prefixes
+# that remain present inside the generated output.
 text = text.replace("\n" + pressed_init, "")
-text = text.replace(base_init, base_init + "\n" + pressed_init, 1)
+text = text.replace("\n" + tab_year_sync, "")
+text = text.replace(base_init, base_init + "\n" + pressed_init + "\n" + tab_year_sync, 1)
+
+old_apply_head = """    const apply = () => {
+        const q = input ? input.value.toLowerCase().trim() : '';
+        const activeContent = document.querySelector('.tab-content.active') || document;
+        let count = 0;
+"""
+new_apply_head = """    const apply = () => {
+        const q = input ? input.value.toLowerCase().trim() : '';
+        const activeContent = document.querySelector('.tab-content.active') || document;
+        syncYearFilterForTab(activeContent);
+        let count = 0;
+"""
+if new_apply_head not in text:
+    if old_apply_head in text:
+        text = text.replace(old_apply_head, new_apply_head, 1)
+    else:
+        raise SystemExit("Could not find filter apply block")
 
 old_click = """        if (t) { activeTag = t; document.querySelectorAll('.chip[data-filter]').forEach(x => x.classList.toggle('active', x === c)); }
         if (y) { activeYear = y; document.querySelectorAll('.chip[data-year]').forEach(x => x.classList.toggle('active', x === c)); }
@@ -56,8 +88,8 @@ old_count = """        const countEl = document.getElementById('search-count');
 """
 new_count = """        const countEl = document.getElementById('search-count');
         if (countEl) {
-            const ja = countEl.querySelector('[lang="ja"]');
-            const en = countEl.querySelector('[lang="en"]');
+            const ja = countEl.querySelector('[lang=\"ja\"]');
+            const en = countEl.querySelector('[lang=\"en\"]');
             if (ja) ja.textContent = `${count}件`;
             if (en) en.textContent = `${count} items`;
         }
