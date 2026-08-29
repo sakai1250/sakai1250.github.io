@@ -10,7 +10,7 @@ EXPECTED_REPOS = {
     "MAIORAL (iOS)": "PresentMemo",
 }
 REPO_LINK = re.compile(
-    r'href="https://github\.com/sakai1250/([A-Za-z0-9_.-]+)">GitHub</a>'
+    r'href="https://github\.com/sakai1250/([A-Za-z0-9_.-]+)"[^>]*>\s*GitHub\s*</a>'
 )
 APP_CARD_MARKER = '<div class="app-card"'
 
