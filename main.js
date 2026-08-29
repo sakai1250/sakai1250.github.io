@@ -161,6 +161,8 @@ function initSearchAndFilters() {
 
 
 
+
+
     const apply = () => {
         const q = input ? input.value.toLowerCase().trim() : '';
         const activeContent = document.querySelector('.tab-content.active') || document;
