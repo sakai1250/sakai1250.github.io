@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     safeInit(initTabs, 'Tabs');
     safeInit(initTheme, 'Theme');
+    safeInit(initLanguage, 'Language');
     safeInit(initModals, 'Modals');
     safeInit(initStats, 'Stats');
     safeInit(initSearchAndFilters, 'SearchAndFilters');
@@ -25,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(initContactForm, 'ContactForm');
     safeInit(initStickyHeader, 'StickyHeader');
     safeInit(initReadingProgress, 'ReadingProgress');
-    safeInit(initLanguage, 'Language');
 
     // Visual Effects (From effects.js)
     safeInit(window.initBackgroundParticles, 'BackgroundParticles');
