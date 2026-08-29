@@ -39,7 +39,12 @@ jobs:
           for path in \
             index.html \
             404.html \
+            style.css \
+            main.js \
+            effects.js \
             assets/cv.pdf \
+            assets/cv.txt \
+            llms.txt \
             .well-known/security.txt; do
             if [[ ! -s "$path" ]]; then
               echo "Missing or empty deploy-critical file: $path" >&2
