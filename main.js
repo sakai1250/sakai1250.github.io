@@ -170,7 +170,12 @@ function initSearchAndFilters() {
         });
 
         const countEl = document.getElementById('search-count');
-        if (countEl) countEl.textContent = count;
+        if (countEl) {
+            const ja = countEl.querySelector('[lang="ja"]');
+            const en = countEl.querySelector('[lang="en"]');
+            if (ja) ja.textContent = `${count}件`;
+            if (en) en.textContent = `${count} items`;
+        }
         if (typeof updateSectionTabs === 'function') updateSectionTabs();
     };
 
@@ -195,6 +200,7 @@ function initSearchAndFilters() {
         }
         apply();
     }));
+    apply();
 }
 
 function initModals() {
