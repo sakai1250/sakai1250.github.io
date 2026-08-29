@@ -74,14 +74,35 @@ old_listener_end = """        apply();
 """
 new_listener_end = """        apply();
     }));
+    window.addEventListener('portfolio:tabchange', apply);
+    apply();
+}
+"""
+old_listener_with_initial_apply = """        apply();
+    }));
     apply();
 }
 """
 if new_listener_end not in text:
-    if old_listener_end in text:
+    if old_listener_with_initial_apply in text:
+        text = text.replace(old_listener_with_initial_apply, new_listener_end, 1)
+    elif old_listener_end in text:
         text = text.replace(old_listener_end, new_listener_end, 1)
     else:
         raise SystemExit("Could not find filter listener block")
+
+old_tab_update = """        if (typeof updateTOC === 'function') updateTOC();
+        if (typeof updateSectionTabs === 'function') updateSectionTabs();
+"""
+new_tab_update = """        if (typeof updateTOC === 'function') updateTOC();
+        if (typeof updateSectionTabs === 'function') updateSectionTabs();
+        window.dispatchEvent(new Event('portfolio:tabchange'));
+"""
+if new_tab_update not in text:
+    if old_tab_update in text:
+        text = text.replace(old_tab_update, new_tab_update, 1)
+    else:
+        raise SystemExit("Could not find tab update block")
 
 js_path.write_text(text, encoding="utf-8")
 
