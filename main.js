@@ -143,9 +143,24 @@ function initSearchAndFilters() {
         chip.setAttribute('aria-pressed', String(chip.classList.contains('active')));
     });
 
+    const yearFilterRow = document.querySelector('.year-filter');
+    const syncYearFilterForTab = (activeContent) => {
+        const engineeringActive = activeContent?.id === 'engineering-content';
+        if (yearFilterRow) yearFilterRow.hidden = engineeringActive;
+        if (!engineeringActive || activeYear === 'all') return;
+
+        activeYear = 'all';
+        document.querySelectorAll('.chip[data-year]').forEach(x => {
+            const active = x.getAttribute('data-year') === 'all';
+            x.classList.toggle('active', active);
+            x.setAttribute('aria-pressed', String(active));
+        });
+    };
+
     const apply = () => {
         const q = input ? input.value.toLowerCase().trim() : '';
         const activeContent = document.querySelector('.tab-content.active') || document;
+        syncYearFilterForTab(activeContent);
         let count = 0;
 
         activeContent.querySelectorAll('.section-card').forEach(section => {
