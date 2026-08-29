@@ -68,7 +68,7 @@ jobs:
             exit 1
           fi
           if grep -Fq '.header-actions .header-btn.primary { display: none; }' style.css; then
-            echo 'Mobile CSS hides the primary CV action and makes it depend on JavaScript.' >&2
+            echo 'Mobile CSS hides the primary GitHub action and makes it depend on JavaScript.' >&2
             exit 1
           fi
           if ! grep -Fq 'href="https://github.com/sakai1250"' index.html; then
