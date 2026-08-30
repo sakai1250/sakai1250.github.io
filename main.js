@@ -378,6 +378,11 @@ function initTOC() {
         document.addEventListener('click', (e) => {
             if (!menu.contains(e.target) && !fab.contains(e.target)) setOpen(false);
         });
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape' || !menu.classList.contains('show')) return;
+            setOpen(false);
+            fab.focus();
+        });
         updateTOC();
         updateSectionTabs();
     }
