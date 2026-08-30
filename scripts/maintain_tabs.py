@@ -48,6 +48,41 @@ elif plain_anchor_click in js:
 elif enhanced_anchor_click not in js:
     raise SystemExit("Could not find expected primary tab click handling")
 
+# Follow the standard tab keyboard pattern: arrows move between adjacent tabs,
+# while Home and End jump directly to the first and last tab. With only two
+# primary sections this is small, but it keeps keyboard behavior predictable and
+# remains correct if another primary section is added later.
+old_primary_keyboard = """        i.addEventListener('keydown', (e) => {
+            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+            e.preventDefault();
+            const items = Array.from(tabItems);
+            const current = items.indexOf(i);
+            const next = e.key === 'ArrowRight'
+                ? (current + 1) % items.length
+                : (current - 1 + items.length) % items.length;
+            items[next].focus();
+            switchTab(items[next].getAttribute('data-tab'), true);
+        });
+"""
+enhanced_primary_keyboard = """        i.addEventListener('keydown', (e) => {
+            const items = Array.from(tabItems);
+            const current = items.indexOf(i);
+            let next;
+            if (e.key === 'ArrowRight') next = (current + 1) % items.length;
+            else if (e.key === 'ArrowLeft') next = (current - 1 + items.length) % items.length;
+            else if (e.key === 'Home') next = 0;
+            else if (e.key === 'End') next = items.length - 1;
+            else return;
+            e.preventDefault();
+            items[next].focus();
+            switchTab(items[next].getAttribute('data-tab'), true);
+        });
+"""
+if old_primary_keyboard in js:
+    js = js.replace(old_primary_keyboard, enhanced_primary_keyboard, 1)
+elif enhanced_primary_keyboard not in js:
+    raise SystemExit("Could not find expected primary tab keyboard handling")
+
 old_section_state = "    tabs.forEach((tab, index) => tab.classList.toggle('active', index === activeIndex));"
 new_section_state = """    tabs.forEach((tab, index) => {
         const active = index === activeIndex;
