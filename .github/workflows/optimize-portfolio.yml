@@ -173,7 +173,8 @@ jobs:
           missing = [snippet for snippet in required if snippet not in text]
           if missing:
               raise SystemExit(f'Thumbnail cache fallback policy is incomplete: {missing}')
-          if 'if filename not in generated_files:' in text:
+          legacy_cleanup = 'if filename not in ' + 'generated_files:'
+          if legacy_cleanup in text:
               raise SystemExit('Thumbnail cleanup still depends on current-run download success')
           PY
 
