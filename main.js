@@ -298,12 +298,17 @@ function initModals() {
 }
 
 function initStats() {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const animate = (obj, end) => {
+        if (reduceMotion) {
+            obj.textContent = end;
+            return;
+        }
         let start = null;
         const step = (ts) => {
             if (!start) start = ts;
             const progress = Math.min((ts - start) / 1500, 1);
-            obj.innerHTML = Math.floor(progress * end);
+            obj.textContent = Math.floor(progress * end);
             if (progress < 1) requestAnimationFrame(step);
         };
         requestAnimationFrame(step);
