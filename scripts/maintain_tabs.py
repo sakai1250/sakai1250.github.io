@@ -156,6 +156,7 @@ keyboard_modal = """function initModals() {
         if (!thumb || !cardTitle) return;
         opener = trigger;
         img.src = thumb.src;
+        img.alt = `${cardTitle.textContent.trim()} screenshot`;
         title.textContent = cardTitle.textContent;
         desc.textContent = card.querySelector('.app-desc')?.textContent || '';
         links.innerHTML = card.querySelector('.app-links')?.innerHTML || '';
@@ -235,6 +236,8 @@ elif resource_only_modal not in js:
 
 if "linkSource?.querySelector('.app-detail-trigger')?.remove();" not in js:
     raise SystemExit("App modal must exclude the Details trigger from copied resources")
+if "img.alt = `${cardTitle.textContent.trim()} screenshot`;" not in js:
+    raise SystemExit("App modal screenshot must have app-specific alternative text")
 
 accessible_toc = """function initTOC() {
     const fab = document.getElementById('toc-fab'), menu = document.getElementById('toc-menu');
