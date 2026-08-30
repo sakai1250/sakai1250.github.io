@@ -248,21 +248,40 @@ function initModals() {
         opener = null;
     };
 
+    const openModal = (card, trigger) => {
+        const thumb = card.querySelector('.app-thumb');
+        const cardTitle = card.querySelector('.app-title');
+        if (!thumb || !cardTitle) return;
+        opener = trigger;
+        img.src = thumb.src;
+        title.textContent = cardTitle.textContent;
+        desc.textContent = card.querySelector('.app-desc')?.textContent || '';
+        links.innerHTML = card.querySelector('.app-links')?.innerHTML || '';
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        dialog?.focus();
+    };
+
     document.querySelectorAll('.app-card').forEach(card => {
+        const appLinks = card.querySelector('.app-links');
+        if (!appLinks) return;
+
+        let trigger = appLinks.querySelector('.app-detail-trigger');
+        if (!trigger) {
+            trigger = document.createElement('button');
+            trigger.type = 'button';
+            trigger.className = 'app-detail-trigger';
+            trigger.innerHTML = '<span lang="ja">詳細</span><span lang="en">Details</span>';
+            appLinks.appendChild(trigger);
+        }
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openModal(card, trigger);
+        });
         card.addEventListener('click', (e) => {
-            if (e.target.closest('a')) return;
-            const thumb = card.querySelector('.app-thumb');
-            const cardTitle = card.querySelector('.app-title');
-            if (!thumb || !cardTitle) return;
-            opener = card;
-            img.src = thumb.src;
-            title.textContent = cardTitle.textContent;
-            desc.textContent = card.querySelector('.app-desc')?.textContent || '';
-            links.innerHTML = card.querySelector('.app-links')?.innerHTML || '';
-            modal.classList.add('open');
-            modal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-            dialog?.focus();
+            if (e.target.closest('a, button')) return;
+            openModal(card, trigger);
         });
     });
     modal.querySelector('.modal-close')?.addEventListener('click', close);

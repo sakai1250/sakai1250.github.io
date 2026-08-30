@@ -1307,3 +1307,20 @@ html[data-lang="en"] [lang="ja"] { display: none !important; }
   }
   .header-bar { background: var(--bg-2) !important; }
 }
+
+
+.app-detail-trigger {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.app-detail-trigger:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
