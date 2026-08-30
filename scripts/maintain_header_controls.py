@@ -7,21 +7,34 @@ from maintain_asset_versions import main as maintain_asset_versions
 path = Path('index.html')
 text = path.read_text(encoding='utf-8')
 
-# Make search results and shared links identify the research field immediately.
-# "Portfolio" alone is generic and wastes the most visible metadata field.
-old_title = '<title>Taigo Sakai | Portfolio</title>'
-new_title = '<title>Taigo Sakai | Computer Vision Researcher</title>'
-if old_title in text:
-    text = text.replace(old_title, new_title, 1)
-elif new_title not in text:
-    raise SystemExit('Could not find expected document title')
+# Make search results and shared links identify both the current academic stage
+# and the research field immediately. Keep older titles as migration inputs so
+# repeated maintenance remains safe across previously generated states.
+legacy_titles = (
+    '<title>Taigo Sakai | Portfolio</title>',
+    '<title>Taigo Sakai | Computer Vision Researcher</title>',
+)
+current_title = '<title>Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher</title>'
+for legacy_title in legacy_titles:
+    if legacy_title in text:
+        text = text.replace(legacy_title, current_title, 1)
+        break
+else:
+    if current_title not in text:
+        raise SystemExit('Could not find expected document title')
 
-old_og_title = '<meta property="og:title" content="Taigo Sakai | Portfolio">'
-new_og_title = '<meta property="og:title" content="Taigo Sakai | Computer Vision Researcher">'
-if old_og_title in text:
-    text = text.replace(old_og_title, new_og_title, 1)
-elif new_og_title not in text:
-    raise SystemExit('Could not find expected Open Graph title')
+legacy_og_titles = (
+    '<meta property="og:title" content="Taigo Sakai | Portfolio">',
+    '<meta property="og:title" content="Taigo Sakai | Computer Vision Researcher">',
+)
+current_og_title = '<meta property="og:title" content="Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher">'
+for legacy_og_title in legacy_og_titles:
+    if legacy_og_title in text:
+        text = text.replace(legacy_og_title, current_og_title, 1)
+        break
+else:
+    if current_og_title not in text:
+        raise SystemExit('Could not find expected Open Graph title')
 
 # Keep social-card metadata as complete as the Open Graph metadata. This makes
 # shared portfolio links identify the person and research field without relying
@@ -29,15 +42,21 @@ elif new_og_title not in text:
 twitter_creator = '<meta name="twitter:creator" content="@ikaitaig">'
 twitter_metadata = (
     '<meta name="twitter:creator" content="@ikaitaig">\n'
-    '  <meta name="twitter:title" content="Taigo Sakai | Computer Vision Researcher">\n'
+    '  <meta name="twitter:title" content="Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher">\n'
     '  <meta name="twitter:description" content="Ph.D. Student and Special Assistant at Meijo University researching Computer Vision, Continual Learning, and Multi-View Tracking.">\n'
     '  <meta name="twitter:image" content="https://github.com/sakai1250.png">\n'
     '  <meta name="twitter:image:alt" content="Portrait of Taigo Sakai">'
 )
+legacy_twitter_title = '<meta name="twitter:title" content="Taigo Sakai | Computer Vision Researcher">'
+current_twitter_title = '<meta name="twitter:title" content="Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher">'
 if '<meta name="twitter:title"' not in text:
     if twitter_creator not in text:
         raise SystemExit('Could not find Twitter creator metadata')
     text = text.replace(twitter_creator, twitter_metadata, 1)
+elif legacy_twitter_title in text:
+    text = text.replace(legacy_twitter_title, current_twitter_title, 1)
+elif current_twitter_title not in text:
+    raise SystemExit('Could not find expected Twitter title')
 
 og_image = '<meta property="og:image" content="https://github.com/sakai1250.png">'
 og_image_with_alt = (
