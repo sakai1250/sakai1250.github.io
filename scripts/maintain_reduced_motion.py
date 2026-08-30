@@ -4,7 +4,7 @@ from pathlib import Path
 path = Path('main.js')
 text = path.read_text(encoding='utf-8')
 
-legacy = """function initStats() {
+legacy_stats = """function initStats() {
     const animate = (obj, end) => {
         let start = null;
         const step = (ts) => {
@@ -16,7 +16,7 @@ legacy = """function initStats() {
         requestAnimationFrame(step);
     };"""
 
-reduced_motion = """function initStats() {
+reduced_motion_stats = """function initStats() {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const animate = (obj, end) => {
         if (reduceMotion) {
@@ -33,19 +33,40 @@ reduced_motion = """function initStats() {
         requestAnimationFrame(step);
     };"""
 
-if legacy in text:
-    text = text.replace(legacy, reduced_motion, 1)
-elif reduced_motion not in text:
+if legacy_stats in text:
+    text = text.replace(legacy_stats, reduced_motion_stats, 1)
+elif reduced_motion_stats not in text:
     raise SystemExit('Could not find the expected stats animation implementation')
+
+legacy_scroll = """function scrollToSection(section) {
+    window.scrollTo({
+        top: section.getBoundingClientRect().top + window.scrollY - getStickyOffset(),
+        behavior: 'smooth'
+    });
+}"""
+
+reduced_motion_scroll = """function scrollToSection(section) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({
+        top: section.getBoundingClientRect().top + window.scrollY - getStickyOffset(),
+        behavior: reduceMotion ? 'auto' : 'smooth'
+    });
+}"""
+
+if legacy_scroll in text:
+    text = text.replace(legacy_scroll, reduced_motion_scroll, 1)
+elif reduced_motion_scroll not in text:
+    raise SystemExit('Could not find the expected section navigation implementation')
 
 required = [
     "window.matchMedia('(prefers-reduced-motion: reduce)').matches",
     'if (reduceMotion) {',
     'obj.textContent = end;',
     'requestAnimationFrame(step);',
+    "behavior: reduceMotion ? 'auto' : 'smooth'",
 ]
 missing = [snippet for snippet in required if snippet not in text]
 if missing:
-    raise SystemExit(f'Reduced-motion stats policy is incomplete: {missing}')
+    raise SystemExit(f'Reduced-motion policy is incomplete: {missing}')
 
 path.write_text(text, encoding='utf-8')
