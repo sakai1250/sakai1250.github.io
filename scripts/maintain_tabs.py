@@ -218,10 +218,23 @@ keyboard_modal = """function initModals() {
     });
 }
 """
+
+resource_only_modal = keyboard_modal.replace(
+    "        links.innerHTML = card.querySelector('.app-links')?.innerHTML || '';",
+    """        const linkSource = card.querySelector('.app-links')?.cloneNode(true);
+        linkSource?.querySelector('.app-detail-trigger')?.remove();
+        links.replaceChildren(...(linkSource ? Array.from(linkSource.childNodes) : []));""",
+)
+
 if focus_trapped_modal in js:
-    js = js.replace(focus_trapped_modal, keyboard_modal, 1)
-elif keyboard_modal not in js:
+    js = js.replace(focus_trapped_modal, resource_only_modal, 1)
+elif keyboard_modal in js:
+    js = js.replace(keyboard_modal, resource_only_modal, 1)
+elif resource_only_modal not in js:
     raise SystemExit("Could not find expected app modal behavior")
+
+if "linkSource?.querySelector('.app-detail-trigger')?.remove();" not in js:
+    raise SystemExit("App modal must exclude the Details trigger from copied resources")
 
 accessible_toc = """function initTOC() {
     const fab = document.getElementById('toc-fab'), menu = document.getElementById('toc-menu');
