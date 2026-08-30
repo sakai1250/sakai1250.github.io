@@ -48,7 +48,7 @@ jobs:
           DATA_FILE = os.path.join(ASSETS_DIR, 'data.json')
 
           os.makedirs(THUMB_DIR, exist_ok=True)
-          generated_files = set()
+          expected_files = set()
 
           res = requests.get(README_URL, timeout=20)
           res.raise_for_status()
@@ -125,9 +125,11 @@ jobs:
 
               app_data = {'desc': desc}
               if img_src and img_src.startswith('http'):
+                  filename = f"{full_repo.replace('/', '_')}.webp"
+                  local_path = os.path.join(THUMB_DIR, filename)
+                  local_web_path = f'assets/thumbnails/{filename}'
+                  expected_files.add(filename)
                   try:
-                      filename = f"{full_repo.replace('/', '_')}.webp"
-                      local_path = os.path.join(THUMB_DIR, filename)
                       image_res = requests.get(img_src, timeout=20)
                       image_res.raise_for_status()
                       img = Image.open(BytesIO(image_res.content))
@@ -137,20 +139,42 @@ jobs:
                           img = img.convert('RGB')
                       img.thumbnail((400, 400))
                       img.save(local_path, 'WEBP', quality=85)
-                      generated_files.add(filename)
-                      app_data['img'] = f'assets/thumbnails/{filename}'
+                      app_data['img'] = local_web_path
                   except Exception as exc:
                       print(f'Error processing image for {full_repo}: {exc}')
-                      app_data['img'] = img_src
+                      if os.path.isfile(local_path):
+                          print(f'Using cached thumbnail for {full_repo}: {local_web_path}')
+                          app_data['img'] = local_web_path
+                      else:
+                          app_data['img'] = img_src
 
               data['apps'][full_repo] = app_data
 
           for filename in os.listdir(THUMB_DIR):
-              if filename not in generated_files:
+              if filename not in expected_files:
                   os.remove(os.path.join(THUMB_DIR, filename))
 
           with open(DATA_FILE, 'w', encoding='utf-8') as f:
               json.dump(data, f, ensure_ascii=False, indent=2)
+          PY
+
+      - name: Guard thumbnail cache fallback policy
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          text = Path('.github/workflows/optimize-portfolio.yml').read_text(encoding='utf-8')
+          required = [
+              'expected_files.add(filename)',
+              'if os.path.isfile(local_path):',
+              "app_data['img'] = local_web_path",
+              'if filename not in expected_files:',
+          ]
+          missing = [snippet for snippet in required if snippet not in text]
+          if missing:
+              raise SystemExit(f'Thumbnail cache fallback policy is incomplete: {missing}')
+          if 'if filename not in generated_files:' in text:
+              raise SystemExit('Thumbnail cleanup still depends on current-run download success')
           PY
 
       - name: Keep app repository links aligned
