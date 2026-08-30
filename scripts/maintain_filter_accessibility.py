@@ -204,6 +204,25 @@ html = re.sub(
 if engineer_filter_label not in html or all_filter_button not in html:
     raise SystemExit("Could not normalize Engineering filter language labels")
 
+# The filter chips act as one control set, not a collection of unrelated
+# buttons. Group and name both rows so screen readers announce the purpose
+# before users move through the individual filter choices.
+filter_groups = {
+    '<div class="filter-row year-filter">': (
+        '<div class="filter-row year-filter" role="group" '
+        'aria-label="Filter research outputs by year / 研究業績を年度で絞り込む">'
+    ),
+    '<div class="filter-row">': (
+        '<div class="filter-row" role="group" '
+        'aria-label="Filter engineering work / 開発実績を絞り込む">'
+    ),
+}
+for plain_row, named_row in filter_groups.items():
+    if plain_row in html:
+        html = html.replace(plain_row, named_row, 1)
+    elif named_row not in html:
+        raise SystemExit(f"Could not find filter group: {plain_row}")
+
 status_html = (
     '<span id="search-count" class="filter-label" role="status" '
     'aria-live="polite" aria-atomic="true">'
@@ -212,7 +231,7 @@ status_html = (
     '</span>'
 )
 if status_html not in html:
-    year_filter = re.search(r'(<div class="filter-row year-filter">[\s\S]*?)(\n\s*</div>)', html)
+    year_filter = re.search(r'(<div class="filter-row year-filter"[^>]*>[\s\S]*?)(\n\s*</div>)', html)
     if not year_filter:
         raise SystemExit("Could not find year filter row for result status")
     block = year_filter.group(1)
