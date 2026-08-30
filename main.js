@@ -254,6 +254,7 @@ function initModals() {
         if (!thumb || !cardTitle) return;
         opener = trigger;
         img.src = thumb.src;
+        img.alt = `${cardTitle.textContent.trim()} screenshot`;
         title.textContent = cardTitle.textContent;
         desc.textContent = card.querySelector('.app-desc')?.textContent || '';
         const linkSource = card.querySelector('.app-links')?.cloneNode(true);
