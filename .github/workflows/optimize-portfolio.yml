@@ -329,6 +329,7 @@ jobs:
           python scripts/maintain_filter_accessibility.py
           python scripts/maintain_storage_resilience.py
           python scripts/maintain_external_links.py
+          python scripts/maintain_resource_link_accessibility.py
           python scripts/maintain_asset_versions.py
 
       - name: Commit and Push changes
