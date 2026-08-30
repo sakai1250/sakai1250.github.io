@@ -1,0 +1,39 @@
+name: Reduced Motion Maintenance
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reduced-motion-maintenance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.14'
+
+      - name: Keep JavaScript motion preference aligned
+        run: python scripts/maintain_reduced_motion.py
+
+      - name: Commit maintained JavaScript
+        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
+        with:
+          commit_message: "Respect reduced motion in stats"
+          file_pattern: "main.js"
+          commit_user_name: "sakai1250"
+          commit_user_email: "92532910+sakai1250@users.noreply.github.com"
+          commit_author: "sakai1250 <92532910+sakai1250@users.noreply.github.com>"
