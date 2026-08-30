@@ -436,9 +436,10 @@ function getStickyOffset() {
 }
 
 function scrollToSection(section) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.scrollTo({
         top: section.getBoundingClientRect().top + window.scrollY - getStickyOffset(),
-        behavior: 'smooth'
+        behavior: reduceMotion ? 'auto' : 'smooth'
     });
 }
 
