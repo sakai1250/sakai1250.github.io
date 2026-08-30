@@ -239,6 +239,15 @@ if "linkSource?.querySelector('.app-detail-trigger')?.remove();" not in js:
 if "img.alt = `${cardTitle.textContent.trim()} screenshot`;" not in js:
     raise SystemExit("App modal screenshot must have app-specific alternative text")
 
+modal_description_marker = "    modal.setAttribute('aria-describedby', 'modal-desc');"
+if modal_description_marker not in js:
+    modal_title_marker = "    modal.setAttribute('aria-labelledby', 'modal-title');"
+    if modal_title_marker not in js:
+        raise SystemExit("Could not find expected app modal accessible title")
+    js = js.replace(modal_title_marker, f"{modal_title_marker}\n{modal_description_marker}", 1)
+if modal_description_marker not in js:
+    raise SystemExit("App modal description must be associated with the dialog")
+
 accessible_toc = """function initTOC() {
     const fab = document.getElementById('toc-fab'), menu = document.getElementById('toc-menu');
     if (fab && menu) {
