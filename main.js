@@ -238,6 +238,7 @@ function initModals() {
     modal.setAttribute('role', 'dialog');
     modal.setAttribute('aria-modal', 'true');
     modal.setAttribute('aria-labelledby', 'modal-title');
+    modal.setAttribute('aria-describedby', 'modal-desc');
 
     const close = () => {
         if (!modal.classList.contains('open')) return;
