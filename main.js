@@ -669,9 +669,17 @@ async function initQiitaArticles() {
 
     const showError = () => {
         const lang = document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'ja';
-        c.textContent = lang === 'en'
-            ? 'Could not load Qiita articles.'
-            : 'Qiita記事を読み込めませんでした。';
+        const item = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = 'https://qiita.com/sakai1250';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = lang === 'en' ? 'Open Qiita profile' : 'Qiitaプロフィールを開く';
+        const message = lang === 'en'
+            ? 'Could not load recent Qiita articles. '
+            : 'Qiitaの最新記事を読み込めませんでした。';
+        item.append(document.createTextNode(message), link);
+        c.replaceChildren(item);
     };
 
     try {
