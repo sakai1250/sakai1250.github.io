@@ -48,6 +48,7 @@ for script in \
   scripts/maintain_storage_resilience.py \
   scripts/maintain_external_links.py \
   scripts/maintain_resource_link_accessibility.py \
+  scripts/maintain_reduced_motion.py \
   scripts/maintain_asset_versions.py; do
   python3 "$script"
 done
