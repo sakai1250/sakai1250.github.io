@@ -88,13 +88,15 @@ function initTabs() {
             switchTab(id, true);
         });
         i.addEventListener('keydown', (e) => {
-            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-            e.preventDefault();
             const items = Array.from(tabItems);
             const current = items.indexOf(i);
-            const next = e.key === 'ArrowRight'
-                ? (current + 1) % items.length
-                : (current - 1 + items.length) % items.length;
+            let next;
+            if (e.key === 'ArrowRight') next = (current + 1) % items.length;
+            else if (e.key === 'ArrowLeft') next = (current - 1 + items.length) % items.length;
+            else if (e.key === 'Home') next = 0;
+            else if (e.key === 'End') next = items.length - 1;
+            else return;
+            e.preventDefault();
             items[next].focus();
             switchTab(items[next].getAttribute('data-tab'), true);
         });
