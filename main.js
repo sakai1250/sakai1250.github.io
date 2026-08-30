@@ -256,7 +256,9 @@ function initModals() {
         img.src = thumb.src;
         title.textContent = cardTitle.textContent;
         desc.textContent = card.querySelector('.app-desc')?.textContent || '';
-        links.innerHTML = card.querySelector('.app-links')?.innerHTML || '';
+        const linkSource = card.querySelector('.app-links')?.cloneNode(true);
+        linkSource?.querySelector('.app-detail-trigger')?.remove();
+        links.replaceChildren(...(linkSource ? Array.from(linkSource.childNodes) : []));
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
