@@ -21,9 +21,16 @@ contact_replacement = r'''function initContactForm() {
 
         const lang = document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'ja';
         const labels = lang === 'en'
-            ? { sending: 'Sending…', success: 'Message sent.', error: 'Could not send the message.' }
-            : { sending: '送信中…', success: '送信しました。', error: '送信できませんでした。' };
+            ? { sending: 'Sending…', success: 'Message sent.', error: 'Could not send the message.', emailFallback: 'Email directly instead.' }
+            : { sending: '送信中…', success: '送信しました。', error: '送信できませんでした。', emailFallback: 'メールで直接連絡する' };
         const originalButtonHTML = button.innerHTML;
+        const showError = () => {
+            if (!status) return;
+            const link = document.createElement('a');
+            link.href = 'mailto:263441505@ccmailg.meijo-u.ac.jp';
+            link.textContent = labels.emailFallback;
+            status.replaceChildren(document.createTextNode(`${labels.error} `), link);
+        };
 
         button.disabled = true;
         button.setAttribute('aria-busy', 'true');
@@ -41,10 +48,14 @@ contact_replacement = r'''function initContactForm() {
                 headers: { 'Accept': 'application/json' },
                 signal: controller.signal
             });
-            if (status) status.textContent = response.ok ? labels.success : labels.error;
-            if (response.ok) f.reset();
+            if (response.ok) {
+                if (status) status.textContent = labels.success;
+                f.reset();
+            } else {
+                showError();
+            }
         } catch {
-            if (status) status.textContent = labels.error;
+            showError();
         } finally {
             window.clearTimeout(timeoutId);
             button.disabled = false;
