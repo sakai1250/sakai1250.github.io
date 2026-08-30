@@ -241,7 +241,33 @@ accessible_toc = """function initTOC() {
     }
 }
 """
-if accessible_toc not in js:
+
+escape_dismissible_toc = """function initTOC() {
+    const fab = document.getElementById('toc-fab'), menu = document.getElementById('toc-menu');
+    if (fab && menu) {
+        const setOpen = (open) => {
+            menu.classList.toggle('show', open);
+            fab.setAttribute('aria-expanded', String(open));
+        };
+        fab.setAttribute('aria-controls', 'toc-menu');
+        setOpen(menu.classList.contains('show'));
+        fab.addEventListener('click', () => setOpen(!menu.classList.contains('show')));
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target) && !fab.contains(e.target)) setOpen(false);
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape' || !menu.classList.contains('show')) return;
+            setOpen(false);
+            fab.focus();
+        });
+        updateTOC();
+        updateSectionTabs();
+    }
+}
+"""
+if accessible_toc in js:
+    js = js.replace(accessible_toc, escape_dismissible_toc, 1)
+elif escape_dismissible_toc not in js:
     raise SystemExit("Could not find expected TOC disclosure behavior")
 
 old_toc_link_close = "            document.getElementById('toc-menu').classList.remove('show');"
