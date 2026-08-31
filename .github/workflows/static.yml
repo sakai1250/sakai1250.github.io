@@ -57,6 +57,12 @@ jobs:
         run: python scripts/check_site_integrity.py
       - name: Validate progressive enhancement before deployment
         run: python scripts/check_progressive_enhancement.py
+      - name: Validate structured profile before deployment
+        run: python scripts/check_structured_profile.py
+      - name: Validate machine-readable profile before deployment
+        run: python scripts/check_llms_profile.py
+      - name: Validate security contact before deployment
+        run: python scripts/check_security_contact.py
       - name: Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
