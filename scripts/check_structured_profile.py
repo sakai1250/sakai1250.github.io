@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+from html.parser import HTMLParser
+from pathlib import Path
+import json
+
+
+class JsonLdParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.capture = False
+        self.blocks = []
+        self.current = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "script" and attrs.get("type") == "application/ld+json":
+            self.capture = True
+            self.current = []
+
+    def handle_data(self, data):
+        if self.capture:
+            self.current.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == "script" and self.capture:
+            self.blocks.append("".join(self.current))
+            self.capture = False
+            self.current = []
+
+
+def main():
+    parser = JsonLdParser()
+    parser.feed(Path("index.html").read_text(encoding="utf-8"))
+
+    people = []
+    for raw in parser.blocks:
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise SystemExit(f"invalid JSON-LD: {exc}")
+        items = data if isinstance(data, list) else [data]
+        people.extend(
+            item
+            for item in items
+            if isinstance(item, dict) and item.get("@type") == "Person"
+        )
+
+    if len(people) != 1:
+        raise SystemExit(
+            f"expected exactly one Person JSON-LD object, found {len(people)}"
+        )
+
+    person = people[0]
+    required_text = ["name", "jobTitle", "url"]
+    for key in required_text:
+        if not str(person.get(key, "")).strip():
+            raise SystemExit(f"Person JSON-LD is missing {key}")
+
+    job_title = str(person["jobTitle"])
+    required_roles = ("Ph.D. Student", "Special Assistant")
+    for required_role in required_roles:
+        if required_role not in job_title:
+            raise SystemExit(
+                f"Person JSON-LD jobTitle is missing current role: {required_role}"
+            )
+
+    if person["url"] != "https://sakai1250.github.io/":
+        raise SystemExit(f'unexpected profile URL: {person["url"]}')
+
+    same_as = person.get("sameAs")
+    if not isinstance(same_as, list):
+        raise SystemExit("Person JSON-LD sameAs must be a list")
+    required_profiles = {
+        "https://github.com/sakai1250",
+        "https://qiita.com/sakai1250",
+        "https://www.linkedin.com/in/sakai1250",
+        "https://scholar.google.com/citations?user=eS-5wrQAAAAJ",
+    }
+    missing_profiles = sorted(required_profiles - set(same_as))
+    if missing_profiles:
+        raise SystemExit(
+            f"Person JSON-LD is missing professional profile links: {missing_profiles}"
+        )
+
+    affiliation = person.get("affiliation")
+    if not isinstance(affiliation, dict) or affiliation.get("name") != "Meijo University":
+        raise SystemExit(
+            "Person JSON-LD must identify Meijo University as the current affiliation"
+        )
+    if affiliation.get("@type") != "CollegeOrUniversity":
+        raise SystemExit("Person JSON-LD affiliation must use CollegeOrUniversity")
+
+    if "alumniOf" in person:
+        raise SystemExit(
+            "Person JSON-LD uses alumniOf for a current affiliation; use affiliation instead"
+        )
+
+    cv_text = Path("assets/cv.txt").read_text(encoding="utf-8")
+    if person["name"].upper() not in cv_text.upper():
+        raise SystemExit("assets/cv.txt is missing the JSON-LD person name")
+    for required_role in required_roles:
+        if required_role not in cv_text:
+            raise SystemExit(f"assets/cv.txt is missing current role: {required_role}")
+    if affiliation["name"] not in cv_text:
+        raise SystemExit("assets/cv.txt is missing the current affiliation")
+    if person["url"] not in cv_text:
+        raise SystemExit("assets/cv.txt is missing the canonical portfolio URL")
+    missing_cv_profiles = sorted(
+        profile for profile in required_profiles if profile not in cv_text
+    )
+    if missing_cv_profiles:
+        raise SystemExit(
+            "assets/cv.txt is missing professional profile links from JSON-LD: "
+            + ", ".join(missing_cv_profiles)
+        )
+
+    print(
+        "OK: Person JSON-LD and assets/cv.txt contain a consistent professional identity"
+    )
+
+
+if __name__ == "__main__":
+    main()
