@@ -54,6 +54,7 @@ for script in \
   python3 "$script"
 done
 python3 scripts/check_app_repo_links.py
+python3 scripts/check_site_integrity.py
 git diff --exit-code -- index.html 404.html main.js effects.js style.css
 ```
 
@@ -65,7 +66,7 @@ If the final command reports changes, include the generated maintenance updates 
 - `style.css` controls the visual presentation and light/dark themes.
 - `main.js` handles filtering, language switching, statistics, and interaction.
 - `effects.js` contains restrained visual effects plus accessibility and presentation helpers layered on top of the core interactions.
-- `scripts/*.py` contains repeatable maintenance transforms used by GitHub Actions; keep these transforms idempotent so repeated runs do not alter already-correct content.
+- `scripts/*.py` contains repeatable maintenance transforms and checks used by GitHub Actions; keep transforms idempotent so repeated runs do not alter already-correct content.
 - `assets/cv.pdf` is the CV linked from the site header.
 - `assets/cv.txt` mirrors the core CV content for machine-readable access.
 - `llms.txt` routes machine-readable visitors to the appropriate primary sources.
