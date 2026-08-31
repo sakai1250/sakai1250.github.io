@@ -44,6 +44,7 @@ for script in \
   scripts/maintain_tabs.py \
   scripts/maintain_contact_form.py \
   scripts/maintain_header_controls.py \
+  scripts/maintain_profile_metadata.py \
   scripts/maintain_filter_accessibility.py \
   scripts/maintain_storage_resilience.py \
   scripts/maintain_external_links.py \
