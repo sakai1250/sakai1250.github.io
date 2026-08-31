@@ -21,3 +21,5 @@ jobs:
           python-version: '3.14'
       - name: Validate JSON-LD person metadata
         run: python scripts/check_structured_profile.py
+      - name: Validate machine-readable profile routes
+        run: python scripts/check_llms_profile.py
