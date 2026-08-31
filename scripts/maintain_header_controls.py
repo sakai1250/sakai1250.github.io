@@ -230,6 +230,22 @@ elif github_profile_same_tab in text:
 elif github_profile not in text:
     raise SystemExit('Could not find GitHub profile header action')
 
+# The linked document is an academic CV rather than a general-purpose resume.
+# Keep the header wording consistent with the 404 recovery navigation and the
+# English label so research visitors and recruiters know what the document is.
+cv_resume_label = (
+    '              <span lang="ja">履歴書</span>\n'
+    '              <span lang="en">CV</span>'
+)
+cv_academic_label = (
+    '              <span lang="ja">CV</span>\n'
+    '              <span lang="en">CV</span>'
+)
+if cv_resume_label in text:
+    text = text.replace(cv_resume_label, cv_academic_label, 1)
+elif cv_academic_label not in text:
+    raise SystemExit('Could not find academic CV header label')
+
 # The portrait sits immediately beside the visible name and identity. Announcing
 # the same name again for the image adds noise without conveying new content.
 header_avatar = 'class="header-avatar" src="assets/avatar.jpg" alt="Taigo Sakai"'
