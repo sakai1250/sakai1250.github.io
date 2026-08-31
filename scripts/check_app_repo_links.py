@@ -1,33 +1,11 @@
 from __future__ import annotations
 
-import re
 from pathlib import Path
+
+from app_repo_links import EXPECTED_REPOS, REPO_LINK, app_card
 
 
 INDEX = Path("index.html")
-EXPECTED_REPOS = {
-    "おつりDoctor (iOS)": "otsuri_docter",
-    "MAIORAL (iOS)": "PresentMemo",
-}
-REPO_LINK = re.compile(
-    r'href="https://github\.com/sakai1250/([A-Za-z0-9_.-]+)"[^>]*>\s*GitHub\s*</a>'
-)
-APP_CARD_MARKER = '<div class="app-card"'
-
-
-def app_card(text: str, title: str) -> str:
-    title_marker = f">{title}</a>"
-    title_pos = text.find(title_marker)
-    if title_pos == -1:
-        raise SystemExit(f"Could not find app title: {title}")
-
-    start = text.rfind(APP_CARD_MARKER, 0, title_pos)
-    if start == -1:
-        raise SystemExit(f"Could not find app card for: {title}")
-
-    next_card = text.find(APP_CARD_MARKER, title_pos + len(title_marker))
-    end = next_card if next_card != -1 else len(text)
-    return text[start:end]
 
 
 def main() -> None:
