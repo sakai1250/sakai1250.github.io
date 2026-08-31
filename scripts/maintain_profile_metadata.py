@@ -8,6 +8,30 @@ import re
 INDEX_PATH = Path("index.html")
 
 
+def maintain_page_titles(text: str) -> str:
+    old_title = "Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher"
+    new_title = "Taigo Sakai | Ph.D. Student, Special Assistant &amp; Computer Vision Researcher"
+
+    title_fields = (
+        f"<title>{old_title}</title>",
+        f'<meta property="og:title" content="{old_title}">',
+        f'<meta name="twitter:title" content="{old_title}">',
+    )
+    updated_fields = (
+        f"<title>{new_title}</title>",
+        f'<meta property="og:title" content="{new_title}">',
+        f'<meta name="twitter:title" content="{new_title}">',
+    )
+
+    for old, new in zip(title_fields, updated_fields):
+        if old in text:
+            text = text.replace(old, new, 1)
+        elif new not in text:
+            raise SystemExit(f"Could not find expected profile title field: {old}")
+
+    return text
+
+
 def maintain_structured_profile(text: str) -> str:
     old_title = '"jobTitle": "Ph.D. Student / Researcher / Engineer"'
     new_title = '"jobTitle": "Ph.D. Student / Special Assistant / Researcher / Engineer"'
@@ -105,6 +129,7 @@ def maintain_canonical_url(text: str) -> str:
 
 def main() -> None:
     text = INDEX_PATH.read_text(encoding="utf-8")
+    text = maintain_page_titles(text)
     text = maintain_structured_profile(text)
     text = maintain_visible_profile(text)
     text = maintain_canonical_url(text)
