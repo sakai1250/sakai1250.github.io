@@ -83,6 +83,10 @@ jobs:
         run: |
           python scripts/maintain_reduced_motion.py
           git diff --exit-code -- main.js
+      - name: Validate static fallback metadata before deployment
+        run: |
+          python scripts/maintain_static_fallbacks.py
+          git diff --exit-code -- index.html sitemap.xml
       - name: Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
