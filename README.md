@@ -50,14 +50,15 @@ for script in \
   scripts/maintain_external_links.py \
   scripts/maintain_resource_link_accessibility.py \
   scripts/maintain_reduced_motion.py \
-  scripts/maintain_asset_versions.py; do
+  scripts/maintain_asset_versions.py \
+  scripts/maintain_static_fallbacks.py; do
   python3 "$script"
 done
 python3 scripts/check_app_repo_links.py
 python3 scripts/check_site_integrity.py
 python3 scripts/check_progressive_enhancement.py
 python3 scripts/check_security_contact.py
-git diff --exit-code -- index.html 404.html main.js effects.js style.css
+git diff --exit-code -- index.html 404.html main.js effects.js style.css sitemap.xml
 ```
 
 If the final command reports changes, include the generated maintenance updates in the same branch before pushing.
