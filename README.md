@@ -40,20 +40,9 @@ Before opening a pull request, install the maintenance dependency and run the sa
 ```bash
 python3 -m pip install -r requirements-maintenance.txt
 python3 -m py_compile scripts/*.py
-for script in \
-  scripts/maintain_tabs.py \
-  scripts/maintain_contact_form.py \
-  scripts/maintain_header_controls.py \
-  scripts/maintain_profile_metadata.py \
-  scripts/maintain_filter_accessibility.py \
-  scripts/maintain_storage_resilience.py \
-  scripts/maintain_external_links.py \
-  scripts/maintain_resource_link_accessibility.py \
-  scripts/maintain_reduced_motion.py \
-  scripts/maintain_asset_versions.py \
-  scripts/maintain_static_fallbacks.py; do
-  python3 "$script"
-done
+python3 scripts/run_deterministic_maintenance.py
+python3 scripts/maintain_profile_metadata.py
+python3 scripts/maintain_static_fallbacks.py
 python3 scripts/check_app_repo_links.py
 python3 scripts/check_local_deep_links.py
 python3 scripts/check_site_integrity.py
