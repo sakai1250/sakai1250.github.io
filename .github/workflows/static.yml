@@ -67,6 +67,14 @@ jobs:
         run: python scripts/check_llms_profile.py
       - name: Validate security contact before deployment
         run: python scripts/check_security_contact.py
+      - name: Validate accessible resource names before deployment
+        run: |
+          python scripts/maintain_resource_link_accessibility.py
+          git diff --exit-code -- index.html
+      - name: Validate reduced-motion support before deployment
+        run: |
+          python scripts/maintain_reduced_motion.py
+          git diff --exit-code -- main.js
       - name: Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
