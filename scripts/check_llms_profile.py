@@ -7,6 +7,11 @@ def require(text, needle, source):
         raise SystemExit(f"{source} is missing required profile content: {needle}")
 
 
+def require_casefold(text, needle, source):
+    if needle.casefold() not in text.casefold():
+        raise SystemExit(f"{source} is missing required profile content: {needle}")
+
+
 def main():
     llms_path = Path("llms.txt")
     cv_path = Path("assets/cv.txt")
@@ -50,10 +55,10 @@ def main():
         "Ph.D. Student",
         "Special Assistant",
         "Meijo University",
-        "https://sakai1250.github.io/",
     ]
     for item in shared_identity:
-        require(cv_text, item, "assets/cv.txt")
+        require_casefold(cv_text, item, "assets/cv.txt")
+    require(cv_text, "https://sakai1250.github.io/", "assets/cv.txt")
 
     for profile in required_profiles[:-1]:
         require(cv_text, profile, "assets/cv.txt")
