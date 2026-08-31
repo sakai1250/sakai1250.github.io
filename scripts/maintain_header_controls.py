@@ -13,8 +13,9 @@ text = path.read_text(encoding='utf-8')
 legacy_titles = (
     '<title>Taigo Sakai | Portfolio</title>',
     '<title>Taigo Sakai | Computer Vision Researcher</title>',
+    '<title>Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher</title>',
 )
-current_title = '<title>Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher</title>'
+current_title = '<title>Taigo Sakai | Ph.D. Student, Special Assistant &amp; Computer Vision Researcher</title>'
 for legacy_title in legacy_titles:
     if legacy_title in text:
         text = text.replace(legacy_title, current_title, 1)
@@ -26,8 +27,9 @@ else:
 legacy_og_titles = (
     '<meta property="og:title" content="Taigo Sakai | Portfolio">',
     '<meta property="og:title" content="Taigo Sakai | Computer Vision Researcher">',
+    '<meta property="og:title" content="Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher">',
 )
-current_og_title = '<meta property="og:title" content="Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher">'
+current_og_title = '<meta property="og:title" content="Taigo Sakai | Ph.D. Student, Special Assistant &amp; Computer Vision Researcher">'
 for legacy_og_title in legacy_og_titles:
     if legacy_og_title in text:
         text = text.replace(legacy_og_title, current_og_title, 1)
@@ -42,21 +44,28 @@ else:
 twitter_creator = '<meta name="twitter:creator" content="@ikaitaig">'
 twitter_metadata = (
     '<meta name="twitter:creator" content="@ikaitaig">\n'
-    '  <meta name="twitter:title" content="Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher">\n'
+    '  <meta name="twitter:title" content="Taigo Sakai | Ph.D. Student, Special Assistant &amp; Computer Vision Researcher">\n'
     '  <meta name="twitter:description" content="Ph.D. Student and Special Assistant at Meijo University researching Computer Vision, Continual Learning, and Multi-View Tracking.">\n'
     '  <meta name="twitter:image" content="https://github.com/sakai1250.png">\n'
     '  <meta name="twitter:image:alt" content="Portrait of Taigo Sakai">'
 )
-legacy_twitter_title = '<meta name="twitter:title" content="Taigo Sakai | Computer Vision Researcher">'
-current_twitter_title = '<meta name="twitter:title" content="Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher">'
+legacy_twitter_titles = (
+    '<meta name="twitter:title" content="Taigo Sakai | Computer Vision Researcher">',
+    '<meta name="twitter:title" content="Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher">',
+)
+current_twitter_title = '<meta name="twitter:title" content="Taigo Sakai | Ph.D. Student, Special Assistant &amp; Computer Vision Researcher">'
 if '<meta name="twitter:title"' not in text:
     if twitter_creator not in text:
         raise SystemExit('Could not find Twitter creator metadata')
     text = text.replace(twitter_creator, twitter_metadata, 1)
-elif legacy_twitter_title in text:
-    text = text.replace(legacy_twitter_title, current_twitter_title, 1)
-elif current_twitter_title not in text:
-    raise SystemExit('Could not find expected Twitter title')
+else:
+    for legacy_twitter_title in legacy_twitter_titles:
+        if legacy_twitter_title in text:
+            text = text.replace(legacy_twitter_title, current_twitter_title, 1)
+            break
+    else:
+        if current_twitter_title not in text:
+            raise SystemExit('Could not find expected Twitter title')
 
 og_image = '<meta property="og:image" content="https://github.com/sakai1250.png">'
 og_image_with_alt = (
