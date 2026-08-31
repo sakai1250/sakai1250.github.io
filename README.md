@@ -60,6 +60,7 @@ python3 scripts/check_site_integrity.py
 python3 scripts/check_progressive_enhancement.py
 python3 scripts/check_security_contact.py
 python3 scripts/check_structured_profile.py
+python3 scripts/check_llms_profile.py
 git diff --exit-code -- index.html 404.html main.js effects.js style.css sitemap.xml
 ```
 
