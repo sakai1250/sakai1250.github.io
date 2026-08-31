@@ -21,28 +21,12 @@ jobs:
           python-version: '3.x'
       - name: Validate maintenance scripts
         run: |
-          for script in \
-            scripts/maintain_tabs.py \
-            scripts/maintain_contact_form.py \
-            scripts/maintain_header_controls.py \
-            scripts/maintain_filter_accessibility.py \
-            scripts/maintain_storage_resilience.py \
-            scripts/maintain_external_links.py \
-            scripts/maintain_asset_versions.py \
-            scripts/check_app_repo_links.py \
-            scripts/check_local_deep_links.py; do
-            python -m py_compile "$script"
-          done
+          python scripts/run_deterministic_maintenance.py --compile-only
+          python -m py_compile scripts/check_app_repo_links.py scripts/check_local_deep_links.py
       - name: Validate maintenance state and idempotence
         run: |
           run_maintenance() {
-            python scripts/maintain_tabs.py
-            python scripts/maintain_contact_form.py
-            python scripts/maintain_header_controls.py
-            python scripts/maintain_filter_accessibility.py
-            python scripts/maintain_storage_resilience.py
-            python scripts/maintain_external_links.py
-            python scripts/maintain_asset_versions.py
+            python scripts/run_deterministic_maintenance.py
           }
 
           tracked_site_files=(index.html 404.html main.js effects.js style.css)
