@@ -56,6 +56,7 @@ done
 python3 scripts/check_app_repo_links.py
 python3 scripts/check_site_integrity.py
 python3 scripts/check_progressive_enhancement.py
+python3 scripts/check_security_contact.py
 git diff --exit-code -- index.html 404.html main.js effects.js style.css
 ```
 
