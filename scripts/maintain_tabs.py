@@ -226,12 +226,17 @@ resource_only_modal = keyboard_modal.replace(
         linkSource?.querySelector('.app-detail-trigger')?.remove();
         links.replaceChildren(...(linkSource ? Array.from(linkSource.childNodes) : []));""",
 )
+described_resource_only_modal = resource_only_modal.replace(
+    "    modal.setAttribute('aria-labelledby', 'modal-title');",
+    "    modal.setAttribute('aria-labelledby', 'modal-title');\n"
+    "    modal.setAttribute('aria-describedby', 'modal-desc');",
+)
 
 if focus_trapped_modal in js:
     js = js.replace(focus_trapped_modal, resource_only_modal, 1)
 elif keyboard_modal in js:
     js = js.replace(keyboard_modal, resource_only_modal, 1)
-elif resource_only_modal not in js:
+elif resource_only_modal not in js and described_resource_only_modal not in js:
     raise SystemExit("Could not find expected app modal behavior")
 
 if "linkSource?.querySelector('.app-detail-trigger')?.remove();" not in js:
