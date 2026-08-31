@@ -67,22 +67,18 @@ jobs:
         run: python scripts/check_llms_profile.py
       - name: Validate security contact before deployment
         run: python scripts/check_security_contact.py
-      - name: Validate contact form maintenance before deployment
+      - name: Validate full interaction maintenance before deployment
         run: |
+          python scripts/maintain_tabs.py
           python scripts/maintain_contact_form.py
-          git diff --exit-code -- index.html main.js
-      - name: Validate filter accessibility before deployment
-        run: |
+          python scripts/maintain_header_controls.py
           python scripts/maintain_filter_accessibility.py
-          git diff --exit-code -- index.html main.js
-      - name: Validate accessible resource names before deployment
-        run: |
+          python scripts/maintain_storage_resilience.py
+          python scripts/maintain_external_links.py
           python scripts/maintain_resource_link_accessibility.py
-          git diff --exit-code -- index.html
-      - name: Validate reduced-motion support before deployment
-        run: |
           python scripts/maintain_reduced_motion.py
-          git diff --exit-code -- main.js
+          python scripts/maintain_asset_versions.py
+          git diff --exit-code -- index.html 404.html main.js effects.js style.css
       - name: Validate static fallback metadata before deployment
         run: |
           python scripts/maintain_static_fallbacks.py
