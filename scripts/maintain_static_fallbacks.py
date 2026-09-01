@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep visible portfolio fallback counts and update dates aligned."""
+"""Keep visible portfolio fallback counts and sitemap update dates aligned."""
 
 from pathlib import Path
 import html
@@ -12,11 +12,16 @@ INDEX_PATH = Path("index.html")
 SITEMAP_PATH = Path("sitemap.xml")
 TRACKED_PAGE_FILES = ("index.html", "main.js", "style.css", "effects.js")
 HOME_URL = "https://sakai1250.github.io/"
+STATIC_SITEMAP_FILES = {
+    "https://sakai1250.github.io/assets/cv.pdf": "assets/cv.pdf",
+    "https://sakai1250.github.io/assets/cv.txt": "assets/cv.txt",
+    "https://sakai1250.github.io/llms.txt": "llms.txt",
+}
 
 
-def source_update_date() -> str:
+def git_update_date(*tracked_files: str) -> str:
     dates = []
-    for tracked_file in TRACKED_PAGE_FILES:
+    for tracked_file in tracked_files:
         result = subprocess.run(
             ["git", "log", "-1", "--format=%cs", "--", tracked_file],
             check=True,
@@ -28,7 +33,7 @@ def source_update_date() -> str:
             dates.append(value)
 
     if not dates:
-        raise SystemExit("Could not resolve a source update date")
+        raise SystemExit(f"Could not resolve an update date for {tracked_files}")
 
     latest = max(dates)
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", latest):
@@ -36,22 +41,29 @@ def source_update_date() -> str:
     return latest
 
 
-def update_sitemap(lastmod_value: str) -> None:
+def update_sitemap(lastmods: dict[str, str]) -> None:
     namespace = "http://www.sitemaps.org/schemas/sitemap/0.9"
     ET.register_namespace("", namespace)
     ns = {"sm": namespace}
     tree = ET.parse(SITEMAP_PATH)
     root = tree.getroot()
+    updated = set()
 
     for url in root.findall("sm:url", ns):
         loc = url.find("sm:loc", ns)
         lastmod = url.find("sm:lastmod", ns)
-        if loc is not None and loc.text == HOME_URL and lastmod is not None:
-            lastmod.text = lastmod_value
-            tree.write(SITEMAP_PATH, encoding="UTF-8", xml_declaration=True)
-            return
+        if loc is None or not loc.text or loc.text not in lastmods:
+            continue
+        if lastmod is None:
+            raise SystemExit(f"Sitemap entry has no lastmod: {loc.text}")
+        lastmod.text = lastmods[loc.text]
+        updated.add(loc.text)
 
-    raise SystemExit("Could not resolve homepage lastmod in sitemap.xml")
+    missing = sorted(set(lastmods) - updated)
+    if missing:
+        raise SystemExit(f"Could not resolve sitemap entries: {missing}")
+
+    tree.write(SITEMAP_PATH, encoding="UTF-8", xml_declaration=True)
 
 
 def plain_text(fragment: str) -> str:
@@ -125,10 +137,17 @@ def update_index(lastmod_value: str) -> dict[str, int]:
 
 
 def main() -> None:
-    latest = source_update_date()
-    update_sitemap(latest)
-    counts = update_index(latest)
-    print(f"Portfolio stats: {counts}; source/footer/sitemap date: {latest}")
+    homepage_date = git_update_date(*TRACKED_PAGE_FILES)
+    sitemap_lastmods = {HOME_URL: homepage_date}
+    sitemap_lastmods.update(
+        {url: git_update_date(path) for url, path in STATIC_SITEMAP_FILES.items()}
+    )
+    update_sitemap(sitemap_lastmods)
+    counts = update_index(homepage_date)
+    print(
+        f"Portfolio stats: {counts}; homepage date: {homepage_date}; "
+        f"sitemap dates: {sitemap_lastmods}"
+    )
 
 
 if __name__ == "__main__":
