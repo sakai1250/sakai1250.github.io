@@ -297,6 +297,7 @@ function initModals() {
             return;
         }
         if (e.key !== 'Tab') return;
+
         const focusable = Array.from(modal.querySelectorAll(
             'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
         )).filter(el => !el.hasAttribute('hidden') && el.offsetParent !== null);
@@ -522,6 +523,7 @@ function initCopyButtons() {
             const error = btn.getAttribute('data-error') || 'Error';
             const spans = btn.querySelectorAll('span');
             const originals = Array.from(spans).map(s => s.textContent);
+
             const fallbackCopy = () => {
                 const textarea = document.createElement('textarea');
                 textarea.value = value;
