@@ -136,7 +136,7 @@ def main() -> None:
             (THUMB_DIR / filename).unlink()
 
     DATA_FILE.write_text(
-        json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+        json.dumps(data, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
 
