@@ -22,7 +22,7 @@ jobs:
       - name: Validate maintenance scripts
         run: |
           python scripts/run_deterministic_maintenance.py --compile-only
-          python -m py_compile scripts/check_app_repo_links.py scripts/check_local_deep_links.py scripts/sync_readme_assets.py
+          python -m py_compile scripts/check_app_repo_links.py scripts/check_local_deep_links.py scripts/check_year_filter_coverage.py scripts/sync_readme_assets.py
       - name: Validate maintenance state and idempotence
         run: |
           run_maintenance() {
@@ -58,3 +58,5 @@ jobs:
         run: python scripts/check_app_repo_links.py
       - name: Validate local tab deep links
         run: python scripts/check_local_deep_links.py
+      - name: Validate year filter coverage
+        run: python scripts/check_year_filter_coverage.py
