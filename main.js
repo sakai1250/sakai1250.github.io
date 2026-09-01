@@ -392,7 +392,11 @@ function initTOC() {
     }
 }
 
-function getSectionId(content, index) {
+function getSectionId(content, section, index) {
+    const currentId = section?.id || '';
+    const generatedId = /^(?:(?:research|engineer|portfolio)-)?section-\d+$/;
+    if (currentId && !generatedId.test(currentId)) return currentId;
+
     const prefix = content?.id?.replace(/-content$/, '') || 'portfolio';
     return `${prefix}-section-${index}`;
 }
@@ -407,7 +411,7 @@ function updateTOC() {
         const title = s.querySelector('.section-title');
         if (!title) return;
         const text = (title.querySelector(`[lang="${lang}"]`) || title).textContent.trim();
-        s.id = getSectionId(content, i);
+        s.id = getSectionId(content, s, i);
         const a = document.createElement('a');
         a.className = 'toc-link';
         a.setAttribute('data-title', text);
@@ -483,7 +487,7 @@ function updateSectionTabs() {
     nav.innerHTML = '';
 
     sections.forEach((section, index) => {
-        section.id = getSectionId(content, index);
+        section.id = getSectionId(content, section, index);
         const button = document.createElement('button');
         button.className = 'section-tab-item';
         button.type = 'button';
