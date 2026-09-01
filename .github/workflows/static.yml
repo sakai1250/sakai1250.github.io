@@ -55,10 +55,18 @@ jobs:
           done
       - name: Validate site integrity before deployment
         run: python scripts/check_site_integrity.py
+      - name: Validate interactive accessible names before deployment
+        run: python scripts/check_control_accessible_names.py
+      - name: Validate form control names before deployment
+        run: python scripts/check_form_control_names.py
+      - name: Validate new-tab link security before deployment
+        run: python scripts/check_new_tab_link_security.py
       - name: Validate progressive enhancement before deployment
         run: python scripts/check_progressive_enhancement.py
       - name: Validate local deep links before deployment
         run: python scripts/check_local_deep_links.py
+      - name: Validate year filter coverage before deployment
+        run: python scripts/check_year_filter_coverage.py
       - name: Validate app repository links before deployment
         run: python scripts/check_app_repo_links.py
       - name: Validate visible profile metadata before deployment
