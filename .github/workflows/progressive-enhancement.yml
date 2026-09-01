@@ -9,6 +9,13 @@ on:
       - main.js
       - scripts/check_progressive_enhancement.py
       - .github/workflows/progressive-enhancement.yml
+  pull_request:
+    paths:
+      - index.html
+      - style.css
+      - main.js
+      - scripts/check_progressive_enhancement.py
+      - .github/workflows/progressive-enhancement.yml
   workflow_dispatch:
 
 permissions:
