@@ -14,6 +14,16 @@ APP_TITLE_ANCHOR_RE = re.compile(
     r'(?=[^>]*\bhref=(?P<hq>["\'])(?P<href>https?://.*?)(?P=hq))[^>]*>',
     re.IGNORECASE,
 )
+APP_LINKS_BLOCK_RE = re.compile(
+    r'(?P<open><div\b[^>]*\bclass=(?P<cq>["\'])[^"\']*\bapp-links\b[^"\']*(?P=cq)[^>]*>)'
+    r'(?P<body>.*?)'
+    r'(?P<close></div>)',
+    re.IGNORECASE | re.DOTALL,
+)
+HTTP_ANCHOR_RE = re.compile(
+    r'<a\b(?=[^>]*\bhref=(?P<hq>["\'])https?://.*?(?P=hq))[^>]*>',
+    re.IGNORECASE,
+)
 
 PAPER_HOSTS = (
     'arxiv.org/',
@@ -42,11 +52,16 @@ def secure_anchor(tag: str) -> str:
     return tag[:-1] + ' rel="noopener noreferrer">'
 
 
-def keep_external_app_title_non_destructive(match: re.Match[str]) -> str:
+def keep_external_link_non_destructive(match: re.Match[str]) -> str:
     tag = match.group(0)
     if re.search(r'\btarget=(["\'])_blank\1', tag, re.IGNORECASE):
         return secure_anchor(tag)
     return secure_anchor(tag[:-1] + ' target="_blank">')
+
+
+def keep_external_app_links_non_destructive(match: re.Match[str]) -> str:
+    body = HTTP_ANCHOR_RE.sub(keep_external_link_non_destructive, match.group('body'))
+    return f"{match.group('open')}{body}{match.group('close')}"
 
 
 def clarify_resource_label(match: re.Match[str]) -> str:
@@ -75,7 +90,8 @@ for path in TARGET_FILES:
         continue
     text = path.read_text(encoding='utf-8')
     updated = remove_stale_profile_links(text)
-    updated = APP_TITLE_ANCHOR_RE.sub(keep_external_app_title_non_destructive, updated)
+    updated = APP_TITLE_ANCHOR_RE.sub(keep_external_link_non_destructive, updated)
+    updated = APP_LINKS_BLOCK_RE.sub(keep_external_app_links_non_destructive, updated)
     updated = ANCHOR_RE.sub(lambda match: secure_anchor(match.group(0)), updated)
     updated = GENERIC_LINK_RE.sub(clarify_resource_label, updated)
     path.write_text(updated, encoding='utf-8')
