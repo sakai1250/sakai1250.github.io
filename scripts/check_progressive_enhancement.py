@@ -18,11 +18,21 @@ class LinkParser(HTMLParser):
     def __init__(self):
         super().__init__()
         self.blocking_external_stylesheets = []
+        self.in_qiita_list = False
+        self.qiita_profile_fallback = False
 
     def handle_starttag(self, tag, attrs):
+        values = dict(attrs)
+        if tag == "ul" and values.get("id") == "qiita-list":
+            self.in_qiita_list = True
+        if (
+            tag == "a"
+            and self.in_qiita_list
+            and values.get("href") == "https://qiita.com/sakai1250"
+        ):
+            self.qiita_profile_fallback = True
         if tag != "link":
             return
-        values = dict(attrs)
         rel = values.get("rel", "").split()
         href = values.get("href", "")
         if (
@@ -31,6 +41,10 @@ class LinkParser(HTMLParser):
             and values.get("media") != "print"
         ):
             self.blocking_external_stylesheets.append(href)
+
+    def handle_endtag(self, tag):
+        if tag == "ul" and self.in_qiita_list:
+            self.in_qiita_list = False
 
 
 if 'id="loading-screen"' in index:
@@ -53,6 +67,8 @@ if parser.blocking_external_stylesheets:
         "Render-blocking external stylesheet detected: "
         + ", ".join(parser.blocking_external_stylesheets)
     )
+if not parser.qiita_profile_fallback:
+    problems.append("Qiita section has no usable static profile fallback.")
 
 required_index_snippets = {
     'id="main-content"': "Static main content is missing from index.html.",
@@ -63,7 +79,6 @@ required_index_snippets = {
     'href="assets/cv.pdf"': "Static CV link is missing from index.html.",
     'href="https://github.com/sakai1250"': "Static GitHub profile link is missing from index.html.",
     'href="https://scholar.google.com/citations?user=eS-5wrQAAAAJ': "Static Google Scholar link is missing from index.html.",
-    '<ul class="repo-list" id="qiita-list">\n                <li><a href="https://qiita.com/sakai1250"': "Qiita section has no usable static profile fallback.",
 }
 for snippet, message in required_index_snippets.items():
     if snippet not in index:
