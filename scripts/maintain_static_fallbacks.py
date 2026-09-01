@@ -17,6 +17,7 @@ STATIC_SITEMAP_FILES = {
     "https://sakai1250.github.io/assets/cv.txt": "assets/cv.txt",
     "https://sakai1250.github.io/llms.txt": "llms.txt",
 }
+QIITA_FALLBACK = '''<li><a href="https://qiita.com/sakai1250" target="_blank" rel="noopener noreferrer"><span lang="ja">Qiitaプロフィールを見る</span><span lang="en">Open Qiita profile</span></a></li>'''
 
 
 def git_update_date(*tracked_files: str) -> str:
@@ -100,6 +101,19 @@ def section_block(text: str, english_title: str) -> str:
 
 def update_index(lastmod_value: str) -> dict[str, int]:
     text = INDEX_PATH.read_text(encoding="utf-8")
+
+    qiita_pattern = re.compile(
+        r'(<ul\s+class="repo-list"\s+id="qiita-list">)\s*<li>[\s\S]*?</li>\s*(</ul>)',
+        re.IGNORECASE,
+    )
+    text, qiita_count = qiita_pattern.subn(
+        rf"\1\n                {QIITA_FALLBACK}\n              \2",
+        text,
+        count=1,
+    )
+    if qiita_count != 1:
+        raise SystemExit("Could not update the static Qiita fallback")
+
     counts = {
         "stat-papers": len(re.findall(r"<li\b", section_block(text, "Research Achievements"))),
         "stat-awards": len(re.findall(r"<li\b", section_block(text, "Awards"))),
