@@ -11,17 +11,47 @@ on:
       - 'sitemap.xml'
       - 'scripts/maintain_static_fallbacks.py'
       - '.github/workflows/static-fallbacks.yml'
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'main.js'
+      - 'style.css'
+      - 'effects.js'
+      - 'sitemap.xml'
+      - 'scripts/maintain_static_fallbacks.py'
+      - '.github/workflows/static-fallbacks.yml'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: static-fallbacks-main
+  group: static-fallbacks-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Validate visible fallback metadata
+        run: |
+          python3 scripts/maintain_static_fallbacks.py
+          if ! git diff --exit-code -- index.html sitemap.xml; then
+            echo 'Static fallback metadata is stale. Run scripts/maintain_static_fallbacks.py and commit the result.'
+            exit 1
+          fi
+
   sync:
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
