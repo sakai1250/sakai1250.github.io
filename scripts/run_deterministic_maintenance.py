@@ -20,6 +20,7 @@ MAINTENANCE_SCRIPTS = (
     "scripts/maintain_external_links.py",
     "scripts/maintain_resource_link_accessibility.py",
     "scripts/maintain_reduced_motion.py",
+    "scripts/maintain_app_repo_links.py",
     "scripts/maintain_asset_versions.py",
 )
 
