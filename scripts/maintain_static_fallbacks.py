@@ -64,6 +64,8 @@ def update_sitemap(lastmods: dict[str, str]) -> None:
         raise SystemExit(f"Could not resolve sitemap entries: {missing}")
 
     tree.write(SITEMAP_PATH, encoding="UTF-8", xml_declaration=True)
+    sitemap_text = SITEMAP_PATH.read_text(encoding="utf-8")
+    SITEMAP_PATH.write_text(sitemap_text.rstrip("\n") + "\n", encoding="utf-8")
 
 
 def plain_text(fragment: str) -> str:
