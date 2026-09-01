@@ -32,142 +32,18 @@ jobs:
         run: pip install -r requirements-maintenance.txt
 
       - name: Process README and optimize images
-        run: |
-          python <<'PY'
-          import json
-          import os
-          import re
-          from io import BytesIO
-
-          import requests
-          from PIL import Image
-
-          README_URL = 'https://raw.githubusercontent.com/sakai1250/sakai1250/main/Readme.md'
-          ASSETS_DIR = 'assets'
-          THUMB_DIR = os.path.join(ASSETS_DIR, 'thumbnails')
-          DATA_FILE = os.path.join(ASSETS_DIR, 'data.json')
-
-          os.makedirs(THUMB_DIR, exist_ok=True)
-          expected_files = set()
-
-          res = requests.get(README_URL, timeout=20)
-          res.raise_for_status()
-          content = res.text
-
-          data = {'badges': {}, 'apps': {}}
-
-          def extract_images(header_pattern):
-              pattern = re.compile(
-                  rf'^#+\s*(?:{header_pattern})\s*$([\s\S]*?)(?=^#+\s|\Z)',
-                  re.IGNORECASE | re.MULTILINE,
-              )
-              match = pattern.search(content)
-              if not match:
-                  return []
-
-              block = match.group(1)
-              img_pattern = re.compile(
-                  r'!\[(.*?)\]\((.*?)\)|<img\s+[^>]*src=["\'](.*?)["\'][^>]*>',
-                  re.IGNORECASE,
-              )
-              images = []
-              for m in img_pattern.finditer(block):
-                  if m.group(1) is not None:
-                      images.append({'alt': m.group(1), 'src': m.group(2)})
-                  else:
-                      tag = m.group(0)
-                      alt_match = re.search(r'alt=["\'](.*?)["\']', tag, re.IGNORECASE)
-                      images.append({'alt': alt_match.group(1) if alt_match else '', 'src': m.group(3)})
-              return images
-
-          data['badges']['badges-languages'] = extract_images(
-              r'Programming\s+languages|Languages|言語'
-          )
-          data['badges']['badges-frameworks'] = extract_images(
-              r'Frameworks|Tools|ツール|技術'
-          )
-          data['badges']['badges-orgs'] = extract_images(
-              r'Organizations|所属'
-          )
-
-          apps_match = re.search(
-              r'^##\s+My Apps\s*$([\s\S]*?)(?=^##\s|\Z)',
-              content,
-              re.IGNORECASE | re.MULTILINE,
-          )
-          apps_content = apps_match.group(1) if apps_match else ''
-
-          app_blocks = re.findall(
-              r'<td\b[^>]*>([\s\S]*?)</td>',
-              apps_content,
-              re.IGNORECASE,
-          )
-
-          for block in app_blocks:
-              repo_match = re.search(
-                  r'<a\b[^>]*href=["\']https?://github\.com/([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+?)(?:\.git)?["\'][^>]*>',
-                  block,
-                  re.IGNORECASE,
-              )
-              if not repo_match:
-                  continue
-
-              full_repo = repo_match.group(1)
-
-              paragraph_match = re.search(r'<p\b[^>]*>([\s\S]*?)</p>', block, re.IGNORECASE)
-              desc = ''
-              if paragraph_match:
-                  desc = re.sub(r'<[^>]+>', ' ', paragraph_match.group(1))
-                  desc = re.sub(r'\s+', ' ', desc).strip()
-
-              img_match = re.search(r'<img\s+[^>]*src=["\'](.*?)["\']', block, re.IGNORECASE)
-              img_src = img_match.group(1) if img_match else None
-
-              app_data = {'desc': desc}
-              if img_src and img_src.startswith('http'):
-                  filename = f"{full_repo.replace('/', '_')}.webp"
-                  local_path = os.path.join(THUMB_DIR, filename)
-                  local_web_path = f'assets/thumbnails/{filename}'
-                  expected_files.add(filename)
-                  try:
-                      image_res = requests.get(img_src, timeout=20)
-                      image_res.raise_for_status()
-                      img = Image.open(BytesIO(image_res.content))
-                      if img.mode == 'P':
-                          img = img.convert('RGBA')
-                      elif img.mode == 'CMYK':
-                          img = img.convert('RGB')
-                      img.thumbnail((400, 400))
-                      img.save(local_path, 'WEBP', quality=85)
-                      app_data['img'] = local_web_path
-                  except Exception as exc:
-                      print(f'Error processing image for {full_repo}: {exc}')
-                      if os.path.isfile(local_path):
-                          print(f'Using cached thumbnail for {full_repo}: {local_web_path}')
-                          app_data['img'] = local_web_path
-                      else:
-                          app_data['img'] = img_src
-
-              data['apps'][full_repo] = app_data
-
-          for filename in os.listdir(THUMB_DIR):
-              if filename not in expected_files:
-                  os.remove(os.path.join(THUMB_DIR, filename))
-
-          with open(DATA_FILE, 'w', encoding='utf-8') as f:
-              json.dump(data, f, ensure_ascii=False, indent=2)
-          PY
+        run: python scripts/sync_readme_assets.py
 
       - name: Guard thumbnail cache fallback policy
         run: |
           python <<'PY'
           from pathlib import Path
 
-          text = Path('.github/workflows/optimize-portfolio.yml').read_text(encoding='utf-8')
+          text = Path('scripts/sync_readme_assets.py').read_text(encoding='utf-8')
           required = [
               'expected_files.add(filename)',
-              'if os.path.isfile(local_path):',
-              "app_data['img'] = local_web_path",
+              'if local_path.is_file():',
+              'return local_web_path',
               'if filename not in expected_files:',
           ]
           missing = [snippet for snippet in required if snippet not in text]
@@ -219,16 +95,7 @@ jobs:
         run: python scripts/maintain_profile_metadata.py
 
       - name: Keep site interactions and external links aligned
-        run: |
-          python scripts/maintain_tabs.py
-          python scripts/maintain_contact_form.py
-          python scripts/maintain_header_controls.py
-          python scripts/maintain_filter_accessibility.py
-          python scripts/maintain_storage_resilience.py
-          python scripts/maintain_external_links.py
-          python scripts/maintain_resource_link_accessibility.py
-          python scripts/maintain_reduced_motion.py
-          python scripts/maintain_asset_versions.py
+        run: python scripts/run_deterministic_maintenance.py
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
