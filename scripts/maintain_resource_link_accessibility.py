@@ -68,13 +68,13 @@ def update_publication_links(text: str) -> tuple[str, int]:
 
 def update_award_links(text: str) -> tuple[str, int]:
     item_pattern = re.compile(r'<li\b[^>]*data-year="[^"]+"[^>]*>[\s\S]*?</li>')
-    anchor_pattern = re.compile(r'<a\b[^>]*>\[Link\]</a>')
+    anchor_pattern = re.compile(r'<a\b[^>]*>\[(?:Link|Details)\]</a>')
     updated_count = 0
 
     def update_item(match: re.Match[str]) -> str:
         nonlocal updated_count
         item = match.group(0)
-        if "[Link]" not in item:
+        if "[Link]" not in item and "[Details]" not in item:
             return item
 
         english_match = re.search(r'<span lang="en">([\s\S]*?)</span>', item)
@@ -89,7 +89,8 @@ def update_award_links(text: str) -> tuple[str, int]:
             anchor = anchor_match.group(0)
             updated_count += 1
             anchor = set_aria_label(anchor, f"Award details: {award}")
-            return anchor.replace(">[Link]</a>", ">[Details]</a>", 1)
+            anchor = anchor.replace(">[Link]</a>", ">[Details]</a>", 1)
+            return anchor
 
         return anchor_pattern.sub(update_anchor, item)
 
