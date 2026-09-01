@@ -6,45 +6,54 @@ from pathlib import Path
 class ControlNameParser(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.current_button = None
-        self.unnamed_buttons = []
+        self.current_control = None
+        self.unnamed_controls = []
 
     def handle_starttag(self, tag, attrs):
-        if tag != 'button':
-            return
         attrs = dict(attrs)
-        self.current_button = {
+        is_control = tag == 'button' or (tag == 'a' and attrs.get('href'))
+        if not is_control:
+            return
+        self.current_control = {
+            'tag': tag,
             'id': attrs.get('id', ''),
+            'href': attrs.get('href', ''),
             'aria_label': attrs.get('aria-label', '').strip(),
             'aria_labelledby': attrs.get('aria-labelledby', '').strip(),
             'text': [],
         }
 
     def handle_data(self, data):
-        if self.current_button is not None:
-            self.current_button['text'].append(data)
+        if self.current_control is not None:
+            self.current_control['text'].append(data)
 
     def handle_endtag(self, tag):
-        if tag != 'button' or self.current_button is None:
+        if self.current_control is None or tag != self.current_control['tag']:
             return
-        control = self.current_button
+        control = self.current_control
         visible_text = ''.join(control['text']).strip()
         if not (visible_text or control['aria_label'] or control['aria_labelledby']):
-            identifier = f"#{control['id']}" if control['id'] else '<button>'
-            self.unnamed_buttons.append(identifier)
-        self.current_button = None
+            if control['id']:
+                identifier = f"#{control['id']}"
+            elif control['tag'] == 'a':
+                identifier = f"<a href={control['href']!r}>"
+            else:
+                identifier = '<button>'
+            self.unnamed_controls.append(identifier)
+        self.current_control = None
 
 
 problems = []
 for html_path in (Path('index.html'), Path('404.html')):
     parser = ControlNameParser()
     parser.feed(html_path.read_text(encoding='utf-8'))
-    if parser.unnamed_buttons:
+    if parser.unnamed_controls:
         problems.append(
-            f"{html_path}: buttons missing an accessible name {parser.unnamed_buttons}"
+            f"{html_path}: interactive controls missing an accessible name "
+            f"{parser.unnamed_controls}"
         )
 
 if problems:
     raise SystemExit('\n'.join(problems))
 
-print('OK: interactive buttons expose visible text or an ARIA accessible name')
+print('OK: links and buttons expose visible text or an ARIA accessible name')
