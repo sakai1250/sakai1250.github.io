@@ -19,6 +19,7 @@ class Parser(HTMLParser):
         super().__init__()
         self.ids = []
         self.refs = []
+        self.aria_id_refs = []
         self.img_without_alt = []
         self.form_control_ids = []
         self.label_fors = []
@@ -32,6 +33,9 @@ class Parser(HTMLParser):
         for key in ('href', 'src'):
             if key in attrs:
                 self.refs.append(attrs[key])
+        for key in ('aria-labelledby', 'aria-describedby', 'aria-controls'):
+            if key in attrs:
+                self.aria_id_refs.extend((key, ref) for ref in attrs[key].split())
 
         if tag == 'html':
             self.html_lang = attrs.get('lang', '').strip()
@@ -72,6 +76,10 @@ for html_path in html_files:
         problems.append(f'{html_path}: form controls missing matching <label for> {unlabeled}')
 
     ids = set(parser.ids)
+    for attr, ref in parser.aria_id_refs:
+        if ref not in ids:
+            problems.append(f'{html_path}: {attr} references missing id #{ref}')
+
     html_ids[html_path.name] = ids
     total_ids += len(ids)
     total_refs += len(parser.refs)
@@ -229,5 +237,5 @@ if problems:
 
 print(
     f'OK: {len(html_files)} HTML files, {total_ids} unique ids, '
-    f'{total_refs} references, accessibility basics, generated data, CV text, sitemap and robots checked'
+    f'{total_refs} references, ARIA relationships, accessibility basics, generated data, CV text, sitemap and robots checked'
 )
