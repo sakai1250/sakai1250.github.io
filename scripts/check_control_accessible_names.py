@@ -11,6 +11,12 @@ class ControlNameParser(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
+        if self.current_control is not None and tag == 'img':
+            alt = attrs.get('alt', '').strip()
+            if alt:
+                self.current_control['text'].append(alt)
+            return
+
         is_control = tag == 'button' or (tag == 'a' and attrs.get('href'))
         if not is_control:
             return
@@ -31,8 +37,8 @@ class ControlNameParser(HTMLParser):
         if self.current_control is None or tag != self.current_control['tag']:
             return
         control = self.current_control
-        visible_text = ''.join(control['text']).strip()
-        if not (visible_text or control['aria_label'] or control['aria_labelledby']):
+        accessible_text = ''.join(control['text']).strip()
+        if not (accessible_text or control['aria_label'] or control['aria_labelledby']):
             if control['id']:
                 identifier = f"#{control['id']}"
             elif control['tag'] == 'a':
@@ -56,4 +62,4 @@ for html_path in (Path('index.html'), Path('404.html')):
 if problems:
     raise SystemExit('\n'.join(problems))
 
-print('OK: links and buttons expose visible text or an ARIA accessible name')
+print('OK: links and buttons expose text, image alt text, or an ARIA accessible name')
