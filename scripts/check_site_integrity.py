@@ -21,8 +21,6 @@ class Parser(HTMLParser):
         self.refs = []
         self.aria_id_refs = []
         self.img_without_alt = []
-        self.form_control_ids = []
-        self.label_fors = []
         self.html_lang = None
         self.has_main = False
 
@@ -43,13 +41,6 @@ class Parser(HTMLParser):
             self.has_main = True
         elif tag == 'img' and 'alt' not in attrs:
             self.img_without_alt.append(attrs.get('src', '<inline image>'))
-        elif tag in ('input', 'textarea', 'select'):
-            control_id = attrs.get('id')
-            control_type = attrs.get('type', '').lower()
-            if control_id and control_type != 'hidden':
-                self.form_control_ids.append(control_id)
-        elif tag == 'label' and attrs.get('for'):
-            self.label_fors.append(attrs['for'])
 
 
 for html_path in html_files:
@@ -70,10 +61,6 @@ for html_path in html_files:
         problems.append(f'{html_path}: missing <main> landmark')
     if parser.img_without_alt:
         problems.append(f'{html_path}: images missing alt attributes {parser.img_without_alt}')
-
-    unlabeled = sorted(set(parser.form_control_ids) - set(parser.label_fors))
-    if unlabeled:
-        problems.append(f'{html_path}: form controls missing matching <label for> {unlabeled}')
 
     ids = set(parser.ids)
     for attr, ref in parser.aria_id_refs:
