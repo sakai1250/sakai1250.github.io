@@ -29,3 +29,5 @@ jobs:
         run: python scripts/check_control_accessible_names.py
       - name: Check form control names
         run: python scripts/check_form_control_names.py
+      - name: Check new-tab link security
+        run: python scripts/check_new_tab_link_security.py
