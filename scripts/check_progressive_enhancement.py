@@ -63,6 +63,7 @@ required_index_snippets = {
     'href="assets/cv.pdf"': "Static CV link is missing from index.html.",
     'href="https://github.com/sakai1250"': "Static GitHub profile link is missing from index.html.",
     'href="https://scholar.google.com/citations?user=eS-5wrQAAAAJ': "Static Google Scholar link is missing from index.html.",
+    '<ul class="repo-list" id="qiita-list">\n                <li><a href="https://qiita.com/sakai1250"': "Qiita section has no usable static profile fallback.",
 }
 for snippet, message in required_index_snippets.items():
     if snippet not in index:
