@@ -297,7 +297,6 @@ function initModals() {
             return;
         }
         if (e.key !== 'Tab') return;
-
         const focusable = Array.from(modal.querySelectorAll(
             'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
         )).filter(el => !el.hasAttribute('hidden') && el.offsetParent !== null);
@@ -392,6 +391,11 @@ function initTOC() {
     }
 }
 
+function getSectionId(content, index) {
+    const prefix = content?.id?.replace(/-content$/, '') || 'portfolio';
+    return `${prefix}-section-${index}`;
+}
+
 function updateTOC() {
     const nav = document.getElementById('toc-nav');
     const content = document.querySelector('.tab-content.active');
@@ -402,7 +406,7 @@ function updateTOC() {
         const title = s.querySelector('.section-title');
         if (!title) return;
         const text = (title.querySelector(`[lang="${lang}"]`) || title).textContent.trim();
-        s.id = `section-${i}`;
+        s.id = getSectionId(content, i);
         const a = document.createElement('a');
         a.className = 'toc-link';
         a.setAttribute('data-title', text);
@@ -472,12 +476,13 @@ function updateActiveSectionTab() {
 
 function updateSectionTabs() {
     const nav = document.getElementById('section-tab-nav');
-    if (!nav) return;
+    const content = document.querySelector('.tab-content.active');
+    if (!nav || !content) return;
     const sections = getActiveSections();
     nav.innerHTML = '';
 
     sections.forEach((section, index) => {
-        if (!section.id) section.id = `section-${index}`;
+        section.id = getSectionId(content, index);
         const button = document.createElement('button');
         button.className = 'section-tab-item';
         button.type = 'button';
@@ -517,7 +522,6 @@ function initCopyButtons() {
             const error = btn.getAttribute('data-error') || 'Error';
             const spans = btn.querySelectorAll('span');
             const originals = Array.from(spans).map(s => s.textContent);
-
             const fallbackCopy = () => {
                 const textarea = document.createElement('textarea');
                 textarea.value = value;
