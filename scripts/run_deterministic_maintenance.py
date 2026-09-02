@@ -18,6 +18,7 @@ MAINTENANCE_SCRIPTS = (
     "scripts/maintain_contact_form.py",
     "scripts/maintain_header_controls.py",
     "scripts/maintain_filter_accessibility.py",
+    "scripts/maintain_heading_hierarchy.py",
     "scripts/maintain_storage_resilience.py",
     "scripts/maintain_external_links.py",
     "scripts/maintain_resource_link_accessibility.py",
