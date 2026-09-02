@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep the language toggle's accessible action aligned with the current language."""
+"""Keep language choice and toggle accessibility aligned with visitor intent."""
 
 from pathlib import Path
 
@@ -34,7 +34,18 @@ main_text = main_path.read_text(encoding="utf-8")
 
 legacy_anchor = """        safeStorageSet('lang', l);
         const s = document.getElementById('search');"""
-current_block = """        safeStorageSet('lang', l);
+current_block = """        if (persist) safeStorageSet('lang', l);
+
+        if (btn) {
+            btn.setAttribute(
+                'aria-label',
+                l === 'ja'
+                    ? 'Switch to English / 英語に切り替え'
+                    : 'Switch to Japanese / 日本語に切り替え'
+            );
+        }
+        const s = document.getElementById('search');"""
+previous_accessible_block = """        safeStorageSet('lang', l);
 
         if (btn) {
             btn.setAttribute(
@@ -47,9 +58,34 @@ current_block = """        safeStorageSet('lang', l);
         const s = document.getElementById('search');"""
 
 if current_block not in main_text:
-    if legacy_anchor not in main_text:
+    if previous_accessible_block in main_text:
+        main_text = main_text.replace(previous_accessible_block, current_block, 1)
+    elif legacy_anchor in main_text:
+        main_text = main_text.replace(legacy_anchor, current_block, 1)
+    else:
         raise SystemExit("Could not find language toggle state handling")
-    main_text = main_text.replace(legacy_anchor, current_block, 1)
+
+legacy_set_signature = "    const set = (l) => {"
+current_set_signature = "    const set = (l, persist = false) => {"
+if legacy_set_signature in main_text:
+    main_text = main_text.replace(legacy_set_signature, current_set_signature, 1)
+elif current_set_signature not in main_text:
+    raise SystemExit("Could not find language setter")
+
+legacy_click = "    if (btn) btn.addEventListener('click', () => set(document.documentElement.getAttribute('data-lang') === 'ja' ? 'en' : 'ja'));"
+current_click = "    if (btn) btn.addEventListener('click', () => set(document.documentElement.getAttribute('data-lang') === 'ja' ? 'en' : 'ja', true));"
+if legacy_click in main_text:
+    main_text = main_text.replace(legacy_click, current_click, 1)
+elif current_click not in main_text:
+    raise SystemExit("Could not find explicit language toggle persistence")
+
+legacy_initial = "    set(safeStorageGet('lang') || 'ja');"
+current_initial = """    const browserLanguage = (navigator.languages?.[0] || navigator.language || 'ja').toLowerCase();
+    set(safeStorageGet('lang') || (browserLanguage.startsWith('en') ? 'en' : 'ja'));"""
+if legacy_initial in main_text:
+    main_text = main_text.replace(legacy_initial, current_initial, 1)
+elif current_initial not in main_text:
+    raise SystemExit("Could not find browser-aware initial language selection")
 
 if main_text.count(current_block) != 1:
     raise SystemExit("Language toggle must have exactly one accessible action block")
@@ -57,8 +93,13 @@ if main_text.count(current_block) != 1:
 for expected in (
     "Switch to English / 英語に切り替え",
     "Switch to Japanese / 日本語に切り替え",
+    "if (persist) safeStorageSet('lang', l);",
+    "browserLanguage.startsWith('en') ? 'en' : 'ja'",
 ):
     if expected not in main_text:
-        raise SystemExit(f"Missing language toggle accessible action: {expected}")
+        raise SystemExit(f"Missing language preference behavior: {expected}")
+
+if "        safeStorageSet('lang', l);" in main_text:
+    raise SystemExit("Initial language application must not persist without an explicit visitor choice")
 
 main_path.write_text(main_text, encoding="utf-8")
