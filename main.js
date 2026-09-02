@@ -159,6 +159,15 @@ function initTheme() {
         safeStorageSet('theme', t);
         if (icon) icon.textContent = t === 'dark' ? '☾' : '☀︎';
         if (btn) btn.setAttribute('aria-pressed', String(t === 'dark'));
+        if (btn) {
+            btn.removeAttribute('aria-pressed');
+            btn.setAttribute(
+                'aria-label',
+                t === 'dark'
+                    ? 'Switch to light theme / ライトテーマに切り替え'
+                    : 'Switch to dark theme / ダークテーマに切り替え'
+            );
+        }
         document.querySelectorAll('#stats-langs, #stats-general').forEach(img => {
             img.src = img.src.replace(/theme=[^&]+/, `theme=${t === 'dark' ? 'dracula' : 'default'}`);
         });
