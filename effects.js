@@ -24,23 +24,6 @@ function getSectionByEnglishTitle(title) {
     });
 }
 
-function syncPortfolioStats() {
-    const researchSection = getSectionByEnglishTitle('Research Achievements');
-    const awardsSection = getSectionByEnglishTitle('Awards');
-    const appsSection = getSectionByEnglishTitle('My Apps & Services');
-
-    const values = {
-        'stat-papers': researchSection?.querySelectorAll('.repo-list > li').length,
-        'stat-awards': awardsSection?.querySelectorAll('.repo-list > li').length,
-        'stat-apps': appsSection?.querySelectorAll('.app-card').length,
-    };
-
-    Object.entries(values).forEach(([id, value]) => {
-        const element = document.getElementById(id);
-        if (element && Number.isInteger(value)) element.textContent = String(value);
-    });
-}
-
 function initPublicationLinkAccessibility() {
     const researchSection = getSectionByEnglishTitle('Research Achievements');
     if (!researchSection) return;
@@ -213,8 +196,6 @@ function initPortfolioPolish() {
     initAppCardKeyboardAccess();
     initModalAccessibility();
     initTocAccessibility();
-    syncPortfolioStats();
-    window.setTimeout(syncPortfolioStats, 1700);
 }
 
 if (document.readyState === 'loading') {
