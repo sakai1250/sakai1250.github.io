@@ -159,6 +159,7 @@ function initTheme() {
         safeStorageSet('theme', t);
         if (icon) icon.textContent = t === 'dark' ? '☾' : '☀︎';
 
+
         if (btn) {
             btn.removeAttribute('aria-pressed');
             btn.setAttribute(
@@ -651,6 +652,15 @@ function initLanguage() {
         document.documentElement.setAttribute('data-lang', l);
         document.documentElement.lang = l;
         safeStorageSet('lang', l);
+
+        if (btn) {
+            btn.setAttribute(
+                'aria-label',
+                l === 'ja'
+                    ? 'Switch to English / 英語に切り替え'
+                    : 'Switch to Japanese / 日本語に切り替え'
+            );
+        }
         const s = document.getElementById('search');
         if (s) s.placeholder = s.getAttribute(`data-${l}-placeholder`);
         
