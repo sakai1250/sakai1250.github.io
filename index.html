@@ -59,6 +59,19 @@
       const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
       const theme = savedTheme || systemTheme;
       document.documentElement.setAttribute('data-theme', theme);
+      window.addEventListener('DOMContentLoaded', () => {
+        const themeButton = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        if (themeButton) {
+          themeButton.setAttribute(
+            'aria-label',
+            theme === 'dark'
+              ? 'Switch to light theme / ライトテーマに切り替え'
+              : 'Switch to dark theme / ダークテーマに切り替え'
+          );
+        }
+        if (themeIcon) themeIcon.textContent = theme === 'dark' ? '☾' : '☀︎';
+      });
     })();
   </script>
 </head>
