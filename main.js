@@ -145,7 +145,7 @@ function initTabs() {
 function initTheme() {
     const btn = document.getElementById('theme-toggle');
     const icon = document.getElementById('theme-icon');
-    const set = (t, animate) => {
+    const set = (t, animate, persist = false) => {
         if (animate) {
             document.documentElement.classList.add('theme-transitioning');
             window.setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 340);
@@ -156,8 +156,9 @@ function initTheme() {
             }
         }
         document.documentElement.setAttribute('data-theme', t);
-        safeStorageSet('theme', t);
+        if (persist) safeStorageSet('theme', t);
         if (icon) icon.textContent = t === 'dark' ? '☾' : '☀︎';
+
 
 
         if (btn) {
@@ -175,7 +176,7 @@ function initTheme() {
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');
         if (metaThemeColor) metaThemeColor.setAttribute('content', t === 'dark' ? '#09131F' : '#F7F3EA');
     };
-    if (btn) btn.addEventListener('click', () => set(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark', true));
+    if (btn) btn.addEventListener('click', () => set(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark', true, true));
     set(safeStorageGet('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'), false);
 }
 
