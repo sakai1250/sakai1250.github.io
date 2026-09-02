@@ -21,6 +21,7 @@ MAINTENANCE_SCRIPTS = (
     "scripts/maintain_heading_hierarchy.py",
     "scripts/maintain_scat_grant_status.py",
     "scripts/maintain_storage_resilience.py",
+    "scripts/maintain_theme_preference_persistence.py",
     "scripts/maintain_theme_toggle_accessibility.py",
     "scripts/maintain_language_toggle_accessibility.py",
     "scripts/maintain_external_links.py",
