@@ -649,10 +649,10 @@ function initReadingProgress() {
 
 function initLanguage() {
     const btn = document.getElementById('lang-toggle');
-    const set = (l) => {
+    const set = (l, persist = false) => {
         document.documentElement.setAttribute('data-lang', l);
         document.documentElement.lang = l;
-        safeStorageSet('lang', l);
+        if (persist) safeStorageSet('lang', l);
 
         if (btn) {
             btn.setAttribute(
@@ -677,8 +677,9 @@ function initLanguage() {
         updateTOC();
         updateSectionTabs();
     };
-    if (btn) btn.addEventListener('click', () => set(document.documentElement.getAttribute('data-lang') === 'ja' ? 'en' : 'ja'));
-    set(safeStorageGet('lang') || 'ja');
+    if (btn) btn.addEventListener('click', () => set(document.documentElement.getAttribute('data-lang') === 'ja' ? 'en' : 'ja', true));
+    const browserLanguage = (navigator.languages?.[0] || navigator.language || 'ja').toLowerCase();
+    set(safeStorageGet('lang') || (browserLanguage.startsWith('en') ? 'en' : 'ja'));
 }
 
 function initContactForm() {
