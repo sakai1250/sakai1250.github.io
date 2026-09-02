@@ -63,4 +63,30 @@ if legacy_html in index_text:
 if index_text.count(current_html) != 1:
     raise SystemExit("Initial theme toggle must have exactly one accessible action label")
 
+legacy_bootstrap = """      const theme = savedTheme || systemTheme;
+      document.documentElement.setAttribute('data-theme', theme);"""
+current_bootstrap = """      const theme = savedTheme || systemTheme;
+      document.documentElement.setAttribute('data-theme', theme);
+      window.addEventListener('DOMContentLoaded', () => {
+        const themeButton = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        if (themeButton) {
+          themeButton.setAttribute(
+            'aria-label',
+            theme === 'dark'
+              ? 'Switch to light theme / ライトテーマに切り替え'
+              : 'Switch to dark theme / ダークテーマに切り替え'
+          );
+        }
+        if (themeIcon) themeIcon.textContent = theme === 'dark' ? '☾' : '☀︎';
+      });"""
+
+if legacy_bootstrap in index_text:
+    index_text = index_text.replace(legacy_bootstrap, current_bootstrap, 1)
+elif current_bootstrap not in index_text:
+    raise SystemExit("Could not find expected theme bootstrap")
+
+if index_text.count(current_bootstrap) != 1:
+    raise SystemExit("Theme bootstrap must align the initial action exactly once")
+
 index_path.write_text(index_text, encoding="utf-8")
