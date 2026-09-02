@@ -106,9 +106,13 @@ language_button_accessible = (
     '<button class="header-btn" id="lang-toggle" type="button" '
     'aria-label="Switch language / 言語切り替え">'
 )
+language_button_action = (
+    '<button class="header-btn" id="lang-toggle" type="button" '
+    'aria-label="Switch to English / 英語に切り替え">'
+)
 if language_button in text:
     text = text.replace(language_button, language_button_accessible, 1)
-elif language_button_accessible not in text:
+elif language_button_accessible not in text and language_button_action not in text:
     raise SystemExit('Could not find language toggle button')
 
 theme_button = (
