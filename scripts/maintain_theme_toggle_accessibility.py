@@ -18,13 +18,21 @@ current = """        if (btn) {
             );
         }"""
 
+# Storage-resilience maintenance historically restored the old pressed-state
+# line. Replace it when needed, but never duplicate an already-correct action
+# block. Collapse any duplicate action blocks left by an interrupted migration.
 if legacy in text:
-    text = text.replace(legacy, current, 1)
+    text = text.replace(legacy, "" if current in text else current, 1)
 elif current not in text:
     raise SystemExit("Could not find expected theme toggle state handling")
 
-if "if (btn) btn.setAttribute('aria-pressed'" in text:
+while text.count(current) > 1:
+    text = text.replace(current + "\n" + current, current, 1)
+
+if legacy in text:
     raise SystemExit("Theme toggle still exposes ambiguous aria-pressed state")
+if text.count(current) != 1:
+    raise SystemExit("Theme toggle must have exactly one accessible action block")
 
 for expected in (
     "Switch to light theme / ライトテーマに切り替え",
