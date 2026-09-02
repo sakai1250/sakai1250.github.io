@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Keep visible portfolio fallback counts and sitemap update dates aligned."""
 
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 import html
 import re
 import subprocess
@@ -12,6 +14,7 @@ INDEX_PATH = Path("index.html")
 SITEMAP_PATH = Path("sitemap.xml")
 TRACKED_PAGE_FILES = ("index.html", "main.js", "style.css", "effects.js")
 HOME_URL = "https://sakai1250.github.io/"
+SITE_TIMEZONE = ZoneInfo("Asia/Tokyo")
 STATIC_SITEMAP_FILES = {
     "https://sakai1250.github.io/assets/cv.pdf": "assets/cv.pdf",
     "https://sakai1250.github.io/assets/cv.txt": "assets/cv.txt",
@@ -24,22 +27,25 @@ def git_update_date(*tracked_files: str) -> str:
     dates = []
     for tracked_file in tracked_files:
         result = subprocess.run(
-            ["git", "log", "-1", "--format=%cs", "--", tracked_file],
+            ["git", "log", "-1", "--format=%cI", "--", tracked_file],
             check=True,
             capture_output=True,
             text=True,
         )
         value = result.stdout.strip()
         if value:
-            dates.append(value)
+            try:
+                timestamp = datetime.fromisoformat(value)
+            except ValueError as exc:
+                raise SystemExit(f"Unexpected source update timestamp: {value}") from exc
+            if timestamp.tzinfo is None:
+                raise SystemExit(f"Source update timestamp has no timezone: {value}")
+            dates.append(timestamp.astimezone(SITE_TIMEZONE).date())
 
     if not dates:
         raise SystemExit(f"Could not resolve an update date for {tracked_files}")
 
-    latest = max(dates)
-    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", latest):
-        raise SystemExit(f"Unexpected source update date: {latest}")
-    return latest
+    return max(dates).isoformat()
 
 
 def update_sitemap(lastmods: dict[str, str]) -> None:
