@@ -81,9 +81,14 @@ current_bootstrap = """      const theme = savedTheme || systemTheme;
         if (themeIcon) themeIcon.textContent = theme === 'dark' ? '☾' : '☀︎';
       });"""
 
-if legacy_bootstrap in index_text:
+# `legacy_bootstrap` is a prefix of the current form. Check the complete current
+# block first; otherwise every maintenance pass would match the prefix again and
+# append another DOMContentLoaded listener.
+if current_bootstrap in index_text:
+    pass
+elif legacy_bootstrap in index_text:
     index_text = index_text.replace(legacy_bootstrap, current_bootstrap, 1)
-elif current_bootstrap not in index_text:
+else:
     raise SystemExit("Could not find expected theme bootstrap")
 
 if index_text.count(current_bootstrap) != 1:
