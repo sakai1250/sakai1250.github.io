@@ -123,9 +123,13 @@ theme_button_accessible = (
     '<button class="header-btn" id="theme-toggle" type="button" '
     'aria-label="Switch theme / テーマ切り替え">'
 )
+theme_button_action = (
+    '<button class="header-btn" id="theme-toggle" type="button" '
+    'aria-label="Switch to light theme / ライトテーマに切り替え">'
+)
 if theme_button in text:
     text = text.replace(theme_button, theme_button_accessible, 1)
-elif theme_button_accessible not in text:
+elif theme_button_accessible not in text and theme_button_action not in text:
     raise SystemExit('Could not find theme toggle button')
 
 # The theme control already has an accessible name. Its moon/sun glyph is only
