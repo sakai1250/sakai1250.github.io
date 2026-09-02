@@ -47,3 +47,20 @@ for expected in (
         raise SystemExit(f"Missing theme toggle accessible action: {expected}")
 
 path.write_text(text, encoding="utf-8")
+
+index_path = Path("index.html")
+index_text = index_path.read_text(encoding="utf-8")
+legacy_html = 'aria-label="Switch theme / テーマ切り替え"'
+current_html = 'aria-label="Switch to light theme / ライトテーマに切り替え"'
+
+if legacy_html in index_text:
+    index_text = index_text.replace(legacy_html, current_html, 1)
+elif current_html not in index_text:
+    raise SystemExit("Could not find expected initial theme toggle accessible name")
+
+if legacy_html in index_text:
+    raise SystemExit("Initial theme toggle still has an ambiguous accessible name")
+if index_text.count(current_html) != 1:
+    raise SystemExit("Initial theme toggle must have exactly one accessible action label")
+
+index_path.write_text(index_text, encoding="utf-8")
