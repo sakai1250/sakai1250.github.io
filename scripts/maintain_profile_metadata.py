@@ -99,15 +99,29 @@ def maintain_visible_profile(text: str) -> str:
     elif filled not in text:
         raise SystemExit("Could not find expected visible profile role")
 
+    old_ja_department = "理工学研究科 電気電子・情報・材料工学専攻"
+    current_ja_department = "理工学研究科 電気・情報・材料・物質工学専攻"
+    if old_ja_department in text:
+        text = text.replace(old_ja_department, current_ja_department)
+    if text.count(current_ja_department) < 2:
+        raise SystemExit("Could not find current Japanese doctoral program wording")
+
+    old_en_department = "Dept. of Electrical, Electronic, Information and Materials Engineering"
+    current_en_department = "Department of Electrical, Information, and Materials Science Engineering"
+    if old_en_department in text:
+        text = text.replace(old_en_department, current_en_department)
+    if current_en_department not in text:
+        raise SystemExit("Could not find current English doctoral program wording")
+
     ja_pattern = re.compile(
-        r"(理工学研究科 電気電子・情報・材料工学専攻<br>\n\s*博士後期課程)(?: · Special Assistant)+"
+        r"(理工学研究科 電気・情報・材料・物質工学専攻<br>\n\s*博士後期課程)(?: · Special Assistant)+"
     )
     text, ja_count = ja_pattern.subn(r"\1 · Special Assistant", text, count=1)
     if ja_count != 1:
         raise SystemExit("Could not normalize Japanese sidebar role")
 
     en_pattern = re.compile(
-        r"(Dept\. of Electrical, Electronic, Information and Materials Engineering<br>\n\s*)"
+        r"(Department of Electrical, Information, and Materials Science Engineering<br>\n\s*)"
         r"Ph\.D\. (?:Course|Student)(?: · Special Assistant)+"
     )
     text, en_count = en_pattern.subn(r"\1Ph.D. Student · Special Assistant", text, count=1)
