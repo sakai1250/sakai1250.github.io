@@ -6,6 +6,11 @@ import re
 INDEX = Path("index.html")
 PUBLICATION_LINKS = {"[Paper]", "[Program]"}
 APP_CARD_MARKER = '<div class="app-card"'
+ORGANIZATION_LINK_LABELS = {
+    "https://github.com/RM-NAGOYASHACHIHOKO": "Organization: RM-NAGOYASHACHIHOKO",
+    "https://github.com/jphacks": "Organization: JPHacks",
+    "https://www.jogiken.com/": "Organization: Jogiken",
+}
 
 
 def normalize_text(value: str) -> str:
@@ -144,11 +149,38 @@ def update_app_links(text: str) -> tuple[str, int]:
     return "".join(updated_parts), updated_count
 
 
+def update_organization_links(text: str) -> tuple[str, int]:
+    section_match = re.search(
+        r'(<div class="badge-row" id="badges-orgs">)([\s\S]*?)(</div>)',
+        text,
+    )
+    if not section_match:
+        return text, 0
+
+    prefix, body, suffix = section_match.groups()
+    anchor_pattern = re.compile(r'<a\b[^>]*href="([^"]+)"[^>]*>[\s\S]*?</a>')
+    updated_count = 0
+
+    def update_anchor(match: re.Match[str]) -> str:
+        nonlocal updated_count
+        href = match.group(1)
+        label = ORGANIZATION_LINK_LABELS.get(href)
+        if not label:
+            return match.group(0)
+        updated_count += 1
+        return set_aria_label(match.group(0), label)
+
+    updated_body = anchor_pattern.sub(update_anchor, body)
+    start, end = section_match.span()
+    return text[:start] + prefix + updated_body + suffix + text[end:], updated_count
+
+
 def main() -> None:
     text = INDEX.read_text(encoding="utf-8")
     text, publication_count = update_publication_links(text)
     text, award_count = update_award_links(text)
     text, app_count = update_app_links(text)
+    text, organization_count = update_organization_links(text)
 
     if publication_count == 0:
         raise SystemExit("No publication resource links were found")
@@ -156,11 +188,17 @@ def main() -> None:
         raise SystemExit("No award detail links were found")
     if app_count == 0:
         raise SystemExit("No app resource links were found")
+    if organization_count != len(ORGANIZATION_LINK_LABELS):
+        raise SystemExit(
+            f"Expected {len(ORGANIZATION_LINK_LABELS)} organization links, "
+            f"found {organization_count}"
+        )
 
     INDEX.write_text(text, encoding="utf-8")
     print(
         f"Kept contextual accessible names on {publication_count} publication links, "
-        f"{award_count} award detail links, and {app_count} app resource links"
+        f"{award_count} award detail links, {app_count} app resource links, and "
+        f"{organization_count} organization links"
     )
 
 
