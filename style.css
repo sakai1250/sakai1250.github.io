@@ -884,7 +884,7 @@ img { max-width: 100%; height: auto; }
 
 /* Badges, forms, footer */
 .badge-row { margin-top: 22px; }
-.badge-row h4 {
+.badge-row h3 {
   margin: 0 0 10px;
   color: var(--primary);
   font-size: 13px;
