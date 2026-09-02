@@ -57,57 +57,6 @@ function initAppResourceLinkAccessibility() {
     });
 }
 
-function initAppCardKeyboardAccess() {
-    document.querySelectorAll('.app-card').forEach(card => {
-        const trigger = card.querySelector('.app-thumb');
-        const title = card.querySelector('.app-title')?.textContent.trim();
-        if (!trigger || !title) return;
-
-        trigger.tabIndex = 0;
-        trigger.setAttribute('role', 'button');
-        trigger.setAttribute('aria-haspopup', 'dialog');
-        trigger.setAttribute('aria-controls', 'app-modal');
-        trigger.setAttribute('aria-label', `詳細を開く: ${title} / Open details: ${title}`);
-        trigger.addEventListener('keydown', event => {
-            if (event.key !== 'Enter' && event.key !== ' ') return;
-            event.preventDefault();
-            card.click();
-        });
-    });
-}
-
-function initModalAccessibility() {
-    const modal = document.getElementById('app-modal');
-    const container = modal?.querySelector('.modal-container');
-    const closeButton = modal?.querySelector('.modal-close');
-    if (!modal || !container || !closeButton) return;
-
-    // main.js owns dialog semantics, Escape, and the focus trap. This helper only
-    // remembers the actual trigger so focus returns to the keyboard user's entry
-    // point after the dialog closes.
-    let lastTrigger = null;
-    document.querySelectorAll('.app-card').forEach(card => {
-        card.addEventListener('click', event => {
-            if (event.target.closest('a')) return;
-            const activeElement = document.activeElement;
-            lastTrigger = activeElement instanceof HTMLElement && card.contains(activeElement)
-                ? activeElement
-                : card.querySelector('.app-title');
-        });
-    });
-
-    const sync = () => {
-        if (!modal.classList.contains('open') && lastTrigger instanceof HTMLElement) {
-            lastTrigger.focus();
-            lastTrigger = null;
-        }
-    };
-
-    const observer = new MutationObserver(sync);
-    observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
-    window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
-}
-
 function initTocAccessibility() {
     const button = document.getElementById('toc-fab');
     const menu = document.getElementById('toc-menu');
@@ -134,11 +83,6 @@ function initPortfolioPolish() {
         .header-profile::after,
         .avatar-drag-tooltip {
             display: none !important;
-        }
-
-        .app-thumb[role="button"]:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
         }
 
         @media (min-width: 769px) {
@@ -193,8 +137,6 @@ function initPortfolioPolish() {
 
     initPublicationLinkAccessibility();
     initAppResourceLinkAccessibility();
-    initAppCardKeyboardAccess();
-    initModalAccessibility();
     initTocAccessibility();
 }
 
