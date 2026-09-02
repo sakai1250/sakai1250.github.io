@@ -59,7 +59,19 @@ function initTabs() {
     });
     const tabFromHash = () => {
         const match = window.location.hash.match(/^#([a-z0-9-]+)-content$/i);
-        return match && validTabs.has(match[1]) ? match[1] : null;
+        if (match && validTabs.has(match[1])) return match[1];
+
+        const rawHash = window.location.hash.slice(1);
+        if (!rawHash) return null;
+
+        let targetId;
+        try { targetId = decodeURIComponent(rawHash); } catch { targetId = rawHash; }
+        const target = document.getElementById(targetId);
+        const content = target?.closest('.tab-content');
+        if (!content?.id.endsWith('-content')) return null;
+
+        const id = content.id.replace(/-content$/, '');
+        return validTabs.has(id) ? id : null;
     };
     const switchTab = (id, updateHash = false) => {
         if (!validTabs.has(id)) return;
