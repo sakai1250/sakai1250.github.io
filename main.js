@@ -431,7 +431,13 @@ function getSectionId(content, section, index) {
     if (currentId && !generatedId.test(currentId)) return currentId;
 
     const prefix = content?.id?.replace(/-content$/, '') || 'portfolio';
-    return `${prefix}-section-${index}`;
+    const englishTitle = section?.querySelector('.section-title [lang="en"]')?.textContent.trim() || '';
+    const slug = englishTitle
+        .toLowerCase()
+        .replace(/&/g, ' and ')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    return slug ? `${prefix}-${slug}` : `${prefix}-section-${index}`;
 }
 
 function updateTOC() {
