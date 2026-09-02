@@ -27,6 +27,27 @@ else:
 if index_text.count(current_button) != 1:
     raise SystemExit("Language toggle must have exactly one initial accessible action")
 
+language_bootstrap = """  <!-- Language Initialization: Resolve Saved or Browser Preference Before Paint -->
+  <script>
+    (function () {
+      let savedLanguage = null;
+      try { savedLanguage = localStorage.getItem('lang'); } catch {}
+      const browserLanguage = (navigator.languages?.[0] || navigator.language || 'ja').toLowerCase();
+      const language = savedLanguage || (browserLanguage.startsWith('en') ? 'en' : 'ja');
+      document.documentElement.setAttribute('data-lang', language);
+      document.documentElement.lang = language;
+    })();
+  </script>
+"""
+theme_anchor = "  <!-- Theme Initialization: Prevent Flash of Incorrect Theme -->\n"
+if language_bootstrap not in index_text:
+    if theme_anchor not in index_text:
+        raise SystemExit("Could not find theme bootstrap anchor for language initialization")
+    index_text = index_text.replace(theme_anchor, language_bootstrap + theme_anchor, 1)
+
+if index_text.count(language_bootstrap) != 1:
+    raise SystemExit("Language bootstrap must appear exactly once")
+
 index_path.write_text(index_text, encoding="utf-8")
 
 main_path = Path("main.js")
@@ -95,9 +116,18 @@ for expected in (
     "Switch to Japanese / 日本語に切り替え",
     "if (persist) safeStorageSet('lang', l);",
     "browserLanguage.startsWith('en') ? 'en' : 'ja'",
+    "document.documentElement.lang = l;",
 ):
     if expected not in main_text:
         raise SystemExit(f"Missing language preference behavior: {expected}")
+
+for expected in (
+    "document.documentElement.setAttribute('data-lang', language);",
+    "document.documentElement.lang = language;",
+    "browserLanguage.startsWith('en') ? 'en' : 'ja'",
+):
+    if expected not in index_text:
+        raise SystemExit(f"Missing initial language bootstrap behavior: {expected}")
 
 if "        safeStorageSet('lang', l);" in main_text:
     raise SystemExit("Initial language application must not persist without an explicit visitor choice")
