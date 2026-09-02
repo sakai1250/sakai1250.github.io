@@ -73,6 +73,22 @@ function initTabs() {
         const id = content.id.replace(/-content$/, '');
         return validTabs.has(id) ? id : null;
     };
+    const scrollHashTarget = () => {
+        const rawHash = window.location.hash.slice(1);
+        if (!rawHash) return;
+
+        let targetId;
+        try { targetId = decodeURIComponent(rawHash); } catch { targetId = rawHash; }
+        const target = document.getElementById(targetId);
+        if (!target || target.classList.contains('tab-content')) return;
+
+        window.requestAnimationFrame(() => {
+            window.scrollTo({
+                top: target.getBoundingClientRect().top + window.scrollY - getStickyOffset(),
+                behavior: 'auto'
+            });
+        });
+    };
     const switchTab = (id, updateHash = false) => {
         if (!validTabs.has(id)) return;
         tabItems.forEach(i => {
@@ -114,10 +130,15 @@ function initTabs() {
         });
     });
     const initialTab = tabFromHash() || Array.from(tabItems).find(i => i.classList.contains('active'))?.getAttribute('data-tab');
-    if (initialTab) switchTab(initialTab);
+    if (initialTab) {
+        switchTab(initialTab);
+        scrollHashTarget();
+    }
     window.addEventListener('hashchange', () => {
         const tab = tabFromHash();
-        if (tab) switchTab(tab);
+        if (!tab) return;
+        switchTab(tab);
+        scrollHashTarget();
     });
 }
 
