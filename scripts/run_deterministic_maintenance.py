@@ -22,6 +22,7 @@ MAINTENANCE_SCRIPTS = (
     "scripts/maintain_scat_grant_status.py",
     "scripts/maintain_storage_resilience.py",
     "scripts/maintain_theme_toggle_accessibility.py",
+    "scripts/maintain_language_toggle_accessibility.py",
     "scripts/maintain_external_links.py",
     "scripts/maintain_resource_link_accessibility.py",
     "scripts/maintain_reduced_motion.py",
