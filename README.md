@@ -59,6 +59,14 @@ git diff --exit-code -- index.html 404.html main.js effects.js style.css sitemap
 
 If the final command reports changes, include the generated maintenance updates in the same branch before pushing.
 
+External URLs are checked by a separate network-dependent workflow. When changing publication, CV, profile, organization, app, or repository URLs, run the same check locally when network access is available:
+
+```bash
+python3 scripts/check_external_links.py
+```
+
+This catches broken or redirected navigation before it reaches researchers, recruiters, or other visitors, while keeping transient network failures separate from deterministic local checks.
+
 ## Maintenance
 
 - `index.html` contains the portfolio content and page structure.
