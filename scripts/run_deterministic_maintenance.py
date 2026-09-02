@@ -26,6 +26,7 @@ MAINTENANCE_SCRIPTS = (
     "scripts/maintain_reduced_motion.py",
     "scripts/maintain_app_repo_links.py",
     "scripts/maintain_asset_versions.py",
+    "scripts/maintain_static_fallbacks.py",
 )
 
 
