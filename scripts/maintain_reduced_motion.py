@@ -77,9 +77,17 @@ reduced_motion_toc_scroll = """            const h = document.querySelector('.he
                 behavior: reduceMotion ? 'auto' : 'smooth'
             });"""
 
+sticky_aware_toc_scroll = """            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            window.scrollTo({
+                top: s.getBoundingClientRect().top + window.scrollY - getStickyOffset(),
+                behavior: reduceMotion ? 'auto' : 'smooth'
+            });"""
+
 if legacy_toc_scroll in text:
-    text = text.replace(legacy_toc_scroll, reduced_motion_toc_scroll, 1)
-elif reduced_motion_toc_scroll not in text:
+    text = text.replace(legacy_toc_scroll, sticky_aware_toc_scroll, 1)
+elif reduced_motion_toc_scroll in text:
+    text = text.replace(reduced_motion_toc_scroll, sticky_aware_toc_scroll, 1)
+elif sticky_aware_toc_scroll not in text:
     raise SystemExit('Could not find the expected table-of-contents navigation implementation')
 
 required = [
@@ -88,10 +96,13 @@ required = [
     'obj.textContent = end;',
     'requestAnimationFrame(step);',
     "behavior: reduceMotion ? 'auto' : 'smooth'",
+    'top: target.getBoundingClientRect().top + window.scrollY - getStickyOffset()',
+    'top: s.getBoundingClientRect().top + window.scrollY - getStickyOffset()',
+    'top: section.getBoundingClientRect().top + window.scrollY - getStickyOffset()',
 ]
 missing = [snippet for snippet in required if snippet not in text]
 if missing:
-    raise SystemExit(f'Reduced-motion policy is incomplete: {missing}')
+    raise SystemExit(f'Reduced-motion or sticky-offset policy is incomplete: {missing}')
 if text.count("behavior: reduceMotion ? 'auto' : 'smooth'") < 2:
     raise SystemExit('Reduced-motion policy must cover both TOC and sticky section navigation')
 
