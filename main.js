@@ -470,6 +470,7 @@ function updateTOC() {
         a.href = `#${s.id}`;
         a.addEventListener('click', (e) => {
             e.preventDefault();
+            history.replaceState(null, '', `#${s.id}`);
             const h = document.querySelector('.header-bar').offsetHeight;
             window.scrollTo({ top: s.getBoundingClientRect().top + window.scrollY - h - 20, behavior: 'smooth' });
             document.getElementById('toc-menu').classList.remove('show');
@@ -500,6 +501,7 @@ function getStickyOffset() {
 
 function scrollToSection(section) {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    history.replaceState(null, '', `#${section.id}`);
     window.scrollTo({
         top: section.getBoundingClientRect().top + window.scrollY - getStickyOffset(),
         behavior: reduceMotion ? 'auto' : 'smooth'
