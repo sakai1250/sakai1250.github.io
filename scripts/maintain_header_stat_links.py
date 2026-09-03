@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Keep header portfolio counts linked to their corresponding evidence sections."""
 
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,35 +16,26 @@ LINKS = {
 
 
 def link_stat_block(text: str, stat_id: str, href: str) -> str:
-    marker = f'id="{stat_id}"'
-    marker_index = text.find(marker)
-    if marker_index < 0:
-        raise SystemExit(f"Could not find {stat_id} in index.html")
-
-    block_start = text.rfind('            <div class="stat-item">', 0, marker_index)
-    if block_start < 0:
-        # Already maintained: verify the expected link rather than rewriting it.
-        anchor_start = text.rfind('            <a class="stat-item"', 0, marker_index)
-        if anchor_start >= 0:
-            tag_end = text.find('>', anchor_start)
-            opening_tag = text[anchor_start:tag_end]
-            if f'href="{href}"' in opening_tag:
-                return text
-        raise SystemExit(f"Could not find the stat-item wrapper for {stat_id}")
-
-    block_end = text.find('            </div>', marker_index)
-    if block_end < 0:
-        raise SystemExit(f"Could not find the stat-item closing tag for {stat_id}")
-    block_end += len('            </div>')
-
-    block = text[block_start:block_end]
-    linked = block.replace(
-        '            <div class="stat-item">',
-        f'            <a class="stat-item" href="{href}">',
-        1,
+    already_linked = re.compile(
+        rf'<a class="stat-item" href="{re.escape(href)}">\s*'
+        rf'<div class="stat-value" id="{re.escape(stat_id)}">.*?</div>\s*'
+        r'<div class="stat-label">.*?</div>\s*</a>',
+        re.S,
     )
-    linked = linked.rsplit('            </div>', 1)[0] + '            </a>'
-    return text[:block_start] + linked + text[block_end:]
+    if already_linked.search(text):
+        return text
+
+    block = re.compile(
+        r'<div class="stat-item">\s*'
+        rf'(<div class="stat-value" id="{re.escape(stat_id)}">.*?</div>\s*'
+        r'<div class="stat-label">.*?</div>)\s*</div>',
+        re.S,
+    )
+    replacement = rf'<a class="stat-item" href="{href}">\n              \1\n            </a>'
+    text, count = block.subn(replacement, text, count=1)
+    if count != 1:
+        raise SystemExit(f"Could not maintain the stat-item wrapper for {stat_id}")
+    return text
 
 
 def main() -> None:
@@ -72,13 +64,16 @@ def main() -> None:
         css = css.rstrip() + rules + "\n"
         STYLE.write_text(css, encoding="utf-8")
 
-    # Guard the contract used by the links: these IDs must remain static.
     current = INDEX.read_text(encoding="utf-8")
     for stat_id, href in LINKS.items():
         target_id = href.removeprefix("#")
         if f'id="{target_id}"' not in current:
             raise SystemExit(f"Header stat target is not static: {target_id}")
-        if f'class="stat-item" href="{href}"' not in current:
+        if not re.search(
+            rf'<a class="stat-item" href="{re.escape(href)}">.*?id="{re.escape(stat_id)}"',
+            current,
+            re.S,
+        ):
             raise SystemExit(f"Header stat link was not maintained: {stat_id}")
 
 
