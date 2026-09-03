@@ -9,6 +9,9 @@ from urllib.parse import urlsplit
 
 
 GENERATED_SECTION_ID = re.compile(r"^(?:(?:research|engineer|portfolio)-)?section-\d+$")
+DOCUMENTED_FILES = ("README.md", "llms.txt")
+PORTFOLIO_HOST = "sakai1250.github.io"
+URL_PATTERN = re.compile(r"https?://[^\s<>\"'`)\]]+")
 
 
 class Parser(HTMLParser):
@@ -109,6 +112,19 @@ def generated_section_ids(page):
     return generated
 
 
+def documented_portfolio_fragments(path):
+    text = Path(path).read_text(encoding="utf-8")
+    for raw_url in URL_PATTERN.findall(text):
+        url = raw_url.rstrip(".,;:")
+        parsed = urlsplit(url)
+        if (
+            (parsed.hostname or "").lower() == PORTFOLIO_HOST
+            and parsed.path in ("", "/")
+            and parsed.fragment
+        ):
+            yield url, parsed.fragment
+
+
 def main():
     index = parse("index.html")
     problems = []
@@ -143,10 +159,18 @@ def main():
                         f"{source}: local deep link {href!r} points to missing id {parsed.fragment!r}"
                     )
 
+    index_ids = set(index.ids)
+    for source in DOCUMENTED_FILES:
+        for url, fragment in documented_portfolio_fragments(source):
+            if fragment not in index_ids:
+                problems.append(
+                    f"{source}: documented portfolio deep link {url!r} points to missing id {fragment!r}"
+                )
+
     if problems:
         raise SystemExit("\n".join(problems))
 
-    print("OK: local deep links resolve and static/runtime section ids are unique")
+    print("OK: local and documented deep links resolve and static/runtime section ids are unique")
 
 
 if __name__ == "__main__":
