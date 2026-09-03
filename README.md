@@ -7,7 +7,9 @@ Personal portfolio for Taigo Sakai, a Ph.D. student, Special Assistant, computer
 - **Portfolio:** https://sakai1250.github.io
 - **Research:** https://sakai1250.github.io/#research-content
 - **Research achievements:** https://sakai1250.github.io/#research-research-achievements
+- **Education:** https://sakai1250.github.io/#research-education
 - **Awards:** https://sakai1250.github.io/#research-awards
+- **Internship:** https://sakai1250.github.io/#research-internship
 - **Engineering:** https://sakai1250.github.io/#engineer-content
 - **Apps & services:** https://sakai1250.github.io/#engineer-my-apps-and-services
 - **CV:** https://sakai1250.github.io/assets/cv.pdf
