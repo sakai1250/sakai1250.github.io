@@ -57,6 +57,11 @@ function initTabs() {
         c.setAttribute('role', 'tabpanel');
         c.setAttribute('aria-labelledby', `${c.id.replace(/-content$/, '')}-tab`);
     });
+    tabContents.forEach(content => {
+        content.querySelectorAll('.section-card').forEach((section, index) => {
+            section.id = getSectionId(content, section, index);
+        });
+    });
     const tabFromHash = () => {
         const match = window.location.hash.match(/^#([a-z0-9-]+)-content$/i);
         if (match && validTabs.has(match[1])) return match[1];
