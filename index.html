@@ -51,6 +51,28 @@
     "affiliation": {"@type": "CollegeOrUniversity", "name": "Meijo University"}
   }
   </script>
+  <!-- Language Initialization: Resolve Saved or Browser Preference Before Paint -->
+  <script>
+    (function () {
+      let savedLanguage = null;
+      try { savedLanguage = localStorage.getItem('lang'); } catch {}
+      const browserLanguage = (navigator.languages?.[0] || navigator.language || 'ja').toLowerCase();
+      const language = savedLanguage || (browserLanguage.startsWith('en') ? 'en' : 'ja');
+      document.documentElement.setAttribute('data-lang', language);
+      document.documentElement.lang = language;
+      window.addEventListener('DOMContentLoaded', () => {
+        const languageButton = document.getElementById('lang-toggle');
+        if (languageButton) {
+          languageButton.setAttribute(
+            'aria-label',
+            language === 'ja'
+              ? 'Switch to English / 英語に切り替え'
+              : 'Switch to Japanese / 日本語に切り替え'
+          );
+        }
+      });
+    })();
+  </script>
   <!-- Theme Initialization: Prevent Flash of Incorrect Theme -->
   <script>
     (function () {
@@ -1104,7 +1126,7 @@
   </div>
 
   <script src="effects.js?v=a68cdd0ca4e8"></script>
-  <script src="main.js?v=dcac6dc7429a"></script>
+  <script src="main.js?v=49fa9e68aac4"></script>
 </body>
 
 </html>

@@ -472,7 +472,11 @@ function updateTOC() {
             e.preventDefault();
             history.replaceState(null, '', `#${s.id}`);
             const h = document.querySelector('.header-bar').offsetHeight;
-            window.scrollTo({ top: s.getBoundingClientRect().top + window.scrollY - h - 20, behavior: 'smooth' });
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            window.scrollTo({
+                top: s.getBoundingClientRect().top + window.scrollY - h - 20,
+                behavior: reduceMotion ? 'auto' : 'smooth'
+            });
             document.getElementById('toc-menu').classList.remove('show');
             document.getElementById('toc-fab')?.setAttribute('aria-expanded', 'false');
         });
