@@ -4,6 +4,7 @@ from pathlib import Path
 
 
 HTML_FILES = [Path('index.html'), Path('404.html')]
+REQUIRED_REL_TOKENS = {'noopener', 'noreferrer'}
 problems = []
 checked_links = 0
 
@@ -24,10 +25,12 @@ class LinkParser(HTMLParser):
 
         checked_links += 1
         rel_tokens = {token.lower() for token in attrs.get('rel', '').split()}
-        if 'noopener' not in rel_tokens:
+        missing_tokens = sorted(REQUIRED_REL_TOKENS - rel_tokens)
+        if missing_tokens:
             href = attrs.get('href', '<missing href>')
+            missing = ' '.join(missing_tokens)
             problems.append(
-                f'{self.path}: target="_blank" link is missing rel="noopener": {href}'
+                f'{self.path}: target="_blank" link is missing rel token(s) {missing}: {href}'
             )
 
 
@@ -42,4 +45,7 @@ for html_path in HTML_FILES:
 if problems:
     raise SystemExit('\n'.join(problems))
 
-print(f'OK: {checked_links} new-tab links include rel="noopener"')
+print(
+    f'OK: {checked_links} new-tab links include '
+    'rel="noopener noreferrer"'
+)
