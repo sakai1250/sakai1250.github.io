@@ -1,8 +1,6 @@
-# Deploy the latest main branch after portfolio optimization finishes.
-# Deployment must not depend on optimization succeeding: that workflow fetches
-# external resources, and a transient network failure must not block a valid
-# main-branch update from reaching the public site.
-name: Deploy static content to Pages
+# Validate the latest main branch after portfolio optimization finishes.
+# GitHub Pages' native branch deployment remains the single deployment owner.
+name: Post-optimization site validation
 
 on:
   workflow_run:
@@ -12,18 +10,9 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  validate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -32,8 +21,7 @@ jobs:
         with:
           ref: main
           persist-credentials: false
-      - name: Setup Pages
-        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+          fetch-depth: 0
       - name: Validate deployable portfolio essentials
         run: |
           for path in \
@@ -53,45 +41,37 @@ jobs:
               exit 1
             fi
           done
-      - name: Validate site integrity before deployment
+      - name: Validate site integrity
         run: python scripts/check_site_integrity.py
-      - name: Validate interactive accessible names before deployment
+      - name: Validate interactive accessible names
         run: python scripts/check_control_accessible_names.py
-      - name: Validate form control names before deployment
+      - name: Validate form control names
         run: python scripts/check_form_control_names.py
-      - name: Validate new-tab link security before deployment
+      - name: Validate new-tab link security
         run: python scripts/check_new_tab_link_security.py
-      - name: Validate progressive enhancement before deployment
+      - name: Validate progressive enhancement
         run: python scripts/check_progressive_enhancement.py
-      - name: Validate local deep links before deployment
+      - name: Validate local deep links
         run: python scripts/check_local_deep_links.py
-      - name: Validate year filter coverage before deployment
+      - name: Validate year filter coverage
         run: python scripts/check_year_filter_coverage.py
-      - name: Validate app repository links before deployment
+      - name: Validate app repository links
         run: python scripts/check_app_repo_links.py
-      - name: Validate visible profile metadata before deployment
+      - name: Validate visible profile metadata
         run: |
           python scripts/maintain_profile_metadata.py
           git diff --exit-code -- index.html
-      - name: Validate structured profile before deployment
+      - name: Validate structured profile
         run: python scripts/check_structured_profile.py
-      - name: Validate machine-readable profile before deployment
+      - name: Validate machine-readable profile
         run: python scripts/check_llms_profile.py
-      - name: Validate security contact before deployment
+      - name: Validate security contact
         run: python scripts/check_security_contact.py
-      - name: Validate full interaction maintenance before deployment
+      - name: Validate full interaction maintenance
         run: |
           python scripts/run_deterministic_maintenance.py
           git diff --exit-code -- index.html 404.html main.js effects.js style.css
-      - name: Validate static fallback metadata before deployment
+      - name: Validate static fallback metadata
         run: |
           python scripts/maintain_static_fallbacks.py
           git diff --exit-code -- index.html sitemap.xml
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
-        with:
-          path: '.'
-          include-hidden-files: true
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
