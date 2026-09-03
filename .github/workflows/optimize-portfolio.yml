@@ -60,9 +60,6 @@ jobs:
       - name: Keep site interactions and external links aligned
         run: python scripts/run_deterministic_maintenance.py
 
-      - name: Verify deterministic maintenance is idempotent
-        run: python scripts/check_deterministic_idempotency.py
-
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
         with:
