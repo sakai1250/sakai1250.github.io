@@ -12,7 +12,16 @@ import xml.etree.ElementTree as ET
 
 INDEX_PATH = Path("index.html")
 SITEMAP_PATH = Path("sitemap.xml")
-TRACKED_PAGE_FILES = ("index.html", "main.js", "style.css", "effects.js", "scripts")
+# Track visitor-facing sources and the transforms that can change them. Validation-only
+# check_*.py edits should not make the public portfolio look newly updated.
+TRACKED_PAGE_FILES = (
+    "index.html",
+    "main.js",
+    "style.css",
+    "effects.js",
+    "scripts/maintain_*.py",
+    "scripts/run_deterministic_maintenance.py",
+)
 HOME_URL = "https://sakai1250.github.io/"
 SITE_TIMEZONE = ZoneInfo("Asia/Tokyo")
 STATIC_SITEMAP_FILES = {
