@@ -44,7 +44,6 @@ Before opening a pull request, install the maintenance dependency and run the sa
 python3 -m pip install -r requirements-maintenance.txt
 python3 -m py_compile scripts/*.py
 python3 scripts/run_deterministic_maintenance.py
-python3 scripts/check_deterministic_idempotency.py
 python3 scripts/maintain_profile_metadata.py
 python3 scripts/maintain_static_fallbacks.py
 python3 scripts/check_app_repo_links.py
