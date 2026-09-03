@@ -12,7 +12,9 @@ INDEX = ROOT / "index.html"
 
 STATIC_SECTION_IDS = (
     "research-research-achievements",
+    "research-education",
     "research-awards",
+    "research-internship",
     "engineer-my-apps-and-services",
 )
 
