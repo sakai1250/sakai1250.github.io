@@ -1,8 +1,41 @@
+import re
 from pathlib import Path
 
 
 js_path = Path("main.js")
 js = js_path.read_text(encoding="utf-8")
+html_path = Path("index.html")
+html = html_path.read_text(encoding="utf-8")
+
+static_section_ids = {
+    "Research Achievements": "research-research-achievements",
+    "Awards": "research-awards",
+    "My Apps &amp; Services": "engineer-my-apps-and-services",
+}
+
+for english_title, section_id in static_section_ids.items():
+    marker = f'id="{section_id}"'
+    if marker in html:
+        continue
+
+    pattern = re.compile(
+        r'<section class="section-card">(?=\s*<h2 class="section-title">\s*'
+        r'<span lang="ja">[^<]*</span>\s*'
+        rf'<span lang="en">{re.escape(english_title)}</span>)'
+    )
+    html, count = pattern.subn(
+        f'<section class="section-card" id="{section_id}">',
+        html,
+        count=1,
+    )
+    if count != 1:
+        raise SystemExit(f"Could not assign static section ID for {english_title}")
+
+for section_id in static_section_ids.values():
+    if html.count(f'id="{section_id}"') != 1:
+        raise SystemExit(f"Static section ID must appear exactly once: {section_id}")
+
+html_path.write_text(html, encoding="utf-8")
 
 old = """    const tabFromHash = () => {
         const match = window.location.hash.match(/^#([a-z0-9-]+)-content$/i);
