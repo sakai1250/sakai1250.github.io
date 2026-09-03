@@ -109,6 +109,30 @@ if new_count not in text:
     else:
         raise SystemExit("Could not find filter result count block")
 
+# Keep section navigation derived from the same visible section set as the
+# sticky section tabs. Filters can hide whole sections, so rebuilding the TOC
+# from every section leaves links pointing to currently hidden content.
+old_toc_loop = "    content.querySelectorAll('.section-card').forEach((s, i) => {"
+visible_toc_loop = "    getActiveSections().forEach((s, i) => {"
+if visible_toc_loop not in text:
+    if old_toc_loop in text:
+        text = text.replace(old_toc_loop, visible_toc_loop, 1)
+    else:
+        raise SystemExit("Could not find table-of-contents section loop")
+
+old_filter_nav_update = """        if (typeof updateSectionTabs === 'function') updateSectionTabs();
+    };
+"""
+new_filter_nav_update = """        if (typeof updateTOC === 'function') updateTOC();
+        if (typeof updateSectionTabs === 'function') updateSectionTabs();
+    };
+"""
+if new_filter_nav_update not in text:
+    if old_filter_nav_update in text:
+        text = text.replace(old_filter_nav_update, new_filter_nav_update, 1)
+    else:
+        raise SystemExit("Could not find filter navigation update block")
+
 old_listener_end = """        apply();
     }));
 }
@@ -149,6 +173,8 @@ if "engineering-content" in text:
     raise SystemExit("Stale Engineering tab id remains in generated filter code")
 if "activeContent?.id === 'engineer-content'" not in text:
     raise SystemExit("Engineering year-filter synchronization was not generated")
+if visible_toc_loop not in text or new_filter_nav_update not in text:
+    raise SystemExit("Filtered section navigation synchronization was not generated")
 
 js_path.write_text(text, encoding="utf-8")
 
