@@ -17,7 +17,12 @@ Use the machine-readable CV as the primary source for biographical, publication,
 - CV PDF: https://sakai1250.github.io/assets/cv.pdf
 - Portfolio: https://sakai1250.github.io/
 - Research: https://sakai1250.github.io/#research-content
+- Research achievements: https://sakai1250.github.io/#research-research-achievements
+- Education: https://sakai1250.github.io/#research-education
+- Awards: https://sakai1250.github.io/#research-awards
+- Internship: https://sakai1250.github.io/#research-internship
 - Engineering: https://sakai1250.github.io/#engineer-content
+- Apps & services: https://sakai1250.github.io/#engineer-my-apps-and-services
 - Portfolio source: https://github.com/sakai1250/sakai1250.github.io
 - Google Scholar: https://scholar.google.com/citations?user=eS-5wrQAAAAJ
 - GitHub: https://github.com/sakai1250
@@ -35,9 +40,9 @@ Use the machine-readable CV as the primary source for biographical, publication,
 
 ## Audience routes
 
-- Research collaborators: use the portfolio research section and machine-readable CV for publications, research areas, awards, and current affiliation.
-- Recruiters: use the CV PDF for a concise overview, then GitHub for implementation evidence and the portfolio for awards and project breadth.
-- Engineers: use GitHub for source code and repositories, and Qiita for technical writing, setup notes, and practical engineering work.
+- Research collaborators: use the Research achievements section and machine-readable CV for publications, research areas, awards, and current affiliation.
+- Recruiters: use the CV PDF for a concise overview, then the Education, Awards, and Internship sections for background and evidence, and Apps & services plus GitHub for implementation breadth.
+- Engineers: use Apps & services and GitHub for source code and repositories, and Qiita for technical writing, setup notes, and practical engineering work.
 
 ## Source guidance
 
