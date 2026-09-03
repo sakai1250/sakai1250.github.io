@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(initContactForm, 'ContactForm');
     safeInit(initStickyHeader, 'StickyHeader');
     safeInit(initReadingProgress, 'ReadingProgress');
+    safeInit(initContextualShareLink, 'ContextualShareLink');
 
     // Visual Effects (From effects.js)
     safeInit(window.initBackgroundParticles, 'BackgroundParticles');
@@ -33,6 +34,28 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // === Core Functions ===
+
+function initContextualShareLink() {
+    const link = document.getElementById('share-btn');
+    if (!link) return;
+
+    const sync = () => {
+        const pageUrl = `${window.location.origin}${window.location.pathname}${window.location.search}${window.location.hash}`;
+        const params = new URLSearchParams({
+            text: "Check out Taigo Sakai's Portfolio!",
+            url: pageUrl,
+            via: 'ikaitaig'
+        });
+        link.href = `https://twitter.com/intent/tweet?${params.toString()}`;
+    };
+
+    link.addEventListener('focus', sync);
+    link.addEventListener('pointerdown', sync);
+    link.addEventListener('click', sync);
+    window.addEventListener('hashchange', sync);
+    sync();
+}
+
 
 function safeStorageGet(key) {
     try { return localStorage.getItem(key); } catch { return null; }
