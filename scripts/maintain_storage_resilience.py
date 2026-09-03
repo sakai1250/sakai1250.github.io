@@ -40,7 +40,6 @@ def update_main() -> None:
         "localStorage.setItem('theme', t);": "safeStorageSet('theme', t);",
         "set(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'), false);": "set(safeStorageGet('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'), false);",
         "localStorage.setItem('lang', l);": "safeStorageSet('lang', l);",
-        "set(localStorage.getItem('lang') || 'ja');": "set(safeStorageGet('lang') || 'ja');",
         "safeInit(window.initBackgroundParticles || initBackgroundParticles, 'BackgroundParticles');": "safeInit(window.initBackgroundParticles, 'BackgroundParticles');",
         "safeInit(window.initTypingEffect || initTypingEffect, 'TypingEffect');": "safeInit(window.initTypingEffect, 'TypingEffect');",
     }
@@ -49,6 +48,15 @@ def update_main() -> None:
             text = text.replace(old, new, 1)
         elif new not in text:
             raise SystemExit(f"Could not find expected resilient access: {old}")
+
+    legacy_language_get = "set(localStorage.getItem('lang') || 'ja');"
+    resilient_language_get = "set(safeStorageGet('lang') || 'ja');"
+    browser_aware_language_get = """const browserLanguage = (navigator.languages?.[0] || navigator.language || 'ja').toLowerCase();
+    set(safeStorageGet('lang') || (browserLanguage.startsWith('en') ? 'en' : 'ja'));"""
+    if legacy_language_get in text:
+        text = text.replace(legacy_language_get, resilient_language_get, 1)
+    elif resilient_language_get not in text and browser_aware_language_get not in text:
+        raise SystemExit("Could not find resilient language storage access")
 
     # Keep the toggle's programmatic state aligned with the applied theme. The
     # moon/sun glyph is intentionally hidden from screen readers, so without a
