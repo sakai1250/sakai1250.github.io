@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 
 INDEX_PATH = Path("index.html")
 SITEMAP_PATH = Path("sitemap.xml")
-TRACKED_PAGE_FILES = ("index.html", "main.js", "style.css", "effects.js")
+TRACKED_PAGE_FILES = ("index.html", "main.js", "style.css", "effects.js", "scripts")
 HOME_URL = "https://sakai1250.github.io/"
 SITE_TIMEZONE = ZoneInfo("Asia/Tokyo")
 STATIC_SITEMAP_FILES = {
