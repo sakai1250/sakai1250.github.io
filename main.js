@@ -500,10 +500,9 @@ function updateTOC() {
         a.addEventListener('click', (e) => {
             e.preventDefault();
             history.replaceState(null, '', `#${s.id}`);
-            const h = document.querySelector('.header-bar').offsetHeight;
             const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             window.scrollTo({
-                top: s.getBoundingClientRect().top + window.scrollY - h - 20,
+                top: s.getBoundingClientRect().top + window.scrollY - getStickyOffset(),
                 behavior: reduceMotion ? 'auto' : 'smooth'
             });
             document.getElementById('toc-menu').classList.remove('show');
