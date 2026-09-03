@@ -96,14 +96,14 @@ required = [
     'obj.textContent = end;',
     'requestAnimationFrame(step);',
     "behavior: reduceMotion ? 'auto' : 'smooth'",
+    'top: target.getBoundingClientRect().top + window.scrollY - getStickyOffset()',
     'top: s.getBoundingClientRect().top + window.scrollY - getStickyOffset()',
+    'top: section.getBoundingClientRect().top + window.scrollY - getStickyOffset()',
 ]
 missing = [snippet for snippet in required if snippet not in text]
 if missing:
-    raise SystemExit(f'Reduced-motion policy is incomplete: {missing}')
+    raise SystemExit(f'Reduced-motion or sticky-offset policy is incomplete: {missing}')
 if text.count("behavior: reduceMotion ? 'auto' : 'smooth'") < 2:
     raise SystemExit('Reduced-motion policy must cover both TOC and sticky section navigation')
-if text.count('getStickyOffset()') < 3:
-    raise SystemExit('Sticky offset must cover deep links, TOC, and sticky section navigation')
 
 path.write_text(text, encoding='utf-8')
