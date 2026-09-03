@@ -249,6 +249,7 @@ function initSearchAndFilters() {
             if (ja) ja.textContent = `${count}件`;
             if (en) en.textContent = `${count} items`;
         }
+        if (typeof updateTOC === 'function') updateTOC();
         if (typeof updateSectionTabs === 'function') updateSectionTabs();
     };
 
@@ -462,7 +463,7 @@ function updateTOC() {
     if (!nav || !content) return;
     nav.innerHTML = '';
     const lang = document.documentElement.getAttribute('data-lang') || 'ja';
-    content.querySelectorAll('.section-card').forEach((s, i) => {
+    getActiveSections().forEach((s, i) => {
         const title = s.querySelector('.section-title');
         if (!title) return;
         const text = (title.querySelector(`[lang="${lang}"]`) || title).textContent.trim();
