@@ -36,6 +36,17 @@ language_bootstrap = """  <!-- Language Initialization: Resolve Saved or Browser
       const language = savedLanguage || (browserLanguage.startsWith('en') ? 'en' : 'ja');
       document.documentElement.setAttribute('data-lang', language);
       document.documentElement.lang = language;
+      window.addEventListener('DOMContentLoaded', () => {
+        const languageButton = document.getElementById('lang-toggle');
+        if (languageButton) {
+          languageButton.setAttribute(
+            'aria-label',
+            language === 'ja'
+              ? 'Switch to English / 英語に切り替え'
+              : 'Switch to Japanese / 日本語に切り替え'
+          );
+        }
+      });
     })();
   </script>
 """
@@ -125,6 +136,9 @@ for expected in (
     "document.documentElement.setAttribute('data-lang', language);",
     "document.documentElement.lang = language;",
     "browserLanguage.startsWith('en') ? 'en' : 'ja'",
+    "const languageButton = document.getElementById('lang-toggle');",
+    "language === 'ja'",
+    "Switch to Japanese / 日本語に切り替え",
 ):
     if expected not in index_text:
         raise SystemExit(f"Missing initial language bootstrap behavior: {expected}")
