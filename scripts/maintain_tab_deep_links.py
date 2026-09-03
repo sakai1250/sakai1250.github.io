@@ -10,7 +10,7 @@ html = html_path.read_text(encoding="utf-8")
 static_section_ids = {
     "Research Achievements": "research-research-achievements",
     "Awards": "research-awards",
-    "My Apps &amp; Services": "engineer-my-apps-and-services",
+    "My Apps & Services": "engineer-my-apps-and-services",
 }
 
 for english_title, section_id in static_section_ids.items():
