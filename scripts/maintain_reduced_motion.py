@@ -53,10 +53,34 @@ reduced_motion_scroll = """function scrollToSection(section) {
     });
 }"""
 
+shareable_reduced_motion_scroll = """function scrollToSection(section) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    history.replaceState(null, '', `#${section.id}`);
+    window.scrollTo({
+        top: section.getBoundingClientRect().top + window.scrollY - getStickyOffset(),
+        behavior: reduceMotion ? 'auto' : 'smooth'
+    });
+}"""
+
 if legacy_scroll in text:
     text = text.replace(legacy_scroll, reduced_motion_scroll, 1)
-elif reduced_motion_scroll not in text:
+elif reduced_motion_scroll not in text and shareable_reduced_motion_scroll not in text:
     raise SystemExit('Could not find the expected section navigation implementation')
+
+legacy_toc_scroll = """            const h = document.querySelector('.header-bar').offsetHeight;
+            window.scrollTo({ top: s.getBoundingClientRect().top + window.scrollY - h - 20, behavior: 'smooth' });"""
+
+reduced_motion_toc_scroll = """            const h = document.querySelector('.header-bar').offsetHeight;
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            window.scrollTo({
+                top: s.getBoundingClientRect().top + window.scrollY - h - 20,
+                behavior: reduceMotion ? 'auto' : 'smooth'
+            });"""
+
+if legacy_toc_scroll in text:
+    text = text.replace(legacy_toc_scroll, reduced_motion_toc_scroll, 1)
+elif reduced_motion_toc_scroll not in text:
+    raise SystemExit('Could not find the expected table-of-contents navigation implementation')
 
 required = [
     "window.matchMedia('(prefers-reduced-motion: reduce)').matches",
@@ -68,5 +92,7 @@ required = [
 missing = [snippet for snippet in required if snippet not in text]
 if missing:
     raise SystemExit(f'Reduced-motion policy is incomplete: {missing}')
+if text.count("behavior: reduceMotion ? 'auto' : 'smooth'") < 2:
+    raise SystemExit('Reduced-motion policy must cover both TOC and sticky section navigation')
 
 path.write_text(text, encoding='utf-8')
