@@ -1324,3 +1324,16 @@ html[data-lang="en"] [lang="ja"] { display: none !important; }
   outline: 2px solid currentColor;
   outline-offset: 3px;
 }
+
+/* Header stat navigation */
+.stat-item[href] {
+  color: inherit;
+  text-decoration: none;
+}
+
+.stat-item[href]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
