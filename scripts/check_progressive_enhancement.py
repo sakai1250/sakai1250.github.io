@@ -42,13 +42,17 @@ class LinkParser(HTMLParser):
         self.qiita_profile_fallback = False
         self.primary_tab_classes = {}
         self.primary_tab_aria_current = {}
+        self.toc_hidden = {}
 
     def handle_starttag(self, tag, attrs):
         values = dict(attrs)
+        attr_names = {name for name, _ in attrs}
         element_id = values.get("id")
         if tag == "a" and element_id in {"research-tab", "engineer-tab"}:
             self.primary_tab_classes[element_id] = set(values.get("class", "").split())
             self.primary_tab_aria_current[element_id] = values.get("aria-current")
+        if element_id in {"toc-fab", "toc-menu"}:
+            self.toc_hidden[element_id] = "hidden" in attr_names
         if tag == "ul" and values.get("id") == "qiita-list":
             self.in_qiita_list = True
         if (
@@ -106,6 +110,22 @@ if parser.primary_tab_aria_current.get("research-tab") != "true":
     problems.append('Research primary navigation must expose aria-current="true" in static HTML.')
 if parser.primary_tab_aria_current.get("engineer-tab") is not None:
     problems.append("Engineering primary navigation must not expose aria-current by default in static HTML.")
+
+for element_id in ("toc-fab", "toc-menu"):
+    if parser.toc_hidden.get(element_id) is not True:
+        problems.append(
+            f"#{element_id} must be hidden in static HTML until JavaScript finishes TOC setup."
+        )
+
+toc_runtime_ready = """        updateTOC();
+        updateSectionTabs();
+        fab.hidden = false;
+        menu.hidden = false;
+"""
+if toc_runtime_ready not in main:
+    problems.append(
+        "TOC controls must be revealed only after TOC links and runtime behavior are initialized."
+    )
 
 required_index_snippets = {
     'id="main-content"': "Static main content is missing from index.html.",
