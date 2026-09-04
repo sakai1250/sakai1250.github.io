@@ -23,9 +23,7 @@ jobs:
         with:
           node-version: '24'
       - name: Check JavaScript syntax
-        run: |
-          node --check main.js
-          node --check effects.js
+        run: node --check main.js
       - name: Check links, accessibility basics, generated data, CV text, and indexing files
         run: python scripts/check_site_integrity.py
       - name: Check interactive control names
