@@ -70,7 +70,7 @@ External URLs are checked by a separate network-dependent workflow. When changin
 python3.14 scripts/check_external_links.py
 ```
 
-This catches broken or redirected navigation before it reaches researchers, recruiters, or other visitors, while keeping transient network failures separate from deterministic local checks.
+This catches broken or unreachable external navigation and images before they reach researchers, recruiters, or other visitors, while keeping transient network failures separate from deterministic local checks.
 
 ## Maintenance
 
