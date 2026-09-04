@@ -40,7 +40,7 @@ Then open `http://localhost:8000`.
 
 ## Local validation
 
-Before opening a pull request, install the maintenance dependency and run the same transforms checked by CI:
+Use Python 3.14 for maintenance and validation so local runs match GitHub Actions. Install the maintenance dependency and run the same transforms checked by CI:
 
 ```bash
 python3 -m pip install -r requirements-maintenance.txt
