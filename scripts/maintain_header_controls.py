@@ -219,8 +219,9 @@ if education_start < achievements_start:
     education_start, _ = find_research_section('Education')
     text = text[:education_start] + achievements_block + '\n\n' + text[education_start:]
 
-# The header action opens the GitHub profile; it does not perform a follow action.
-# Keep the label explicit so visitors know where the link goes before clicking.
+# Keep the GitHub header action as a secondary destination. The CV is the
+# canonical primary action for research visitors and recruiters, so header
+# maintenance must not require or recreate the older GitHub-primary state.
 github_follow = (
     '<a href="https://github.com/sakai1250" class="header-btn primary">\n'
     '              <span lang="ja">フォロー</span>\n'
@@ -233,9 +234,16 @@ github_profile_same_tab = (
     '              <span lang="en">GitHub</span>\n'
     '            </a>'
 )
-github_profile = (
+github_profile_primary = (
     '<a href="https://github.com/sakai1250" target="_blank" '
     'class="header-btn primary" rel="noopener noreferrer">\n'
+    '              <span lang="ja">GitHub</span>\n'
+    '              <span lang="en">GitHub</span>\n'
+    '            </a>'
+)
+github_profile = (
+    '<a href="https://github.com/sakai1250" target="_blank" '
+    'class="header-btn" rel="noopener noreferrer">\n'
     '              <span lang="ja">GitHub</span>\n'
     '              <span lang="en">GitHub</span>\n'
     '            </a>'
@@ -244,6 +252,8 @@ if github_follow in text:
     text = text.replace(github_follow, github_profile, 1)
 elif github_profile_same_tab in text:
     text = text.replace(github_profile_same_tab, github_profile, 1)
+elif github_profile_primary in text:
+    text = text.replace(github_profile_primary, github_profile, 1)
 elif github_profile not in text:
     raise SystemExit('Could not find GitHub profile header action')
 
@@ -262,6 +272,21 @@ if cv_resume_label in text:
     text = text.replace(cv_resume_label, cv_academic_label, 1)
 elif cv_academic_label not in text:
     raise SystemExit('Could not find academic CV header label')
+
+# Keep the CV as the primary static action at every maintenance stage instead of
+# temporarily flipping priority and relying on a later transform to restore it.
+cv_action = (
+    '<a href="assets/cv.pdf" target="_blank" class="header-btn" '
+    'rel="noopener noreferrer">'
+)
+cv_action_primary = (
+    '<a href="assets/cv.pdf" target="_blank" class="header-btn primary" '
+    'rel="noopener noreferrer">'
+)
+if cv_action in text:
+    text = text.replace(cv_action, cv_action_primary, 1)
+elif cv_action_primary not in text:
+    raise SystemExit('Could not find primary CV header action')
 
 # The portrait sits immediately beside the visible name and identity. Announcing
 # the same name again for the image adds noise without conveying new content.
