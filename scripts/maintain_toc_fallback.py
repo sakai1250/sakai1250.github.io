@@ -17,8 +17,6 @@ def ensure_hidden_attribute(source: str, element_id: str) -> str:
     if not match:
         raise SystemExit(f"Could not find expected #{element_id} control")
     start_tag = match.group(1)
-    if re.search(r'\shidden(?:\s*=\s*(?:"hidden"|""|hidden))?$', start_tag):
-        return source
     if re.search(r'\shidden(?:\s*=\s*(?:"hidden"|""|hidden))?(?:\s|$)', start_tag):
         return source
     replacement = f"{start_tag} hidden{match.group(2)}"
@@ -30,25 +28,59 @@ html = ensure_hidden_attribute(html, "toc-menu")
 HTML_PATH.write_text(html, encoding="utf-8")
 
 js = JS_PATH.read_text(encoding="utf-8")
-old_ready = """        updateTOC();
-        updateSectionTabs();
-    }
-}
-"""
-new_ready = """        updateTOC();
+
+# Keep initTOC itself compatible with the existing interaction maintenance.
+# The wrapper reveals the controls only if initTOC returns successfully.
+inline_reveal = """        updateTOC();
         updateSectionTabs();
         fab.hidden = false;
         menu.hidden = false;
     }
 }
 """
+plain_completion = """        updateTOC();
+        updateSectionTabs();
+    }
+}
+"""
+if inline_reveal in js:
+    js = js.replace(inline_reveal, plain_completion, 1)
+elif plain_completion not in js:
+    raise SystemExit("Could not find expected TOC initialization completion block")
 
-if new_ready not in js:
-    if old_ready not in js:
-        raise SystemExit("Could not find expected TOC initialization completion block")
-    js = js.replace(old_ready, new_ready, 1)
+plain_startup = "    safeInit(initTOC, 'TOC');"
+enhanced_startup = "    safeInit(initTOCAndReveal, 'TOC');"
+if plain_startup in js:
+    js = js.replace(plain_startup, enhanced_startup, 1)
+elif enhanced_startup not in js:
+    raise SystemExit("Could not find expected TOC startup call")
 
-if "fab.hidden = false;" not in js or "menu.hidden = false;" not in js:
-    raise SystemExit("TOC controls are not revealed after runtime initialization")
+wrapper = """
+function initTOCAndReveal() {
+    initTOC();
+    const fab = document.getElementById('toc-fab');
+    const menu = document.getElementById('toc-menu');
+    if (!fab || !menu || !fab.hasAttribute('aria-controls')) return;
+    fab.hidden = false;
+    menu.hidden = false;
+}
+
+"""
+wrapper_anchor = "function getSectionId(content, section, index) {"
+if wrapper not in js:
+    if wrapper_anchor not in js:
+        raise SystemExit("Could not find expected TOC wrapper insertion point")
+    js = js.replace(wrapper_anchor, wrapper + wrapper_anchor, 1)
+
+required_markers = (
+    enhanced_startup,
+    "function initTOCAndReveal() {",
+    "if (!fab || !menu || !fab.hasAttribute('aria-controls')) return;",
+    "fab.hidden = false;",
+    "menu.hidden = false;",
+)
+for marker in required_markers:
+    if marker not in js:
+        raise SystemExit(f"Missing TOC fallback runtime marker: {marker}")
 
 JS_PATH.write_text(js, encoding="utf-8")
