@@ -40,9 +40,13 @@ class LinkParser(HTMLParser):
         self.blocking_external_stylesheets = []
         self.in_qiita_list = False
         self.qiita_profile_fallback = False
+        self.primary_tab_classes = {}
 
     def handle_starttag(self, tag, attrs):
         values = dict(attrs)
+        element_id = values.get("id")
+        if tag == "a" and element_id in {"research-tab", "engineer-tab"}:
+            self.primary_tab_classes[element_id] = set(values.get("class", "").split())
         if tag == "ul" and values.get("id") == "qiita-list":
             self.in_qiita_list = True
         if (
@@ -89,6 +93,13 @@ if parser.blocking_external_stylesheets:
     )
 if not parser.qiita_profile_fallback:
     problems.append("Qiita section has no usable static profile fallback.")
+
+research_tab_classes = parser.primary_tab_classes.get("research-tab", set())
+engineer_tab_classes = parser.primary_tab_classes.get("engineer-tab", set())
+if "active" not in research_tab_classes:
+    problems.append("Research primary navigation is not visibly active in static HTML.")
+if "active" in engineer_tab_classes:
+    problems.append("Engineering primary navigation must not be active by default in static HTML.")
 
 required_index_snippets = {
     'id="main-content"': "Static main content is missing from index.html.",
