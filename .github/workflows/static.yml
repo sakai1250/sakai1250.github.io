@@ -27,6 +27,10 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: '3.14'
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
       - name: Validate deployable portfolio essentials
         run: |
           for path in \
@@ -46,6 +50,10 @@ jobs:
               exit 1
             fi
           done
+      - name: Validate JavaScript syntax
+        run: |
+          node --check main.js
+          node --check effects.js
       - name: Validate site integrity
         run: python scripts/check_site_integrity.py
       - name: Validate interactive accessible names
