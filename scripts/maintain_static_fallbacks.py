@@ -18,7 +18,6 @@ TRACKED_PAGE_FILES = (
     "index.html",
     "main.js",
     "style.css",
-    "effects.js",
     "scripts/maintain_*.py",
     "scripts/run_deterministic_maintenance.py",
 )

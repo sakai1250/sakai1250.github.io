@@ -66,7 +66,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
         with:
           commit_message: "chore: update portfolio assets and optimized images"
-          file_pattern: "assets/* index.html 404.html main.js effects.js style.css sitemap.xml"
+          file_pattern: "assets/* index.html 404.html main.js style.css sitemap.xml"
           commit_user_name: "sakai1250"
           commit_user_email: "92532910+sakai1250@users.noreply.github.com"
           commit_author: "sakai1250 <92532910+sakai1250@users.noreply.github.com>"
