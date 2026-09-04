@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 INDEX = Path("index.html")
-ASSETS = ("style.css", "effects.js", "main.js")
+ASSETS = ("style.css", "main.js")
 FAVICON = "assets/avatar.jpg"
 LEGACY_FAVICON = "1770375438872~2.png"
 
