@@ -57,7 +57,7 @@ python3.14 scripts/check_security_contact.py
 python3.14 scripts/check_structured_profile.py
 python3.14 scripts/check_llms_profile.py
 python3.14 scripts/check_year_filter_coverage.py
-git diff --exit-code -- index.html 404.html main.js effects.js style.css sitemap.xml
+git diff --exit-code -- index.html 404.html main.js style.css sitemap.xml
 ```
 
 If the final command reports changes, include the generated maintenance updates in the same branch before pushing.
