@@ -198,6 +198,17 @@ if sitemap.exists():
         locs = [node.text.strip() for node in tree.findall('.//sm:loc', ns) if node.text]
         if not locs:
             problems.append('sitemap.xml: no <loc> entries')
+        required_locs = {
+            'https://sakai1250.github.io/',
+            'https://sakai1250.github.io/assets/cv.pdf',
+            'https://sakai1250.github.io/assets/cv.txt',
+            'https://sakai1250.github.io/llms.txt',
+        }
+        missing_locs = sorted(required_locs.difference(locs))
+        if missing_locs:
+            problems.append(
+                f'sitemap.xml: missing required primary URLs {missing_locs}'
+            )
         for loc in locs:
             parsed = urlsplit(loc)
             if parsed.netloc != 'sakai1250.github.io':
