@@ -1337,3 +1337,9 @@ html[data-lang="en"] [lang="ja"] { display: none !important; }
   border-radius: 4px;
 }
 
+@media (min-width: 769px) {
+  .header-stats {
+    transform: translate(-50%, -8px);
+  }
+}
+

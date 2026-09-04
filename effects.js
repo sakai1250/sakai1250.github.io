@@ -17,33 +17,6 @@ function initTypingEffect() {
     if (cursor) cursor.style.display = 'none';
 }
 
-function initPortfolioPolish() {
-    if (document.getElementById('portfolio-polish-style')) return;
-
-    // Keep only the desktop adjustment that is not already represented in static CSS.
-    const style = document.createElement('style');
-    style.id = 'portfolio-polish-style';
-    style.textContent = `
-        @media (min-width: 769px) {
-            .header-stats {
-                transform: translate(-50%, -8px) !important;
-            }
-        }
-    `;
-    document.head.appendChild(style);
-
-    // Keep the current call-to-action priority until it is moved into static HTML.
-    const cvButton = document.querySelector('.header-actions a[href="assets/cv.pdf"]');
-    const githubButton = document.querySelector('.header-actions a[href*="github.com/sakai1250"]');
-    cvButton?.classList.add('primary');
-    githubButton?.classList.remove('primary');
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initPortfolioPolish, { once: true });
-} else {
-    initPortfolioPolish();
-}
 
 window.init3DEffects = init3DEffects;
 window.initBackgroundParticles = initBackgroundParticles;
