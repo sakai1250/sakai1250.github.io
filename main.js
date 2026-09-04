@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(initSearchAndFilters, 'SearchAndFilters');
     safeInit(initCopyButtons, 'CopyButtons');
     safeInit(initResearchPriority, 'ResearchPriority');
-    safeInit(initTOC, 'TOC');
+    safeInit(initTOCAndReveal, 'TOC');
     safeInit(initSectionTabs, 'SectionTabs');
     safeInit(initQiitaArticles, 'QiitaArticles');
     safeInit(initContactForm, 'ContactForm');
@@ -462,9 +462,17 @@ function initTOC() {
         });
         updateTOC();
         updateSectionTabs();
-        fab.hidden = false;
-        menu.hidden = false;
     }
+}
+
+
+function initTOCAndReveal() {
+    initTOC();
+    const fab = document.getElementById('toc-fab');
+    const menu = document.getElementById('toc-menu');
+    if (!fab || !menu || !fab.hasAttribute('aria-controls')) return;
+    fab.hidden = false;
+    menu.hidden = false;
 }
 
 function getSectionId(content, section, index) {
