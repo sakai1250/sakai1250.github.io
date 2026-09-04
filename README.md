@@ -43,22 +43,22 @@ Then open `http://localhost:8000`.
 Use Python 3.14 for maintenance and validation so local runs match GitHub Actions. Install the maintenance dependency and run the same transforms checked by CI:
 
 ```bash
-python3 -m pip install -r requirements-maintenance.txt
-python3 -m py_compile scripts/*.py
-python3 scripts/run_deterministic_maintenance.py
-python3 scripts/maintain_profile_metadata.py
-python3 scripts/maintain_static_fallbacks.py
-python3 scripts/check_app_repo_links.py
-python3 scripts/check_local_deep_links.py
-python3 scripts/check_site_integrity.py
-python3 scripts/check_control_accessible_names.py
-python3 scripts/check_form_control_names.py
-python3 scripts/check_new_tab_link_security.py
-python3 scripts/check_progressive_enhancement.py
-python3 scripts/check_security_contact.py
-python3 scripts/check_structured_profile.py
-python3 scripts/check_llms_profile.py
-python3 scripts/check_year_filter_coverage.py
+python3.14 -m pip install -r requirements-maintenance.txt
+python3.14 -m py_compile scripts/*.py
+python3.14 scripts/run_deterministic_maintenance.py
+python3.14 scripts/maintain_profile_metadata.py
+python3.14 scripts/maintain_static_fallbacks.py
+python3.14 scripts/check_app_repo_links.py
+python3.14 scripts/check_local_deep_links.py
+python3.14 scripts/check_site_integrity.py
+python3.14 scripts/check_control_accessible_names.py
+python3.14 scripts/check_form_control_names.py
+python3.14 scripts/check_new_tab_link_security.py
+python3.14 scripts/check_progressive_enhancement.py
+python3.14 scripts/check_security_contact.py
+python3.14 scripts/check_structured_profile.py
+python3.14 scripts/check_llms_profile.py
+python3.14 scripts/check_year_filter_coverage.py
 git diff --exit-code -- index.html 404.html main.js effects.js style.css sitemap.xml
 ```
 
@@ -67,7 +67,7 @@ If the final command reports changes, include the generated maintenance updates 
 External URLs are checked by a separate network-dependent workflow. When changing publication, CV, profile, organization, app, or repository URLs, run the same check locally when network access is available:
 
 ```bash
-python3 scripts/check_external_links.py
+python3.14 scripts/check_external_links.py
 ```
 
 This catches broken or redirected navigation before it reaches researchers, recruiters, or other visitors, while keeping transient network failures separate from deterministic local checks.
