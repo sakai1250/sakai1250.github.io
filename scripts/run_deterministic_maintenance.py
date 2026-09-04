@@ -33,6 +33,7 @@ MAINTENANCE_SCRIPTS = (
     "scripts/maintain_reduced_motion.py",
     "scripts/maintain_contextual_share_link.py",
     "scripts/maintain_app_repo_links.py",
+    "scripts/maintain_static_portfolio_polish.py",
     "scripts/maintain_asset_versions.py",
     "scripts/maintain_static_fallbacks.py",
 )
