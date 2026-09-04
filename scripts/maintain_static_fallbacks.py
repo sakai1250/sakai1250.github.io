@@ -117,6 +117,16 @@ def section_block(text: str, english_title: str) -> str:
 def update_index(lastmod_value: str) -> dict[str, int]:
     text = INDEX_PATH.read_text(encoding="utf-8")
 
+    for tab_id, is_current in (("research", True), ("engineer", False)):
+        pattern = re.compile(rf'<a\b(?=[^>]*\bid="{tab_id}-tab")[^>]*>')
+        match = pattern.search(text)
+        if not match:
+            raise SystemExit(f"Could not find static {tab_id} primary navigation link")
+        tag = re.sub(r'\s+aria-current="[^"]*"', '', match.group(0))
+        if is_current:
+            tag = tag[:-1] + ' aria-current="true">'
+        text = text[:match.start()] + tag + text[match.end():]
+
     qiita_pattern = re.compile(
         r'(<ul\s+class="repo-list"\s+id="qiita-list">)\s*<li>[\s\S]*?</li>\s*(</ul>)',
         re.IGNORECASE,
