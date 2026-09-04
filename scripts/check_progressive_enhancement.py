@@ -117,15 +117,20 @@ for element_id in ("toc-fab", "toc-menu"):
             f"#{element_id} must be hidden in static HTML until JavaScript finishes TOC setup."
         )
 
-toc_runtime_ready = """        updateTOC();
-        updateSectionTabs();
-        fab.hidden = false;
-        menu.hidden = false;
-"""
-if toc_runtime_ready not in main:
-    problems.append(
-        "TOC controls must be revealed only after TOC links and runtime behavior are initialized."
-    )
+required_toc_runtime_markers = (
+    "safeInit(initTOCAndReveal, 'TOC');",
+    "function initTOCAndReveal() {",
+    "    initTOC();",
+    "    if (!fab || !menu || !fab.hasAttribute('aria-controls')) return;",
+    "    fab.hidden = false;",
+    "    menu.hidden = false;",
+)
+for marker in required_toc_runtime_markers:
+    if marker not in main:
+        problems.append(
+            "TOC controls must be revealed only after successful TOC runtime initialization."
+        )
+        break
 
 required_index_snippets = {
     'id="main-content"': "Static main content is missing from index.html.",
