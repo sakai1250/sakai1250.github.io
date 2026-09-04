@@ -38,7 +38,6 @@ jobs:
             404.html \
             style.css \
             main.js \
-            effects.js \
             robots.txt \
             sitemap.xml \
             assets/cv.pdf \
@@ -51,9 +50,7 @@ jobs:
             fi
           done
       - name: Validate JavaScript syntax
-        run: |
-          node --check main.js
-          node --check effects.js
+        run: node --check main.js
       - name: Validate site integrity
         run: python scripts/check_site_integrity.py
       - name: Validate interactive accessible names
@@ -83,7 +80,7 @@ jobs:
       - name: Validate full interaction maintenance
         run: |
           python scripts/run_deterministic_maintenance.py
-          git diff --exit-code -- index.html 404.html main.js effects.js style.css
+          git diff --exit-code -- index.html 404.html main.js style.css
       - name: Validate static fallback metadata
         run: |
           python scripts/maintain_static_fallbacks.py
