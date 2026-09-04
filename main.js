@@ -462,6 +462,8 @@ function initTOC() {
         });
         updateTOC();
         updateSectionTabs();
+        fab.hidden = false;
+        menu.hidden = false;
     }
 }
 
