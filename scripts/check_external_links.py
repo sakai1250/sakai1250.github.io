@@ -28,11 +28,14 @@ class LinkParser(HTMLParser):
         self.links = set()
 
     def handle_starttag(self, tag, attrs):
-        if tag != "a":
-            return
-        href = dict(attrs).get("href", "")
-        if href.startswith(("http://", "https://")):
-            self.links.add(href)
+        attrs = dict(attrs)
+        url = ""
+        if tag == "a":
+            url = attrs.get("href", "")
+        elif tag == "img":
+            url = attrs.get("src", "")
+        if url.startswith(("http://", "https://")):
+            self.links.add(url)
 
 
 def hostname(url):
@@ -127,7 +130,7 @@ def main():
     }
 
     failures = []
-    print(f"Checking {len(links)} external links")
+    print(f"Checking {len(links)} external links and images")
 
     for url in sorted(links):
         success, status, error = check_url(url)
@@ -138,7 +141,7 @@ def main():
             print(f"OK   {status}: {url}")
 
     if failures:
-        raise SystemExit(f"{len(failures)} external link(s) are broken or unreachable")
+        raise SystemExit(f"{len(failures)} external link(s) or image(s) are broken or unreachable")
 
 
 if __name__ == "__main__":
