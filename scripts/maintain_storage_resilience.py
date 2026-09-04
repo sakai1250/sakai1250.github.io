@@ -40,8 +40,6 @@ def update_main() -> None:
         "localStorage.setItem('theme', t);": "safeStorageSet('theme', t);",
         "set(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'), false);": "set(safeStorageGet('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'), false);",
         "localStorage.setItem('lang', l);": "safeStorageSet('lang', l);",
-        "safeInit(window.initBackgroundParticles || initBackgroundParticles, 'BackgroundParticles');": "safeInit(window.initBackgroundParticles, 'BackgroundParticles');",
-        "safeInit(window.initTypingEffect || initTypingEffect, 'TypingEffect');": "safeInit(window.initTypingEffect, 'TypingEffect');",
     }
     for old, new in replacements.items():
         if old in text:
@@ -184,7 +182,7 @@ def update_style() -> None:
 
     # Do not make a core recruiter-facing action depend on JavaScript. The CV
     # link is marked primary in the static HTML, so hiding every primary header
-    # button on mobile makes the CV disappear whenever effects.js does not run.
+    # button on mobile makes the CV disappear if JavaScript fails.
     text = text.replace(
         "  .header-actions .header-btn.primary { display: none; }\n",
         "",
