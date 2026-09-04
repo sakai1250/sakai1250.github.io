@@ -6,7 +6,6 @@ on:
       - 'index.html'
       - 'main.js'
       - 'style.css'
-      - 'effects.js'
       - 'sitemap.xml'
       - 'scripts/maintain_static_fallbacks.py'
       - 'scripts/run_deterministic_maintenance.py'
