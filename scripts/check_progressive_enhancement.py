@@ -14,6 +14,26 @@ main = MAIN.read_text(encoding="utf-8")
 problems = []
 
 
+def extract_braced_block(text, marker):
+    marker_start = text.find(marker)
+    if marker_start < 0:
+        return None
+
+    brace_start = text.find("{", marker_start + len(marker))
+    if brace_start < 0:
+        return None
+
+    depth = 0
+    for index in range(brace_start, len(text)):
+        if text[index] == "{":
+            depth += 1
+        elif text[index] == "}":
+            depth -= 1
+            if depth == 0:
+                return text[marker_start:index + 1]
+    return None
+
+
 class LinkParser(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -94,6 +114,30 @@ if ".header-actions .header-btn.primary { display: none; }" in style:
     problems.append(
         "Mobile CSS hides the primary GitHub action and makes it depend on JavaScript."
     )
+
+mobile_media_marker = (
+    "/* Mobile rendering safety: keep core content off decorative compositing layers. */\n"
+    "@media (max-width: 768px)"
+)
+mobile_media_block = extract_braced_block(style, mobile_media_marker)
+if mobile_media_block is None:
+    problems.append(
+        "Scoped mobile rendering safety block is missing or malformed."
+    )
+else:
+    required_mobile_rules = {
+        "body::before { display: none !important; }":
+            "Mobile CSS must disable the decorative body::before layer.",
+        "-webkit-backdrop-filter: none !important;":
+            "Mobile CSS must disable -webkit-backdrop-filter in the safety block.",
+        "backdrop-filter: none !important;":
+            "Mobile CSS must disable backdrop-filter in the safety block.",
+        ".header-bar { background: var(--bg-2) !important; }":
+            "Mobile CSS must give the header an opaque fallback background.",
+    }
+    for rule, message in required_mobile_rules.items():
+        if rule not in mobile_media_block:
+            problems.append(message)
 
 if problems:
     raise SystemExit("Progressive enhancement check failed:\n- " + "\n- ".join(problems))
