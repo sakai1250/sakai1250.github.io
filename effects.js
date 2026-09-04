@@ -9,11 +9,7 @@ function initCardDragRotation() {}
 function initBackgroundParticles() {}
 
 function initTypingEffect() {
-    const textElement = document.getElementById('typing-text');
     const cursor = document.querySelector('.typing-container .cursor');
-    if (!textElement) return;
-
-    textElement.textContent = 'Ph.D. Student · Special Assistant · Computer Vision Researcher';
     if (cursor) cursor.style.display = 'none';
 }
 
