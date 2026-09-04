@@ -46,8 +46,6 @@ Use Python 3.14 for maintenance and validation so local runs match GitHub Action
 python3.14 -m pip install -r requirements-maintenance.txt
 python3.14 -m py_compile scripts/*.py
 python3.14 scripts/run_deterministic_maintenance.py
-python3.14 scripts/maintain_profile_metadata.py
-python3.14 scripts/maintain_static_fallbacks.py
 python3.14 scripts/check_app_repo_links.py
 python3.14 scripts/check_local_deep_links.py
 python3.14 scripts/check_site_integrity.py
@@ -77,7 +75,7 @@ This catches broken or unreachable external navigation and images before they re
 - `index.html` contains the portfolio content and page structure.
 - `style.css` controls the visual presentation and light/dark themes.
 - `main.js` handles filtering, language switching, statistics, and interaction.
-- `effects.js` contains restrained visual effects plus accessibility and presentation helpers layered on top of the core interactions.
+- `effects.js` contains restrained visual effects that are optional to core navigation and accessibility behavior.
 - `scripts/*.py` contains repeatable maintenance transforms and checks used by GitHub Actions; keep transforms idempotent so repeated runs do not alter already-correct content.
 - `assets/cv.pdf` is the CV linked from the site header.
 - `assets/cv.txt` mirrors the core CV content for machine-readable access.
