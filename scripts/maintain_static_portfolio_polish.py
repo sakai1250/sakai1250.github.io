@@ -3,13 +3,11 @@
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
 STYLE = ROOT / "style.css"
-EFFECTS = ROOT / "effects.js"
 
 DESKTOP_STATS_RULE = """
 
@@ -52,31 +50,9 @@ def update_style() -> None:
         STYLE.write_text(text, encoding="utf-8")
 
 
-def update_effects() -> None:
-    text = EFFECTS.read_text(encoding="utf-8")
-    old = text
-
-    text = re.sub(
-        r"\nfunction initPortfolioPolish\(\) \{.*?\n\}\n\n"
-        r"if \(document\.readyState === 'loading'\) \{.*?\n\} else \{\n"
-        r"    initPortfolioPolish\(\);\n\}\n",
-        "\n",
-        text,
-        count=1,
-        flags=re.DOTALL,
-    )
-
-    if "initPortfolioPolish" in text or "portfolio-polish-style" in text:
-        raise SystemExit("Runtime portfolio polish still remains in effects.js")
-
-    if text != old:
-        EFFECTS.write_text(text, encoding="utf-8")
-
-
 def main() -> None:
     update_index()
     update_style()
-    update_effects()
 
 
 if __name__ == "__main__":
