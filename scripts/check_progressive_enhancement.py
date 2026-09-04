@@ -41,12 +41,14 @@ class LinkParser(HTMLParser):
         self.in_qiita_list = False
         self.qiita_profile_fallback = False
         self.primary_tab_classes = {}
+        self.primary_tab_aria_current = {}
 
     def handle_starttag(self, tag, attrs):
         values = dict(attrs)
         element_id = values.get("id")
         if tag == "a" and element_id in {"research-tab", "engineer-tab"}:
             self.primary_tab_classes[element_id] = set(values.get("class", "").split())
+            self.primary_tab_aria_current[element_id] = values.get("aria-current")
         if tag == "ul" and values.get("id") == "qiita-list":
             self.in_qiita_list = True
         if (
@@ -100,6 +102,10 @@ if "active" not in research_tab_classes:
     problems.append("Research primary navigation is not visibly active in static HTML.")
 if "active" in engineer_tab_classes:
     problems.append("Engineering primary navigation must not be active by default in static HTML.")
+if parser.primary_tab_aria_current.get("research-tab") != "true":
+    problems.append('Research primary navigation must expose aria-current="true" in static HTML.')
+if parser.primary_tab_aria_current.get("engineer-tab") is not None:
+    problems.append("Engineering primary navigation must not expose aria-current by default in static HTML.")
 
 required_index_snippets = {
     'id="main-content"': "Static main content is missing from index.html.",
