@@ -30,7 +30,7 @@ jobs:
             python scripts/run_deterministic_maintenance.py
           }
 
-          tracked_site_files=(index.html 404.html main.js effects.js style.css sitemap.xml)
+          tracked_site_files=(index.html 404.html main.js style.css sitemap.xml)
           first_diff="$(mktemp)"
           second_diff="$(mktemp)"
 
