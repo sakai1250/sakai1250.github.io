@@ -110,6 +110,10 @@ if parser.primary_tab_aria_current.get("research-tab") != "true":
     problems.append('Research primary navigation must expose aria-current="true" in static HTML.')
 if parser.primary_tab_aria_current.get("engineer-tab") is not None:
     problems.append("Engineering primary navigation must not expose aria-current by default in static HTML.")
+if "i.removeAttribute('aria-current');" not in main:
+    problems.append(
+        "Enhanced primary tabs must remove static aria-current before exposing aria-selected state."
+    )
 
 for element_id in ("toc-fab", "toc-menu"):
     if parser.toc_hidden.get(element_id) is not True:
