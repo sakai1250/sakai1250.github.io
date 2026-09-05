@@ -45,15 +45,16 @@ def main():
     for route in required_routes:
         require(llms_text, route, "llms.txt")
 
+    contact_email = "263441505@ccmailg.meijo-u.ac.jp"
     required_profiles = [
         "https://github.com/sakai1250",
         "https://qiita.com/sakai1250",
         "https://www.linkedin.com/in/sakai1250",
         "https://scholar.google.com/citations?user=eS-5wrQAAAAJ",
-        "mailto:263441505@ccmailg.meijo-u.ac.jp",
     ]
     for profile in required_profiles:
         require(llms_text, profile, "llms.txt")
+    require(llms_text, f"mailto:{contact_email}", "llms.txt")
 
     shared_identity = [
         "Taigo Sakai",
@@ -65,8 +66,9 @@ def main():
         require_casefold(cv_text, item, "assets/cv.txt")
     require(cv_text, "https://sakai1250.github.io/", "assets/cv.txt")
 
-    for profile in required_profiles[:-1]:
+    for profile in required_profiles:
         require(cv_text, profile, "assets/cv.txt")
+    require(cv_text, f"Email: {contact_email}", "assets/cv.txt")
 
     print("OK: llms.txt and assets/cv.txt expose a consistent professional profile")
 
