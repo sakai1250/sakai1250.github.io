@@ -79,7 +79,15 @@ for html_path in html_files:
             if anchor and anchor not in ids:
                 problems.append(f'{html_path}: missing anchor {ref}')
             continue
-        path = urlsplit(ref).path
+        parsed_ref = urlsplit(ref)
+        path = parsed_ref.path
+        if path == '/' and parsed_ref.fragment:
+            index_ids = html_ids.get('index.html', set())
+            if parsed_ref.fragment not in index_ids:
+                problems.append(
+                    f'{html_path}: root deep link #{parsed_ref.fragment} has no matching id in index.html'
+                )
+            continue
         if not path or path == '/':
             continue
         target = root / path.lstrip('/')
