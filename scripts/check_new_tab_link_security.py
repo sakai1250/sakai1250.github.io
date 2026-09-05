@@ -24,13 +24,19 @@ class LinkParser(HTMLParser):
             return
 
         checked_links += 1
-        rel_tokens = {token.lower() for token in attrs.get('rel', '').split()}
+        href = (attrs.get('href') or '').strip()
+        if not href:
+            problems.append(
+                f'{self.path}: target="_blank" link is missing a usable href'
+            )
+
+        rel_tokens = {token.lower() for token in (attrs.get('rel') or '').split()}
         missing_tokens = sorted(REQUIRED_REL_TOKENS - rel_tokens)
         if missing_tokens:
-            href = attrs.get('href', '<missing href>')
             missing = ' '.join(missing_tokens)
             problems.append(
-                f'{self.path}: target="_blank" link is missing rel token(s) {missing}: {href}'
+                f'{self.path}: target="_blank" link is missing rel token(s) {missing}: '
+                f'{href or "<missing href>"}'
             )
 
 
@@ -46,6 +52,6 @@ if problems:
     raise SystemExit('\n'.join(problems))
 
 print(
-    f'OK: {checked_links} new-tab links include '
+    f'OK: {checked_links} new-tab links have usable href values and include '
     'rel="noopener noreferrer"'
 )
