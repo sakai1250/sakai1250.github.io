@@ -15,9 +15,15 @@ def require_casefold(text, needle, source):
 def main():
     llms_path = Path("llms.txt")
     cv_path = Path("assets/cv.txt")
+    index_path = Path("index.html")
+    main_js_path = Path("main.js")
+    readme_path = Path("README.md")
 
     llms_text = llms_path.read_text(encoding="utf-8")
     cv_text = cv_path.read_text(encoding="utf-8")
+    index_text = index_path.read_text(encoding="utf-8")
+    main_js_text = main_js_path.read_text(encoding="utf-8")
+    readme_text = readme_path.read_text(encoding="utf-8")
 
     required_identity = [
         "# Taigo Sakai",
@@ -46,6 +52,7 @@ def main():
         require(llms_text, route, "llms.txt")
 
     contact_email = "263441505@ccmailg.meijo-u.ac.jp"
+    contact_mailto = f"mailto:{contact_email}"
     required_profiles = [
         "https://github.com/sakai1250",
         "https://qiita.com/sakai1250",
@@ -54,7 +61,7 @@ def main():
     ]
     for profile in required_profiles:
         require(llms_text, profile, "llms.txt")
-    require(llms_text, f"mailto:{contact_email}", "llms.txt")
+    require(llms_text, contact_mailto, "llms.txt")
 
     shared_identity = [
         "Taigo Sakai",
@@ -70,7 +77,13 @@ def main():
         require(cv_text, profile, "assets/cv.txt")
     require(cv_text, f"Email: {contact_email}", "assets/cv.txt")
 
-    print("OK: llms.txt and assets/cv.txt expose a consistent professional profile")
+    # The same contact must remain reachable from the human-facing homepage,
+    # the JavaScript fallback used when form submission fails, and README navigation.
+    require(index_text, contact_mailto, "index.html")
+    require(main_js_text, contact_mailto, "main.js")
+    require(readme_text, contact_mailto, "README.md")
+
+    print("OK: portfolio, CV, and machine-readable sources expose a consistent professional profile")
 
 
 if __name__ == "__main__":
