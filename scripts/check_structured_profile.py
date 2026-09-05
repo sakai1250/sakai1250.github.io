@@ -120,11 +120,24 @@ def main():
     twitter_description = single_value(
         parser.meta.get("twitter:description", []), "twitter:description"
     )
-    if len({description, og_description, twitter_description}) != 1:
+    if description != og_description:
         raise SystemExit(
-            "meta, Open Graph, and Twitter descriptions must match: "
-            f"description={description!r}, og:description={og_description!r}, "
-            f"twitter:description={twitter_description!r}"
+            "meta and Open Graph descriptions must match: "
+            f"description={description!r}, og:description={og_description!r}"
+        )
+    required_twitter_terms = (
+        "Ph.D. Student",
+        "Special Assistant",
+        "Meijo University",
+        "Computer Vision",
+    )
+    missing_twitter_terms = [
+        term for term in required_twitter_terms if term not in twitter_description
+    ]
+    if missing_twitter_terms:
+        raise SystemExit(
+            "Twitter description is missing current professional context: "
+            + ", ".join(missing_twitter_terms)
         )
 
     og_image = single_value(parser.meta.get("og:image", []), "og:image")
@@ -193,7 +206,7 @@ def main():
         )
 
     print(
-        "OK: public metadata, social previews, Person JSON-LD, and assets/cv.txt contain a consistent professional identity"
+        "OK: public metadata, localized social previews, Person JSON-LD, and assets/cv.txt contain a consistent professional identity"
     )
 
 
