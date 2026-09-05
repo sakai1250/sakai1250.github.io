@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import json
+import re
 from pathlib import Path
 
 
@@ -10,6 +12,22 @@ def require(text, needle, source):
 def require_casefold(text, needle, source):
     if needle.casefold() not in text.casefold():
         raise SystemExit(f"{source} is missing required profile content: {needle}")
+
+
+def read_person_json_ld(index_text):
+    blocks = re.findall(
+        r'<script\s+type=["\']application/ld\+json["\']\s*>(.*?)</script>',
+        index_text,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+    for block in blocks:
+        try:
+            data = json.loads(block)
+        except json.JSONDecodeError as exc:
+            raise SystemExit(f"index.html contains invalid JSON-LD: {exc}") from exc
+        if data.get("@type") == "Person":
+            return data
+    raise SystemExit("index.html is missing Person JSON-LD")
 
 
 def main():
@@ -83,7 +101,34 @@ def main():
     require(main_js_text, contact_mailto, "main.js")
     require(readme_text, contact_mailto, "README.md")
 
-    print("OK: portfolio, CV, and machine-readable sources expose a consistent professional profile")
+    # Search engines and professional profile consumers rely on the Person JSON-LD.
+    # Parse it as JSON so malformed metadata cannot pass as a simple string match.
+    person = read_person_json_ld(index_text)
+    expected_fields = {
+        "name": "Taigo Sakai",
+        "url": "https://sakai1250.github.io/",
+    }
+    for field, expected in expected_fields.items():
+        if person.get(field) != expected:
+            raise SystemExit(f"index.html Person JSON-LD has unexpected {field}: {person.get(field)!r}")
+
+    job_title = str(person.get("jobTitle", ""))
+    for role in ("Ph.D. Student", "Special Assistant", "Researcher", "Engineer"):
+        if role.casefold() not in job_title.casefold():
+            raise SystemExit(f"index.html Person JSON-LD jobTitle is missing role: {role}")
+
+    same_as = person.get("sameAs")
+    if not isinstance(same_as, list):
+        raise SystemExit("index.html Person JSON-LD sameAs must be a list")
+    for profile in required_profiles:
+        if profile not in same_as:
+            raise SystemExit(f"index.html Person JSON-LD sameAs is missing profile: {profile}")
+
+    affiliation = person.get("affiliation")
+    if not isinstance(affiliation, dict) or affiliation.get("name") != "Meijo University":
+        raise SystemExit("index.html Person JSON-LD affiliation must identify Meijo University")
+
+    print("OK: portfolio, CV, structured metadata, and machine-readable sources expose a consistent professional profile")
 
 
 if __name__ == "__main__":
