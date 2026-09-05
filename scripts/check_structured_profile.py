@@ -117,10 +117,32 @@ def main():
 
     description = single_value(parser.meta.get("description", []), "meta description")
     og_description = single_value(parser.meta.get("og:description", []), "og:description")
-    if description != og_description:
+    twitter_description = single_value(
+        parser.meta.get("twitter:description", []), "twitter:description"
+    )
+    if len({description, og_description, twitter_description}) != 1:
         raise SystemExit(
-            "meta description and og:description must match: "
-            f"description={description!r}, og:description={og_description!r}"
+            "meta, Open Graph, and Twitter descriptions must match: "
+            f"description={description!r}, og:description={og_description!r}, "
+            f"twitter:description={twitter_description!r}"
+        )
+
+    og_image = single_value(parser.meta.get("og:image", []), "og:image")
+    twitter_image = single_value(parser.meta.get("twitter:image", []), "twitter:image")
+    if og_image != twitter_image:
+        raise SystemExit(
+            "Open Graph and Twitter preview images must match: "
+            f"og:image={og_image!r}, twitter:image={twitter_image!r}"
+        )
+
+    og_image_alt = single_value(parser.meta.get("og:image:alt", []), "og:image:alt")
+    twitter_image_alt = single_value(
+        parser.meta.get("twitter:image:alt", []), "twitter:image:alt"
+    )
+    if og_image_alt != twitter_image_alt:
+        raise SystemExit(
+            "Open Graph and Twitter preview image alt text must match: "
+            f"og:image:alt={og_image_alt!r}, twitter:image:alt={twitter_image_alt!r}"
         )
 
     same_as = person.get("sameAs")
@@ -171,7 +193,7 @@ def main():
         )
 
     print(
-        "OK: public metadata, Person JSON-LD, and assets/cv.txt contain a consistent professional identity"
+        "OK: public metadata, social previews, Person JSON-LD, and assets/cv.txt contain a consistent professional identity"
     )
 
 
