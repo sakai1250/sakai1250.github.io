@@ -1,11 +1,8 @@
 /**
- * Taigo Sakai Portfolio - Restrained visual details
+ * Taigo Sakai Portfolio - Temporary compatibility shim
  */
 
-// Kept as no-ops for compatibility with older cached main.js versions.
-function init3DEffects() {}
-function initAvatarDragGuide() {}
-function initCardDragRotation() {}
+// Kept only for older cached main.js versions until this file is removed.
 function initBackgroundParticles() {}
 
 function initTypingEffect() {
@@ -13,9 +10,5 @@ function initTypingEffect() {
     if (cursor) cursor.style.display = 'none';
 }
 
-
-window.init3DEffects = init3DEffects;
 window.initBackgroundParticles = initBackgroundParticles;
 window.initTypingEffect = initTypingEffect;
-window.initAvatarDragGuide = initAvatarDragGuide;
-window.initCardDragRotation = initCardDragRotation;
