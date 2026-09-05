@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Require accessible names for non-hidden form controls."""
+"""Require meaningful accessible names for non-hidden form controls."""
 
 from html.parser import HTMLParser
 from pathlib import Path
@@ -8,13 +8,17 @@ from pathlib import Path
 HTML_FILES = (Path("index.html"), Path("404.html"))
 
 
+def normalized_text(parts):
+    return " ".join("".join(parts).split())
+
+
 class Parser(HTMLParser):
     def __init__(self):
         super().__init__()
         self.ids = set()
-        self.label_fors = set()
+        self.labels = []
+        self.label_stack = []
         self.controls = []
-        self.label_depth = 0
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
@@ -23,10 +27,9 @@ class Parser(HTMLParser):
             self.ids.add(element_id)
 
         if tag == "label":
-            label_for = attrs.get("for", "").strip()
-            if label_for:
-                self.label_fors.add(label_for)
-            self.label_depth += 1
+            label = {"for": attrs.get("for", "").strip(), "text": []}
+            self.labels.append(label)
+            self.label_stack.append(label)
             return
 
         if tag not in ("input", "textarea", "select"):
@@ -36,11 +39,22 @@ class Parser(HTMLParser):
         if tag == "input" and input_type == "hidden":
             return
 
-        self.controls.append((tag, attrs, self.label_depth > 0))
+        implicit_label = self.label_stack[-1] if self.label_stack else None
+        self.controls.append((tag, attrs, implicit_label))
+
+    def handle_data(self, data):
+        if self.label_stack:
+            self.label_stack[-1]["text"].append(data)
 
     def handle_endtag(self, tag):
-        if tag == "label" and self.label_depth:
-            self.label_depth -= 1
+        if tag == "label" and self.label_stack:
+            self.label_stack.pop()
+
+    def label_text_for(self, control_id):
+        for label in self.labels:
+            if label["for"] == control_id and normalized_text(label["text"]):
+                return True
+        return False
 
 
 def native_input_name(attrs):
@@ -56,7 +70,9 @@ def native_input_name(attrs):
 
 def control_has_name(tag, attrs, implicit_label, parser):
     control_id = attrs.get("id", "").strip()
-    if implicit_label or (control_id and control_id in parser.label_fors):
+    if implicit_label and normalized_text(implicit_label["text"]):
+        return True
+    if control_id and parser.label_text_for(control_id):
         return True
 
     if attrs.get("aria-label", "").strip():
@@ -86,18 +102,28 @@ def main():
         parser = Parser()
         parser.feed(path.read_text(encoding="utf-8"))
 
+        dangling_labels = sorted(
+            label["for"]
+            for label in parser.labels
+            if label["for"] and label["for"] not in parser.ids
+        )
+        if dangling_labels:
+            problems.append(
+                f"{path}: labels reference missing ids: {dangling_labels}"
+            )
+
         for tag, attrs, implicit_label in parser.controls:
             checked += 1
             if not control_has_name(tag, attrs, implicit_label, parser):
                 problems.append(
-                    f"{path}: form control has no accessible name: "
+                    f"{path}: form control has no meaningful accessible name: "
                     f"{describe_control(tag, attrs)}"
                 )
 
     if problems:
         raise SystemExit("\n".join(problems))
 
-    print(f"OK: {checked} non-hidden form controls have accessible names")
+    print(f"OK: {checked} non-hidden form controls have meaningful accessible names")
 
 
 if __name__ == "__main__":
