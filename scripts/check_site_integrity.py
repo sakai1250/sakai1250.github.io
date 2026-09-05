@@ -19,6 +19,7 @@ class Parser(HTMLParser):
         super().__init__()
         self.ids = []
         self.refs = []
+        self.empty_refs = []
         self.aria_id_refs = []
         self.img_without_alt = []
         self.html_lang = None
@@ -30,7 +31,10 @@ class Parser(HTMLParser):
             self.ids.append(attrs['id'])
         for key in ('href', 'src'):
             if key in attrs:
-                self.refs.append(attrs[key])
+                ref = attrs[key]
+                self.refs.append(ref)
+                if not ref or not ref.strip():
+                    self.empty_refs.append(f'<{tag}> {key}')
         for key in ('aria-labelledby', 'aria-describedby', 'aria-controls'):
             if key in attrs:
                 self.aria_id_refs.extend((key, ref) for ref in attrs[key].split())
@@ -61,6 +65,8 @@ for html_path in html_files:
         problems.append(f'{html_path}: missing <main> landmark')
     if parser.img_without_alt:
         problems.append(f'{html_path}: images missing alt attributes {parser.img_without_alt}')
+    if parser.empty_refs:
+        problems.append(f'{html_path}: empty href/src references {parser.empty_refs}')
 
     ids = set(parser.ids)
     for attr, ref in parser.aria_id_refs:
