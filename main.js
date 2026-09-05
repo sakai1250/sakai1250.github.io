@@ -73,6 +73,7 @@ function initTabs() {
         const id = i.getAttribute('data-tab');
         i.setAttribute('role', 'tab');
         i.setAttribute('aria-controls', `${id}-content`);
+        i.removeAttribute('aria-current');
     });
     tabContents.forEach(c => {
         c.setAttribute('role', 'tabpanel');
