@@ -11,6 +11,7 @@ class JsonLdParser(HTMLParser):
         self.blocks = []
         self.current = []
         self.in_title = False
+        self.title_seen = False
         self.title_parts = []
         self.meta = {}
         self.canonical_urls = []
@@ -20,8 +21,9 @@ class JsonLdParser(HTMLParser):
         if tag == "script" and attrs.get("type") == "application/ld+json":
             self.capture = True
             self.current = []
-        elif tag == "title":
+        elif tag == "title" and not self.title_seen:
             self.in_title = True
+            self.title_seen = True
         elif tag == "meta":
             key = attrs.get("property") or attrs.get("name")
             content = attrs.get("content")
@@ -44,7 +46,7 @@ class JsonLdParser(HTMLParser):
             self.blocks.append("".join(self.current))
             self.capture = False
             self.current = []
-        elif tag == "title":
+        elif tag == "title" and self.in_title:
             self.in_title = False
 
 
