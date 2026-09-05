@@ -28,8 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(initReadingProgress, 'ReadingProgress');
     safeInit(initContextualShareLink, 'ContextualShareLink');
 
-    // Visual Effects (From effects.js)
-    safeInit(window.initBackgroundParticles, 'BackgroundParticles');
     safeInit(window.initTypingEffect, 'TypingEffect');
 });
 
