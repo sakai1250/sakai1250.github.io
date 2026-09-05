@@ -3,7 +3,25 @@ name: Structured profile
 on:
   push:
     branches: [main]
+    paths:
+      - 'index.html'
+      - 'main.js'
+      - 'README.md'
+      - 'llms.txt'
+      - 'assets/cv.txt'
+      - 'scripts/check_structured_profile.py'
+      - 'scripts/check_llms_profile.py'
+      - '.github/workflows/structured-profile.yml'
   pull_request:
+    paths:
+      - 'index.html'
+      - 'main.js'
+      - 'README.md'
+      - 'llms.txt'
+      - 'assets/cv.txt'
+      - 'scripts/check_structured_profile.py'
+      - 'scripts/check_llms_profile.py'
+      - '.github/workflows/structured-profile.yml'
 
 permissions:
   contents: read
