@@ -16,18 +16,32 @@ research_html = html[research_start:engineer_start]
 content_years = set(
     re.findall(r'<li\b[^>]*\bdata-year="(\d{4})"', research_html)
 )
-filter_years = set(
-    re.findall(r'<button\b[^>]*\bdata-year="(\d{4})"', html[:research_start])
+filter_year_list = re.findall(
+    r'<button\b[^>]*\bdata-year="(\d{4})"', html[:research_start]
 )
+filter_years = set(filter_year_list)
 
 if not content_years:
     raise SystemExit("Research content has no dated entries")
-if not filter_years:
+if not filter_year_list:
     raise SystemExit("Year filter has no numeric choices")
+
+problems = []
+if len(filter_year_list) != len(filter_years):
+    duplicates = sorted(
+        {year for year in filter_year_list if filter_year_list.count(year) > 1},
+        reverse=True,
+    )
+    problems.append(f"year filter contains duplicate choices: {', '.join(duplicates)}")
+
+expected_order = sorted(filter_years, reverse=True)
+if filter_year_list != expected_order:
+    problems.append(
+        "year filter must list years newest-first: " + ", ".join(expected_order)
+    )
 
 missing = sorted(content_years - filter_years, reverse=True)
 stale = sorted(filter_years - content_years, reverse=True)
-problems = []
 if missing:
     problems.append(f"year filter is missing content years: {', '.join(missing)}")
 if stale:
@@ -36,6 +50,6 @@ if problems:
     raise SystemExit("\n".join(problems))
 
 print(
-    "OK: year filter covers all dated Research entries: "
-    + ", ".join(sorted(content_years, reverse=True))
+    "OK: year filter is unique, newest-first, and covers all dated Research entries: "
+    + ", ".join(filter_year_list)
 )
