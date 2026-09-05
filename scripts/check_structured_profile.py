@@ -10,22 +10,51 @@ class JsonLdParser(HTMLParser):
         self.capture = False
         self.blocks = []
         self.current = []
+        self.in_title = False
+        self.title_parts = []
+        self.meta = {}
+        self.canonical_urls = []
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         if tag == "script" and attrs.get("type") == "application/ld+json":
             self.capture = True
             self.current = []
+        elif tag == "title":
+            self.in_title = True
+        elif tag == "meta":
+            key = attrs.get("property") or attrs.get("name")
+            content = attrs.get("content")
+            if key and content is not None:
+                self.meta.setdefault(key, []).append(content)
+        elif tag == "link":
+            rel_tokens = set(attrs.get("rel", "").lower().split())
+            href = attrs.get("href")
+            if "canonical" in rel_tokens and href:
+                self.canonical_urls.append(href)
 
     def handle_data(self, data):
         if self.capture:
             self.current.append(data)
+        if self.in_title:
+            self.title_parts.append(data)
 
     def handle_endtag(self, tag):
         if tag == "script" and self.capture:
             self.blocks.append("".join(self.current))
             self.capture = False
             self.current = []
+        elif tag == "title":
+            self.in_title = False
+
+
+def single_value(values, label):
+    if len(values) != 1:
+        raise SystemExit(f"expected exactly one {label}, found {len(values)}")
+    value = values[0].strip()
+    if not value:
+        raise SystemExit(f"{label} must not be empty")
+    return value
 
 
 def main():
@@ -66,6 +95,33 @@ def main():
 
     if person["url"] != "https://sakai1250.github.io/":
         raise SystemExit(f'unexpected profile URL: {person["url"]}')
+
+    canonical_url = single_value(parser.canonical_urls, "canonical URL")
+    og_url = single_value(parser.meta.get("og:url", []), "og:url")
+    if canonical_url != person["url"] or og_url != person["url"]:
+        raise SystemExit(
+            "canonical URL, og:url, and Person JSON-LD url must match: "
+            f"canonical={canonical_url!r}, og:url={og_url!r}, person={person['url']!r}"
+        )
+
+    document_title = "".join(parser.title_parts).strip()
+    if not document_title:
+        raise SystemExit("document title must not be empty")
+    og_title = single_value(parser.meta.get("og:title", []), "og:title")
+    twitter_title = single_value(parser.meta.get("twitter:title", []), "twitter:title")
+    if len({document_title, og_title, twitter_title}) != 1:
+        raise SystemExit(
+            "document, Open Graph, and Twitter titles must match: "
+            f"title={document_title!r}, og:title={og_title!r}, twitter:title={twitter_title!r}"
+        )
+
+    description = single_value(parser.meta.get("description", []), "meta description")
+    og_description = single_value(parser.meta.get("og:description", []), "og:description")
+    if description != og_description:
+        raise SystemExit(
+            "meta description and og:description must match: "
+            f"description={description!r}, og:description={og_description!r}"
+        )
 
     same_as = person.get("sameAs")
     if not isinstance(same_as, list):
@@ -115,7 +171,7 @@ def main():
         )
 
     print(
-        "OK: Person JSON-LD and assets/cv.txt contain a consistent professional identity"
+        "OK: public metadata, Person JSON-LD, and assets/cv.txt contain a consistent professional identity"
     )
 
 
