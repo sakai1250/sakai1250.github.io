@@ -40,11 +40,12 @@ Then open `http://localhost:8000`.
 
 ## Local validation
 
-Use Python 3.14 for maintenance and validation so local runs match GitHub Actions. Install the maintenance dependency and run the same transforms checked by CI:
+Use Python 3.14 and Node 24 for maintenance and validation so local runs match GitHub Actions. Install the maintenance dependency and run the same deterministic checks used by CI:
 
 ```bash
 python3.14 -m pip install -r requirements-maintenance.txt
 python3.14 -m py_compile scripts/*.py
+node --check main.js
 python3.14 scripts/run_deterministic_maintenance.py
 python3.14 scripts/check_app_repo_links.py
 python3.14 scripts/check_local_deep_links.py
