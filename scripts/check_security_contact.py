@@ -2,6 +2,7 @@
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import urlsplit
+import re
 
 
 def main() -> None:
@@ -34,6 +35,25 @@ def main() -> None:
     if not any(value.startswith(('mailto:', 'https://')) for value in contacts):
         raise SystemExit('Contact must include a mailto: or https:// URI')
 
+    cv_text = Path('assets/cv.txt').read_text(encoding='utf-8')
+    cv_email_match = re.search(r'^Email:\s*(\S+@\S+)\s*$', cv_text, flags=re.MULTILINE)
+    if not cv_email_match:
+        raise SystemExit('assets/cv.txt is missing a machine-readable Email field')
+    profile_email = cv_email_match.group(1)
+    expected_mailto = f'mailto:{profile_email}'
+    if expected_mailto not in contacts:
+        raise SystemExit(
+            'security.txt Contact is out of sync with assets/cv.txt: '
+            f'expected {expected_mailto}'
+        )
+
+    policy_text = Path('SECURITY.md').read_text(encoding='utf-8')
+    if profile_email not in policy_text:
+        raise SystemExit(
+            'SECURITY.md is out of sync with the profile contact email: '
+            f'expected {profile_email}'
+        )
+
     expires_raw = fields['Expires'][0]
     try:
         expires = datetime.fromisoformat(expires_raw.replace('Z', '+00:00'))
@@ -54,7 +74,9 @@ def main() -> None:
     if policy and not all(urlsplit(value).scheme == 'https' for value in policy):
         raise SystemExit('Policy URLs must use HTTPS')
 
-    print(f'OK: security.txt valid through {expires.isoformat()}')
+    print(
+        f'OK: security.txt matches the public profile contact and is valid through {expires.isoformat()}'
+    )
 
 
 if __name__ == '__main__':
