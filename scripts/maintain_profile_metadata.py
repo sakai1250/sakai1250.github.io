@@ -127,6 +127,39 @@ def maintain_visible_profile_links(text: str, profile_urls: dict[str, str]) -> s
     return text[: match.start(2)] + block + text[match.end(2) :]
 
 
+def maintain_visible_contact(text: str, contact_email: str) -> str:
+    block_pattern = re.compile(
+        r'(<div class="profile-links">)(.*?)(\n\s*</div>\n\s*</div>\n\s*</aside>)',
+        flags=re.DOTALL,
+    )
+    match = block_pattern.search(text)
+    if not match:
+        raise SystemExit("Could not find visible profile links block for contact")
+
+    block = match.group(2)
+    email_pattern = re.compile(
+        r'(<a\b[^>]*\bhref=")mailto:[^"]+("[^>]*>(?:(?!</a>).)*?Email(?:(?!</a>).)*?</a>)',
+        flags=re.DOTALL,
+    )
+    block, email_count = email_pattern.subn(
+        rf'\g<1>mailto:{contact_email}\g<2>', block, count=1
+    )
+    if email_count != 1:
+        raise SystemExit("Could not find visible email contact link")
+
+    copy_pattern = re.compile(
+        r'(<button\b(?=[^>]*\bclass="copy-btn")[^>]*\bdata-copy=")[^"]+("[^>]*>)',
+        flags=re.DOTALL,
+    )
+    block, copy_count = copy_pattern.subn(
+        rf'\g<1>{contact_email}\g<2>', block, count=1
+    )
+    if copy_count != 1:
+        raise SystemExit("Could not find visible email copy control")
+
+    return text[: match.start(2)] + block + text[match.end(2) :]
+
+
 def maintain_recovery_links(
     text: str, profile_urls: dict[str, str], contact_email: str
 ) -> str:
@@ -214,6 +247,7 @@ def main() -> None:
     text = maintain_page_titles(text)
     text = maintain_structured_profile(text, [profile_urls[label] for label in PROFILE_FIELDS])
     text = maintain_visible_profile_links(text, profile_urls)
+    text = maintain_visible_contact(text, contact_email)
     text = maintain_visible_profile(text)
     text = maintain_canonical_url(text)
     not_found_text = maintain_recovery_links(not_found_text, profile_urls, contact_email)
