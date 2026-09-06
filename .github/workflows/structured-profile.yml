@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - '404.html'
       - 'main.js'
       - 'README.md'
       - 'llms.txt'
@@ -15,6 +16,7 @@ on:
   pull_request:
     paths:
       - 'index.html'
+      - '404.html'
       - 'main.js'
       - 'README.md'
       - 'llms.txt'

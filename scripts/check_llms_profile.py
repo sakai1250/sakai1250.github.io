@@ -34,12 +34,14 @@ def main():
     llms_path = Path("llms.txt")
     cv_path = Path("assets/cv.txt")
     index_path = Path("index.html")
+    not_found_path = Path("404.html")
     main_js_path = Path("main.js")
     readme_path = Path("README.md")
 
     llms_text = llms_path.read_text(encoding="utf-8")
     cv_text = cv_path.read_text(encoding="utf-8")
     index_text = index_path.read_text(encoding="utf-8")
+    not_found_text = not_found_path.read_text(encoding="utf-8")
     main_js_text = main_js_path.read_text(encoding="utf-8")
     readme_text = readme_path.read_text(encoding="utf-8")
 
@@ -77,6 +79,11 @@ def main():
         "https://www.linkedin.com/in/sakai1250",
         "https://scholar.google.com/citations?user=eS-5wrQAAAAJ",
     ]
+    recovery_profiles = [
+        "https://github.com/sakai1250",
+        "https://www.linkedin.com/in/sakai1250",
+        "https://scholar.google.com/citations?user=eS-5wrQAAAAJ",
+    ]
     for profile in required_profiles:
         require(llms_text, profile, "llms.txt")
     require(llms_text, contact_mailto, "llms.txt")
@@ -95,11 +102,14 @@ def main():
         require(cv_text, profile, "assets/cv.txt")
     require(cv_text, f"Email: {contact_email}", "assets/cv.txt")
 
-    # The same contact must remain reachable from the human-facing homepage,
-    # the JavaScript fallback used when form submission fails, and README navigation.
+    # Human-facing recovery and contact routes must stay aligned with the
+    # machine-readable profile so stale links do not survive on secondary pages.
     require(index_text, contact_mailto, "index.html")
+    require(not_found_text, contact_mailto, "404.html")
     require(main_js_text, contact_mailto, "main.js")
     require(readme_text, contact_mailto, "README.md")
+    for profile in recovery_profiles:
+        require(not_found_text, profile, "404.html")
 
     # Search engines and professional profile consumers rely on the Person JSON-LD.
     # Parse it as JSON so malformed metadata cannot pass as a simple string match.
@@ -128,7 +138,7 @@ def main():
     if not isinstance(affiliation, dict) or affiliation.get("name") != "Meijo University":
         raise SystemExit("index.html Person JSON-LD affiliation must identify Meijo University")
 
-    print("OK: portfolio, CV, structured metadata, and machine-readable sources expose a consistent professional profile")
+    print("OK: portfolio, recovery navigation, CV, structured metadata, and machine-readable sources expose a consistent professional profile")
 
 
 if __name__ == "__main__":
