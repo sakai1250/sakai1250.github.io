@@ -79,6 +79,11 @@ def main():
         "https://www.linkedin.com/in/sakai1250",
         "https://scholar.google.com/citations?user=eS-5wrQAAAAJ",
     ]
+    recovery_profiles = [
+        "https://github.com/sakai1250",
+        "https://www.linkedin.com/in/sakai1250",
+        "https://scholar.google.com/citations?user=eS-5wrQAAAAJ",
+    ]
     for profile in required_profiles:
         require(llms_text, profile, "llms.txt")
     require(llms_text, contact_mailto, "llms.txt")
@@ -103,7 +108,7 @@ def main():
     require(not_found_text, contact_mailto, "404.html")
     require(main_js_text, contact_mailto, "main.js")
     require(readme_text, contact_mailto, "README.md")
-    for profile in required_profiles:
+    for profile in recovery_profiles:
         require(not_found_text, profile, "404.html")
 
     # Search engines and professional profile consumers rely on the Person JSON-LD.
