@@ -71,7 +71,10 @@ def main():
     for route in required_routes:
         require(llms_text, route, "llms.txt")
 
-    contact_email = "263441505@ccmailg.meijo-u.ac.jp"
+    cv_email_match = re.search(r"^Email:\s*(\S+@\S+)\s*$", cv_text, flags=re.MULTILINE)
+    if not cv_email_match:
+        raise SystemExit("assets/cv.txt is missing a machine-readable Email field")
+    contact_email = cv_email_match.group(1)
     contact_mailto = f"mailto:{contact_email}"
     required_profiles = [
         "https://github.com/sakai1250",
@@ -100,7 +103,6 @@ def main():
 
     for profile in required_profiles:
         require(cv_text, profile, "assets/cv.txt")
-    require(cv_text, f"Email: {contact_email}", "assets/cv.txt")
 
     # Human-facing recovery and contact routes must stay aligned with the
     # machine-readable profile so stale links do not survive on secondary pages.
