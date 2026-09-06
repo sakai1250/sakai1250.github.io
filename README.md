@@ -76,7 +76,6 @@ This catches broken or unreachable external navigation and images before they re
 - `index.html` contains the portfolio content and page structure.
 - `style.css` controls the visual presentation and light/dark themes.
 - `main.js` handles filtering, language switching, statistics, and interaction.
-- `effects.js` is a temporary compatibility shim for older cached `main.js` versions; it no longer owns portfolio content or core interaction and is tracked for removal in Issue #246.
 - `scripts/*.py` contains repeatable maintenance transforms and checks used by GitHub Actions; keep transforms idempotent so repeated runs do not alter already-correct content.
 - `assets/cv.pdf` is the CV linked from the site header.
 - `assets/cv.txt` mirrors the core CV content for machine-readable access.

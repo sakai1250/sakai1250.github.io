@@ -249,16 +249,6 @@ img { max-width: 100%; height: auto; }
   letter-spacing: 0.015em;
 }
 
-.cursor {
-  width: 1px;
-  height: 1.05em;
-  margin-left: 6px;
-  background: var(--accent);
-  animation: blink 1.05s step-end infinite;
-}
-
-@keyframes blink { 50% { opacity: 0; } }
-
 .header-stats {
   display: flex;
   align-items: stretch;

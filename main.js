@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(initReadingProgress, 'ReadingProgress');
     safeInit(initContextualShareLink, 'ContextualShareLink');
 
-    safeInit(window.initTypingEffect, 'TypingEffect');
 });
 
 // === Core Functions ===
