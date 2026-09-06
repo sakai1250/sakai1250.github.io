@@ -39,6 +39,8 @@ OBSOLETE_HEADER_NAV = re.compile(
     flags=re.DOTALL,
 )
 
+OBSOLETE_BACKGROUND_NOTE = "  <!-- Neural Network Background Canvas will be injected here by JS -->\n\n"
+
 
 def update_index() -> None:
     text = INDEX.read_text(encoding="utf-8")
@@ -62,6 +64,7 @@ def update_index() -> None:
         count=1,
     )
     text = OBSOLETE_HEADER_NAV.sub('', text, count=1)
+    text = text.replace(OBSOLETE_BACKGROUND_NOTE, '', 1)
 
     if 'href="assets/cv.pdf" target="_blank" class="header-btn primary"' not in text:
         raise SystemExit("CV header action was not made primary")
@@ -71,6 +74,8 @@ def update_index() -> None:
         raise SystemExit("obsolete effects.js runtime markup is still present")
     if 'header-bottom' in text or 'data-jump=' in text or 'header-hint' in text:
         raise SystemExit("obsolete commented header navigation is still present")
+    if 'Neural Network Background Canvas' in text:
+        raise SystemExit("obsolete background canvas note is still present")
 
     if text != old:
         INDEX.write_text(text, encoding="utf-8")
