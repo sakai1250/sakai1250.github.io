@@ -18,6 +18,13 @@ def read_cv_field(cv_text: str, label: str) -> str:
     return match.group(1)
 
 
+def read_cv_education_label(cv_text: str, prefix: str) -> str:
+    match = re.search(rf"^({re.escape(prefix)}[^\n]*)$", cv_text, flags=re.MULTILINE)
+    if not match:
+        raise SystemExit(f"assets/cv.txt is missing an EDUCATION entry starting with {prefix}")
+    return match.group(1)
+
+
 def maintain_page_titles(text: str) -> str:
     old_title = "Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher"
     new_title = "Taigo Sakai | Ph.D. Student, Special Assistant &amp; Computer Vision Researcher"
@@ -228,6 +235,38 @@ def maintain_visible_profile(text: str) -> str:
     return text
 
 
+def maintain_visible_education(text: str, cv_text: str) -> str:
+    phd_label = read_cv_education_label(cv_text, "Ph.D. Course,")
+    masters_label = read_cv_education_label(cv_text, "Master's Course,")
+    desired_labels = (
+        ("博士後期課程", f"Meijo University Graduate School, {phd_label}"),
+        ("修士課程", f"Meijo University Graduate School, {masters_label}"),
+    )
+
+    section_pattern = re.compile(
+        r'(<section class="section-card" id="research-education">)(.*?)(</section>)',
+        flags=re.DOTALL,
+    )
+    section_match = section_pattern.search(text)
+    if not section_match:
+        raise SystemExit("Could not find visible Education section")
+
+    section = section_match.group(2)
+    for japanese_marker, desired_label in desired_labels:
+        label_pattern = re.compile(
+            rf'(<b lang="ja">[^<]*{re.escape(japanese_marker)}</b>\s*<b lang="en">)([^<]+)(</b>)'
+        )
+        section, count = label_pattern.subn(
+            lambda match: f"{match.group(1)}{desired_label}{match.group(3)}",
+            section,
+            count=1,
+        )
+        if count != 1:
+            raise SystemExit(f"Could not find visible Education label for {japanese_marker}")
+
+    return text[: section_match.start(2)] + section + text[section_match.end(2) :]
+
+
 def maintain_canonical_url(text: str) -> str:
     canonical = '  <link rel="canonical" href="https://sakai1250.github.io/">\n'
     if canonical not in text:
@@ -249,6 +288,7 @@ def main() -> None:
     text = maintain_visible_profile_links(text, profile_urls)
     text = maintain_visible_contact(text, contact_email)
     text = maintain_visible_profile(text)
+    text = maintain_visible_education(text, cv_text)
     text = maintain_canonical_url(text)
     not_found_text = maintain_recovery_links(not_found_text, profile_urls, contact_email)
     INDEX_PATH.write_text(text, encoding="utf-8")
