@@ -41,6 +41,31 @@ OBSOLETE_HEADER_NAV = re.compile(
 
 OBSOLETE_BACKGROUND_NOTE = "  <!-- Neural Network Background Canvas will be injected here by JS -->\n\n"
 
+SOCIAL_ICON_LABELS = ("x-icon", "linkedin-icon", "qiita-icon")
+
+
+def hide_redundant_social_icon_labels(text: str) -> str:
+    for icon_id in SOCIAL_ICON_LABELS:
+        text = re.sub(
+            rf'\s+role="img"\s+aria-labelledby="{re.escape(icon_id)}"',
+            ' aria-hidden="true"',
+            text,
+            count=1,
+        )
+        text = re.sub(
+            rf'\s+aria-labelledby="{re.escape(icon_id)}"\s+class="octicon"',
+            ' class="octicon" aria-hidden="true"',
+            text,
+            count=1,
+        )
+        text = re.sub(
+            rf'\s*<title id="{re.escape(icon_id)}">.*?</title>',
+            '',
+            text,
+            count=1,
+        )
+    return text
+
 
 def update_index() -> None:
     text = INDEX.read_text(encoding="utf-8")
@@ -65,6 +90,7 @@ def update_index() -> None:
     )
     text = OBSOLETE_HEADER_NAV.sub('', text, count=1)
     text = text.replace(OBSOLETE_BACKGROUND_NOTE, '', 1)
+    text = hide_redundant_social_icon_labels(text)
 
     if 'href="assets/cv.pdf" target="_blank" class="header-btn primary"' not in text:
         raise SystemExit("CV header action was not made primary")
@@ -76,6 +102,9 @@ def update_index() -> None:
         raise SystemExit("obsolete commented header navigation is still present")
     if 'Neural Network Background Canvas' in text:
         raise SystemExit("obsolete background canvas note is still present")
+    for icon_id in SOCIAL_ICON_LABELS:
+        if f'aria-labelledby="{icon_id}"' in text or f'<title id="{icon_id}">' in text:
+            raise SystemExit(f"redundant accessible label remains on {icon_id}")
 
     if text != old:
         INDEX.write_text(text, encoding="utf-8")
