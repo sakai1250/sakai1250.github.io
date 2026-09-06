@@ -2,6 +2,10 @@
 from html.parser import HTMLParser
 from pathlib import Path
 import json
+import re
+
+
+PROFILE_FIELDS = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
 
 
 class JsonLdParser(HTMLParser):
@@ -59,9 +63,17 @@ def single_value(values, label):
     return value
 
 
+def read_cv_field(cv_text, label):
+    match = re.search(rf"^{re.escape(label)}:\s*(\S+)\s*$", cv_text, flags=re.MULTILINE)
+    if not match:
+        raise SystemExit(f"assets/cv.txt is missing a machine-readable {label} field")
+    return match.group(1)
+
+
 def main():
     parser = JsonLdParser()
     parser.feed(Path("index.html").read_text(encoding="utf-8"))
+    cv_text = Path("assets/cv.txt").read_text(encoding="utf-8")
 
     people = []
     for raw in parser.blocks:
@@ -164,15 +176,13 @@ def main():
     if not isinstance(same_as, list):
         raise SystemExit("Person JSON-LD sameAs must be a list")
     required_profiles = {
-        "https://github.com/sakai1250",
-        "https://qiita.com/sakai1250",
-        "https://www.linkedin.com/in/sakai1250",
-        "https://scholar.google.com/citations?user=eS-5wrQAAAAJ",
+        read_cv_field(cv_text, label)
+        for label in PROFILE_FIELDS
     }
     missing_profiles = sorted(required_profiles - set(same_as))
     if missing_profiles:
         raise SystemExit(
-            f"Person JSON-LD is missing professional profile links: {missing_profiles}"
+            f"Person JSON-LD is missing professional profile links from assets/cv.txt: {missing_profiles}"
         )
 
     affiliation = person.get("affiliation")
@@ -188,7 +198,6 @@ def main():
             "Person JSON-LD uses alumniOf for a current affiliation; use affiliation instead"
         )
 
-    cv_text = Path("assets/cv.txt").read_text(encoding="utf-8")
     if person["name"].upper() not in cv_text.upper():
         raise SystemExit("assets/cv.txt is missing the JSON-LD person name")
     for required_role in required_roles:
@@ -198,14 +207,6 @@ def main():
         raise SystemExit("assets/cv.txt is missing the current affiliation")
     if person["url"] not in cv_text:
         raise SystemExit("assets/cv.txt is missing the canonical portfolio URL")
-    missing_cv_profiles = sorted(
-        profile for profile in required_profiles if profile not in cv_text
-    )
-    if missing_cv_profiles:
-        raise SystemExit(
-            "assets/cv.txt is missing professional profile links from JSON-LD: "
-            + ", ".join(missing_cv_profiles)
-        )
 
     print(
         "OK: public metadata, localized social previews, Person JSON-LD, and assets/cv.txt contain a consistent professional identity"

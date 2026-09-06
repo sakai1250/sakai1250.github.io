@@ -30,6 +30,13 @@ def read_person_json_ld(index_text):
     raise SystemExit("index.html is missing Person JSON-LD")
 
 
+def read_cv_field(cv_text, label):
+    match = re.search(rf"^{re.escape(label)}:\s*(\S+)\s*$", cv_text, flags=re.MULTILINE)
+    if not match:
+        raise SystemExit(f"assets/cv.txt is missing a machine-readable {label} field")
+    return match.group(1)
+
+
 def main():
     llms_path = Path("llms.txt")
     cv_path = Path("assets/cv.txt")
@@ -71,21 +78,13 @@ def main():
     for route in required_routes:
         require(llms_text, route, "llms.txt")
 
-    cv_email_match = re.search(r"^Email:\s*(\S+@\S+)\s*$", cv_text, flags=re.MULTILINE)
-    if not cv_email_match:
-        raise SystemExit("assets/cv.txt is missing a machine-readable Email field")
-    contact_email = cv_email_match.group(1)
+    contact_email = read_cv_field(cv_text, "Email")
     contact_mailto = f"mailto:{contact_email}"
-    required_profiles = [
-        "https://github.com/sakai1250",
-        "https://qiita.com/sakai1250",
-        "https://www.linkedin.com/in/sakai1250",
-        "https://scholar.google.com/citations?user=eS-5wrQAAAAJ",
-    ]
+    profile_fields = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
+    required_profiles = [read_cv_field(cv_text, label) for label in profile_fields]
     recovery_profiles = [
-        "https://github.com/sakai1250",
-        "https://www.linkedin.com/in/sakai1250",
-        "https://scholar.google.com/citations?user=eS-5wrQAAAAJ",
+        read_cv_field(cv_text, label)
+        for label in ("GitHub", "LinkedIn", "Google Scholar")
     ]
     for profile in required_profiles:
         require(llms_text, profile, "llms.txt")
@@ -100,9 +99,6 @@ def main():
     for item in shared_identity:
         require_casefold(cv_text, item, "assets/cv.txt")
     require(cv_text, "https://sakai1250.github.io/", "assets/cv.txt")
-
-    for profile in required_profiles:
-        require(cv_text, profile, "assets/cv.txt")
 
     # Human-facing recovery and contact routes must stay aligned with the
     # machine-readable profile so stale links do not survive on secondary pages.

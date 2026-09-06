@@ -6,6 +6,15 @@ import re
 
 
 INDEX_PATH = Path("index.html")
+CV_PATH = Path("assets/cv.txt")
+PROFILE_FIELDS = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
+
+
+def read_cv_field(cv_text: str, label: str) -> str:
+    match = re.search(rf"^{re.escape(label)}:\s*(\S+)\s*$", cv_text, flags=re.MULTILINE)
+    if not match:
+        raise SystemExit(f"assets/cv.txt is missing a machine-readable {label} field")
+    return match.group(1)
 
 
 def maintain_page_titles(text: str) -> str:
@@ -32,7 +41,7 @@ def maintain_page_titles(text: str) -> str:
     return text
 
 
-def maintain_structured_profile(text: str) -> str:
+def maintain_structured_profile(text: str, profile_urls: list[str]) -> str:
     old_title = '"jobTitle": "Ph.D. Student / Researcher / Engineer"'
     new_title = '"jobTitle": "Ph.D. Student / Special Assistant / Researcher / Engineer"'
     if old_title in text:
@@ -56,22 +65,13 @@ def maintain_structured_profile(text: str) -> str:
     elif new_context not in text:
         raise SystemExit("Could not find expected JSON-LD schema context")
 
-    scholar_url = "https://scholar.google.com/citations?user=eS-5wrQAAAAJ"
-    jsonld_start = text.find('<script type="application/ld+json">')
-    jsonld_end = text.find("</script>", jsonld_start)
-    if jsonld_start == -1 or jsonld_end == -1:
-        raise SystemExit("Could not find JSON-LD profile block")
-    jsonld = text[jsonld_start:jsonld_end]
-    if scholar_url not in jsonld:
-        marker = '      "https://www.linkedin.com/in/sakai1250"\n'
-        if marker not in jsonld:
-            raise SystemExit("Could not find JSON-LD profile-link insertion point")
-        text = text.replace(
-            marker,
-            '      "https://www.linkedin.com/in/sakai1250",\n'
-            f'      "{scholar_url}"\n',
-            1,
-        )
+    same_as_pattern = re.compile(r'("sameAs": \[\n)(.*?)(\n    \])', flags=re.DOTALL)
+    match = same_as_pattern.search(text)
+    if not match:
+        raise SystemExit("Could not find JSON-LD sameAs profile block")
+    desired_profiles = ",\n".join(f'      "{url}"' for url in profile_urls)
+    if match.group(2) != desired_profiles:
+        text = text[: match.start(2)] + desired_profiles + text[match.end(2) :]
 
     old_description = (
         "名城大学大学院 博士後期課程 坂井泰吾のポートフォリオ。"
@@ -143,8 +143,10 @@ def maintain_canonical_url(text: str) -> str:
 
 def main() -> None:
     text = INDEX_PATH.read_text(encoding="utf-8")
+    cv_text = CV_PATH.read_text(encoding="utf-8")
+    profile_urls = [read_cv_field(cv_text, label) for label in PROFILE_FIELDS]
     text = maintain_page_titles(text)
-    text = maintain_structured_profile(text)
+    text = maintain_structured_profile(text, profile_urls)
     text = maintain_visible_profile(text)
     text = maintain_canonical_url(text)
     INDEX_PATH.write_text(text, encoding="utf-8")
