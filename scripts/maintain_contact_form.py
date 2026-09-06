@@ -4,6 +4,12 @@ from pathlib import Path
 path = Path('main.js')
 text = path.read_text(encoding='utf-8')
 
+cv_text = Path('assets/cv.txt').read_text(encoding='utf-8')
+email_match = re.search(r'^Email:\s*(\S+)\s*$', cv_text, re.MULTILINE)
+if not email_match:
+    raise SystemExit('Could not find Email field in assets/cv.txt')
+contact_email = email_match.group(1)
+
 contact_replacement = r'''function initContactForm() {
     const f = document.getElementById('contact-form');
     if (!f) return;
@@ -27,7 +33,7 @@ contact_replacement = r'''function initContactForm() {
         const showError = () => {
             if (!status) return;
             const link = document.createElement('a');
-            link.href = 'mailto:263441505@ccmailg.meijo-u.ac.jp';
+            link.href = 'mailto:__CONTACT_EMAIL__';
             link.textContent = labels.emailFallback;
             status.replaceChildren(document.createTextNode(`${labels.error} `), link);
         };
@@ -63,7 +69,7 @@ contact_replacement = r'''function initContactForm() {
             button.innerHTML = originalButtonHTML;
         }
     });
-}'''
+}'''.replace('__CONTACT_EMAIL__', contact_email)
 
 contact_pattern = re.compile(
     r'function initContactForm\(\) \{[\s\S]*?\n\}\n\n(?=async function initQiitaArticles\(\) \{)'
