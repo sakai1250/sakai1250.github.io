@@ -46,7 +46,6 @@ Use Python 3.14 and Node 24 for maintenance and validation so local runs match G
 python3.14 -m pip install -r requirements-maintenance.txt
 python3.14 -m py_compile scripts/*.py
 node --check main.js
-python3.14 scripts/maintain_profile_metadata.py
 python3.14 scripts/run_deterministic_maintenance.py
 python3.14 scripts/check_app_repo_links.py
 python3.14 scripts/check_local_deep_links.py
