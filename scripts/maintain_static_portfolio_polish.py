@@ -34,6 +34,11 @@ CURSOR_STYLE = """
 @keyframes blink { 50% { opacity: 0; } }
 """
 
+OBSOLETE_HEADER_NAV = re.compile(
+    r'\n\s*<!-- <div class="header-bottom">.*?</div> -->',
+    flags=re.DOTALL,
+)
+
 
 def update_index() -> None:
     text = INDEX.read_text(encoding="utf-8")
@@ -56,6 +61,7 @@ def update_index() -> None:
         text,
         count=1,
     )
+    text = OBSOLETE_HEADER_NAV.sub('', text, count=1)
 
     if 'href="assets/cv.pdf" target="_blank" class="header-btn primary"' not in text:
         raise SystemExit("CV header action was not made primary")
@@ -63,6 +69,8 @@ def update_index() -> None:
         raise SystemExit("GitHub header action is still primary")
     if 'effects.js' in text or 'class="cursor"' in text:
         raise SystemExit("obsolete effects.js runtime markup is still present")
+    if 'header-bottom' in text or 'data-jump=' in text or 'header-hint' in text:
+        raise SystemExit("obsolete commented header navigation is still present")
 
     if text != old:
         INDEX.write_text(text, encoding="utf-8")
