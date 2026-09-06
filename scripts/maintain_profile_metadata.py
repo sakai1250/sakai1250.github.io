@@ -108,7 +108,7 @@ def maintain_visible_profile_links(text: str, profile_urls: dict[str, str]) -> s
     }
     for field, label in labels.items():
         anchor_pattern = re.compile(
-            rf'(<a\b[^>]*\bhref=")([^"]+)("[^>]*>.*?{re.escape(label)}.*?</a>)',
+            rf'(<a\b[^>]*\bhref=")([^"]+)("[^>]*>(?:(?!</a>).)*?{re.escape(label)}(?:(?!</a>).)*?</a>)',
             flags=re.DOTALL,
         )
 
