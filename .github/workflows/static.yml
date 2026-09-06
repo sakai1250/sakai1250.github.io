@@ -80,7 +80,7 @@ jobs:
       - name: Validate full interaction maintenance
         run: |
           python scripts/run_deterministic_maintenance.py
-          git diff --exit-code -- index.html 404.html main.js style.css
+          git diff --exit-code -- index.html 404.html main.js style.css README.md
       - name: Validate static fallback metadata
         run: |
           python scripts/maintain_static_fallbacks.py
