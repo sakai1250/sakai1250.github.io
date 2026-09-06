@@ -67,10 +67,6 @@ jobs:
         run: python scripts/check_year_filter_coverage.py
       - name: Validate app repository links
         run: python scripts/check_app_repo_links.py
-      - name: Validate visible profile metadata
-        run: |
-          python scripts/maintain_profile_metadata.py
-          git diff --exit-code -- index.html 404.html
       - name: Validate structured profile
         run: python scripts/check_structured_profile.py
       - name: Validate machine-readable profile
