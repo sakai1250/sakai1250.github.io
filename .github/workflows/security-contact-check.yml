@@ -6,12 +6,14 @@ on:
     paths:
       - '.well-known/security.txt'
       - 'SECURITY.md'
+      - 'assets/cv.txt'
       - 'scripts/check_security_contact.py'
       - '.github/workflows/security-contact-check.yml'
   pull_request:
     paths:
       - '.well-known/security.txt'
       - 'SECURITY.md'
+      - 'assets/cv.txt'
       - 'scripts/check_security_contact.py'
       - '.github/workflows/security-contact-check.yml'
   schedule:
