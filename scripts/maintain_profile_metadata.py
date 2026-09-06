@@ -6,6 +6,7 @@ import re
 
 
 INDEX_PATH = Path("index.html")
+NOT_FOUND_PATH = Path("404.html")
 CV_PATH = Path("assets/cv.txt")
 PROFILE_FIELDS = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
 
@@ -126,6 +127,33 @@ def maintain_visible_profile_links(text: str, profile_urls: dict[str, str]) -> s
     return text[: match.start(2)] + block + text[match.end(2) :]
 
 
+def maintain_recovery_links(
+    text: str, profile_urls: dict[str, str], contact_email: str
+) -> str:
+    recovery_fields = ("GitHub", "LinkedIn", "Google Scholar")
+    for field in recovery_fields:
+        label = field
+        anchor_pattern = re.compile(
+            rf'(<a\b[^>]*\bhref=")([^"]+)("[^>]*>{re.escape(label)}</a>)'
+        )
+        text, count = anchor_pattern.subn(
+            rf'\g<1>{profile_urls[field]}\g<3>', text, count=1
+        )
+        if count != 1:
+            raise SystemExit(f"Could not find 404 {field} profile link")
+
+    contact_pattern = re.compile(
+        r'(<a\b[^>]*\bhref=")mailto:[^"]+("[^>]*><span lang="ja">連絡</span>)'
+    )
+    text, count = contact_pattern.subn(
+        rf'\g<1>mailto:{contact_email}\g<2>', text, count=1
+    )
+    if count != 1:
+        raise SystemExit("Could not find 404 contact link")
+
+    return text
+
+
 def maintain_visible_profile(text: str) -> str:
     role = "Ph.D. Student · Special Assistant · Computer Vision Researcher"
     empty = '<span id="typing-text"></span>'
@@ -179,14 +207,18 @@ def maintain_canonical_url(text: str) -> str:
 
 def main() -> None:
     text = INDEX_PATH.read_text(encoding="utf-8")
+    not_found_text = NOT_FOUND_PATH.read_text(encoding="utf-8")
     cv_text = CV_PATH.read_text(encoding="utf-8")
     profile_urls = {label: read_cv_field(cv_text, label) for label in PROFILE_FIELDS}
+    contact_email = read_cv_field(cv_text, "Email")
     text = maintain_page_titles(text)
     text = maintain_structured_profile(text, [profile_urls[label] for label in PROFILE_FIELDS])
     text = maintain_visible_profile_links(text, profile_urls)
     text = maintain_visible_profile(text)
     text = maintain_canonical_url(text)
+    not_found_text = maintain_recovery_links(not_found_text, profile_urls, contact_email)
     INDEX_PATH.write_text(text, encoding="utf-8")
+    NOT_FOUND_PATH.write_text(not_found_text, encoding="utf-8")
 
 
 if __name__ == "__main__":
