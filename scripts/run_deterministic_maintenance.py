@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 MAINTENANCE_SCRIPTS = (
+    "scripts/maintain_profile_metadata.py",
     "scripts/maintain_toc_fallback.py",
     "scripts/maintain_tabs.py",
     "scripts/maintain_stable_section_ids.py",

@@ -56,10 +56,7 @@ jobs:
               raise SystemExit('Thumbnail cleanup still depends on current-run download success')
           PY
 
-      - name: Keep profile metadata aligned
-        run: python scripts/maintain_profile_metadata.py
-
-      - name: Keep site interactions and external links aligned
+      - name: Keep deterministic portfolio maintenance aligned
         run: python scripts/run_deterministic_maintenance.py
 
       - name: Commit and Push changes
