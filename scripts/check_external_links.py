@@ -26,6 +26,7 @@ class LinkParser(HTMLParser):
     def __init__(self):
         super().__init__()
         self.links = set()
+        self.non_get_form_actions = set()
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
@@ -36,6 +37,11 @@ class LinkParser(HTMLParser):
             url = attrs.get("src", "")
         elif tag == "form":
             url = attrs.get("action", "")
+            if (
+                url.startswith(("http://", "https://"))
+                and attrs.get("method", "get").lower() != "get"
+            ):
+                self.non_get_form_actions.add(url)
         if url.startswith(("http://", "https://")):
             self.links.add(url)
 
@@ -56,7 +62,7 @@ def collect_links():
     url_pattern = re.compile(r"https?://[^\s<>\"'`)\]]+")
     for path in SOURCE_FILES:
         links.update(url_pattern.findall(Path(path).read_text(encoding="utf-8")))
-    return links
+    return links, parser.non_get_form_actions
 
 
 def should_check(url, event_name):
@@ -70,7 +76,7 @@ def should_check(url, event_name):
     return True
 
 
-def check_url(url):
+def check_url(url, allow_method_not_allowed=False):
     status = None
     error = None
     success = False
@@ -102,6 +108,13 @@ def check_url(url):
                     success = True
                     break
 
+                # A non-GET form action can legitimately reject link-style requests.
+                # 405 still confirms that the action endpoint exists; do not submit it.
+                if status == 405 and allow_method_not_allowed:
+                    error = None
+                    success = True
+                    break
+
                 # A server may reject HEAD while still serving GET normally.
                 if method == "HEAD" and status in (400, 405, 501):
                     break
@@ -127,15 +140,18 @@ def check_url(url):
 
 def main():
     event_name = os.environ.get("GITHUB_EVENT_NAME", "")
+    collected_links, non_get_form_actions = collect_links()
     links = {
-        url for url in collect_links() if should_check(url, event_name)
+        url for url in collected_links if should_check(url, event_name)
     }
 
     failures = []
     print(f"Checking {len(links)} external links, form actions, and images")
 
     for url in sorted(links):
-        success, status, error = check_url(url)
+        success, status, error = check_url(
+            url, allow_method_not_allowed=url in non_get_form_actions
+        )
         if not success:
             failures.append((url, status, error))
             print(f'FAIL {status or "ERR"}: {url} {error or ""}')
