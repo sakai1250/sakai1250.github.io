@@ -9,8 +9,6 @@ updates:
       github-actions:
         patterns:
           - "*"
-    labels:
-      - "dependencies"
     commit-message:
       prefix: "chore"
 
@@ -23,7 +21,5 @@ updates:
       maintenance-python:
         patterns:
           - "*"
-    labels:
-      - "dependencies"
     commit-message:
       prefix: "chore"
