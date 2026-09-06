@@ -7,6 +7,7 @@ import re
 
 INDEX_PATH = Path("index.html")
 NOT_FOUND_PATH = Path("404.html")
+README_PATH = Path("README.md")
 CV_PATH = Path("assets/cv.txt")
 PROFILE_FIELDS = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
 
@@ -167,6 +168,15 @@ def maintain_visible_contact(text: str, contact_email: str) -> str:
     return text[: match.start(2)] + block + text[match.end(2) :]
 
 
+def maintain_readme_contact(text: str, contact_email: str) -> str:
+    contact_pattern = re.compile(r"(?m)^- \*\*Contact:\*\* mailto:\S+\s*$")
+    desired = f"- **Contact:** mailto:{contact_email}"
+    text, count = contact_pattern.subn(desired, text, count=1)
+    if count != 1:
+        raise SystemExit("Could not find README contact quick link")
+    return text
+
+
 def maintain_recovery_links(
     text: str, profile_urls: dict[str, str], contact_email: str
 ) -> str:
@@ -280,6 +290,7 @@ def maintain_canonical_url(text: str) -> str:
 def main() -> None:
     text = INDEX_PATH.read_text(encoding="utf-8")
     not_found_text = NOT_FOUND_PATH.read_text(encoding="utf-8")
+    readme_text = README_PATH.read_text(encoding="utf-8")
     cv_text = CV_PATH.read_text(encoding="utf-8")
     profile_urls = {label: read_cv_field(cv_text, label) for label in PROFILE_FIELDS}
     contact_email = read_cv_field(cv_text, "Email")
@@ -291,8 +302,10 @@ def main() -> None:
     text = maintain_visible_education(text, cv_text)
     text = maintain_canonical_url(text)
     not_found_text = maintain_recovery_links(not_found_text, profile_urls, contact_email)
+    readme_text = maintain_readme_contact(readme_text, contact_email)
     INDEX_PATH.write_text(text, encoding="utf-8")
     NOT_FOUND_PATH.write_text(not_found_text, encoding="utf-8")
+    README_PATH.write_text(readme_text, encoding="utf-8")
 
 
 if __name__ == "__main__":
