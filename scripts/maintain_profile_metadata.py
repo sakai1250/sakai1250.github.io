@@ -90,6 +90,38 @@ def maintain_structured_profile(text: str, profile_urls: list[str]) -> str:
     return text
 
 
+def maintain_visible_profile_links(text: str, profile_urls: dict[str, str]) -> str:
+    block_pattern = re.compile(
+        r'(<div class="profile-links">)(.*?)(\n\s*</div>\n\s*</div>\n\s*</aside>)',
+        flags=re.DOTALL,
+    )
+    match = block_pattern.search(text)
+    if not match:
+        raise SystemExit("Could not find visible profile links block")
+
+    block = match.group(2)
+    labels = {
+        "GitHub": "GitHub",
+        "Qiita": "Qiita",
+        "LinkedIn": "LinkedIn",
+        "Google Scholar": "Google Scholar",
+    }
+    for field, label in labels.items():
+        anchor_pattern = re.compile(
+            rf'(<a\b[^>]*\bhref=")[^"]+("[^>]*>.*?{re.escape(label)}.*?</a>)',
+            flags=re.DOTALL,
+        )
+        block, count = anchor_pattern.subn(
+            lambda anchor_match: f'{anchor_match.group(1)}{profile_urls[field]}{anchor_match.group(2)}',
+            block,
+            count=1,
+        )
+        if count != 1:
+            raise SystemExit(f"Could not find visible {field} profile link")
+
+    return text[: match.start(2)] + block + text[match.end(2) :]
+
+
 def maintain_visible_profile(text: str) -> str:
     role = "Ph.D. Student · Special Assistant · Computer Vision Researcher"
     empty = '<span id="typing-text"></span>'
@@ -144,9 +176,10 @@ def maintain_canonical_url(text: str) -> str:
 def main() -> None:
     text = INDEX_PATH.read_text(encoding="utf-8")
     cv_text = CV_PATH.read_text(encoding="utf-8")
-    profile_urls = [read_cv_field(cv_text, label) for label in PROFILE_FIELDS]
+    profile_urls = {label: read_cv_field(cv_text, label) for label in PROFILE_FIELDS}
     text = maintain_page_titles(text)
-    text = maintain_structured_profile(text, profile_urls)
+    text = maintain_structured_profile(text, [profile_urls[label] for label in PROFILE_FIELDS])
+    text = maintain_visible_profile_links(text, profile_urls)
     text = maintain_visible_profile(text)
     text = maintain_canonical_url(text)
     INDEX_PATH.write_text(text, encoding="utf-8")
