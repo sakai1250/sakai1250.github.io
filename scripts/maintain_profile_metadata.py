@@ -23,6 +23,18 @@ def read_cv_field(cv_text: str, label: str) -> str:
     return match.group(1)
 
 
+def read_cv_header_profile(cv_text: str) -> tuple[list[str], str]:
+    lines = [line.strip() for line in cv_text.splitlines() if line.strip()]
+    if len(lines) < 5 or " | " not in lines[3]:
+        raise SystemExit("assets/cv.txt is missing the expected role and affiliation header")
+
+    roles = [role.strip() for role in lines[3].split("|") if role.strip()]
+    affiliation = lines[4].split(",", 1)[0].strip()
+    if not roles or not affiliation:
+        raise SystemExit("assets/cv.txt has an incomplete role or affiliation header")
+    return roles, affiliation
+
+
 def read_cv_education_label(cv_text: str, prefix: str) -> str:
     match = re.search(rf"^({re.escape(prefix)}[^\n]*)$", cv_text, flags=re.MULTILINE)
     if not match:
@@ -54,22 +66,27 @@ def maintain_page_titles(text: str) -> str:
     return text
 
 
-def maintain_structured_profile(text: str, profile_urls: list[str]) -> str:
-    old_title = '"jobTitle": "Ph.D. Student / Researcher / Engineer"'
-    new_title = '"jobTitle": "Ph.D. Student / Special Assistant / Researcher / Engineer"'
-    if old_title in text:
-        text = text.replace(old_title, new_title, 1)
-    elif new_title not in text:
+def maintain_structured_profile(text: str, profile_urls: list[str], cv_text: str) -> str:
+    cv_roles, cv_affiliation = read_cv_header_profile(cv_text)
+    desired_title = f'"jobTitle": "{" / ".join(cv_roles)}"'
+    title_pattern = re.compile(r'"jobTitle":\s*"[^"]*"')
+    text, title_count = title_pattern.subn(desired_title, text, count=1)
+    if title_count != 1:
         raise SystemExit("Could not find expected JSON-LD jobTitle")
 
     old_affiliation = '"alumniOf": "Meijo University"'
     new_affiliation = (
-        '"affiliation": {"@type": "CollegeOrUniversity", "name": "Meijo University"}'
+        f'"affiliation": {{"@type": "CollegeOrUniversity", "name": "{cv_affiliation}"}}'
     )
     if old_affiliation in text:
         text = text.replace(old_affiliation, new_affiliation, 1)
     elif new_affiliation not in text:
-        raise SystemExit("Could not find expected JSON-LD affiliation")
+        affiliation_pattern = re.compile(
+            r'"affiliation":\s*\{"@type":\s*"CollegeOrUniversity",\s*"name":\s*"[^"]*"\}'
+        )
+        text, affiliation_count = affiliation_pattern.subn(new_affiliation, text, count=1)
+        if affiliation_count != 1:
+            raise SystemExit("Could not find expected JSON-LD affiliation")
 
     old_context = '"@context": "http://schema.org"'
     new_context = '"@context": "https://schema.org"'
@@ -347,7 +364,9 @@ def main() -> None:
     profile_urls = {label: read_cv_field(cv_text, label) for label in PROFILE_FIELDS}
     contact_email = read_cv_field(cv_text, "Email")
     text = maintain_page_titles(text)
-    text = maintain_structured_profile(text, [profile_urls[label] for label in PROFILE_FIELDS])
+    text = maintain_structured_profile(
+        text, [profile_urls[label] for label in PROFILE_FIELDS], cv_text
+    )
     text = maintain_visible_profile_links(text, profile_urls)
     text = maintain_visible_contact(text, contact_email)
     text = maintain_visible_profile(text)
