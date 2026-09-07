@@ -131,10 +131,12 @@ def main():
         if person.get(field) != expected:
             raise SystemExit(f"index.html Person JSON-LD has unexpected {field}: {person.get(field)!r}")
 
-    job_title = str(person.get("jobTitle", ""))
-    for role in ("Ph.D. Student", "Special Assistant", "Researcher", "Engineer"):
-        if role.casefold() not in job_title.casefold():
-            raise SystemExit(f"index.html Person JSON-LD jobTitle is missing role: {role}")
+    expected_job_title = " / ".join(cv_roles)
+    if person.get("jobTitle") != expected_job_title:
+        raise SystemExit(
+            "index.html Person JSON-LD jobTitle must match assets/cv.txt: "
+            f"expected={expected_job_title!r}, actual={person.get('jobTitle')!r}"
+        )
 
     same_as = person.get("sameAs")
     if not isinstance(same_as, list):
@@ -144,8 +146,8 @@ def main():
             raise SystemExit(f"index.html Person JSON-LD sameAs is missing profile: {profile}")
 
     affiliation = person.get("affiliation")
-    if not isinstance(affiliation, dict) or affiliation.get("name") != "Meijo University":
-        raise SystemExit("index.html Person JSON-LD affiliation must identify Meijo University")
+    if not isinstance(affiliation, dict) or affiliation.get("name") != cv_affiliation:
+        raise SystemExit("index.html Person JSON-LD affiliation must match assets/cv.txt")
 
     print("OK: portfolio, recovery navigation, CV, structured metadata, and machine-readable sources expose a consistent professional profile")
 

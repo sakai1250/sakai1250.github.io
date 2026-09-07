@@ -70,10 +70,23 @@ def read_cv_field(cv_text, label):
     return match.group(1)
 
 
+def read_cv_header_profile(cv_text):
+    lines = [line.strip() for line in cv_text.splitlines() if line.strip()]
+    if len(lines) < 5 or " | " not in lines[3]:
+        raise SystemExit("assets/cv.txt is missing the expected role and affiliation header")
+
+    roles = [role.strip() for role in lines[3].split("|") if role.strip()]
+    affiliation = lines[4].split(",", 1)[0].strip()
+    if not roles or not affiliation:
+        raise SystemExit("assets/cv.txt has an incomplete role or affiliation header")
+    return roles, affiliation
+
+
 def main():
     parser = JsonLdParser()
     parser.feed(Path("index.html").read_text(encoding="utf-8"))
     cv_text = Path("assets/cv.txt").read_text(encoding="utf-8")
+    cv_roles, cv_affiliation = read_cv_header_profile(cv_text)
 
     people = []
     for raw in parser.blocks:
@@ -99,13 +112,12 @@ def main():
         if not str(person.get(key, "")).strip():
             raise SystemExit(f"Person JSON-LD is missing {key}")
 
-    job_title = str(person["jobTitle"])
-    required_roles = ("Ph.D. Student", "Special Assistant")
-    for required_role in required_roles:
-        if required_role not in job_title:
-            raise SystemExit(
-                f"Person JSON-LD jobTitle is missing current role: {required_role}"
-            )
+    expected_job_title = " / ".join(cv_roles)
+    if person["jobTitle"] != expected_job_title:
+        raise SystemExit(
+            "Person JSON-LD jobTitle must match the assets/cv.txt role header: "
+            f"expected={expected_job_title!r}, actual={person['jobTitle']!r}"
+        )
 
     if person["url"] != "https://sakai1250.github.io/":
         raise SystemExit(f'unexpected profile URL: {person["url"]}')
@@ -175,10 +187,7 @@ def main():
     same_as = person.get("sameAs")
     if not isinstance(same_as, list):
         raise SystemExit("Person JSON-LD sameAs must be a list")
-    required_profiles = {
-        read_cv_field(cv_text, label)
-        for label in PROFILE_FIELDS
-    }
+    required_profiles = {read_cv_field(cv_text, label) for label in PROFILE_FIELDS}
     missing_profiles = sorted(required_profiles - set(same_as))
     if missing_profiles:
         raise SystemExit(
@@ -186,9 +195,9 @@ def main():
         )
 
     affiliation = person.get("affiliation")
-    if not isinstance(affiliation, dict) or affiliation.get("name") != "Meijo University":
+    if not isinstance(affiliation, dict) or affiliation.get("name") != cv_affiliation:
         raise SystemExit(
-            "Person JSON-LD must identify Meijo University as the current affiliation"
+            "Person JSON-LD affiliation must match the current assets/cv.txt affiliation"
         )
     if affiliation.get("@type") != "CollegeOrUniversity":
         raise SystemExit("Person JSON-LD affiliation must use CollegeOrUniversity")
@@ -200,7 +209,7 @@ def main():
 
     if person["name"].upper() not in cv_text.upper():
         raise SystemExit("assets/cv.txt is missing the JSON-LD person name")
-    for required_role in required_roles:
+    for required_role in cv_roles:
         if required_role not in cv_text:
             raise SystemExit(f"assets/cv.txt is missing current role: {required_role}")
     if affiliation["name"] not in cv_text:
