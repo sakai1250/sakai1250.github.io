@@ -65,12 +65,13 @@ def main():
     readme_text = readme_path.read_text(encoding="utf-8")
 
     cv_roles, cv_affiliation = read_cv_header_profile(cv_text)
-    expected_current_role = (
-        f"- Current role: {' | '.join(cv_roles)} @ {cv_affiliation}"
-    )
+    role_text = " | ".join(cv_roles)
+    expected_summary_role = f"> {role_text} @ {cv_affiliation}"
+    expected_current_role = f"- Current role: {role_text} @ {cv_affiliation}"
 
     required_identity = [
         "# Taigo Sakai",
+        expected_summary_role,
         "English name: Taigo Sakai",
         "Japanese name: 坂井 泰吾",
         "Publication name: T. Sakai",
