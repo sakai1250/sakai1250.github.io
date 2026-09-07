@@ -37,6 +37,18 @@ def read_cv_field(cv_text, label):
     return match.group(1)
 
 
+def read_cv_header_profile(cv_text):
+    lines = [line.strip() for line in cv_text.splitlines() if line.strip()]
+    if len(lines) < 5 or " | " not in lines[3]:
+        raise SystemExit("assets/cv.txt is missing the expected role and affiliation header")
+
+    roles = [role.strip() for role in lines[3].split("|") if role.strip()]
+    affiliation = lines[4].split(",", 1)[0].strip()
+    if not roles or not affiliation:
+        raise SystemExit("assets/cv.txt has an incomplete role or affiliation header")
+    return roles, affiliation
+
+
 def main():
     llms_path = Path("llms.txt")
     cv_path = Path("assets/cv.txt")
@@ -99,6 +111,17 @@ def main():
     for item in shared_identity:
         require_casefold(cv_text, item, "assets/cv.txt")
     require(cv_text, "https://sakai1250.github.io/", "assets/cv.txt")
+
+    # Keep machine-readable identity checks tied to the CV header as well as the
+    # current known wording. This catches stale llms.txt data after a future role
+    # or affiliation change instead of accepting yesterday's hard-coded profile.
+    cv_roles, cv_affiliation = read_cv_header_profile(cv_text)
+    for role in cv_roles:
+        for term in role.split():
+            term = term.strip(".,/&")
+            if len(term) >= 3:
+                require_casefold(llms_text, term, "llms.txt")
+    require_casefold(llms_text, cv_affiliation, "llms.txt")
 
     # Human-facing recovery and contact routes must stay aligned with the
     # machine-readable profile so stale links do not survive on secondary pages.
