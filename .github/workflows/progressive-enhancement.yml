@@ -9,6 +9,7 @@ on:
       - main.js
       - scripts/check_progressive_enhancement.py
       - scripts/maintain_storage_resilience.py
+      - scripts/maintain_header_controls.py
       - .github/workflows/progressive-enhancement.yml
   pull_request:
     paths:
@@ -17,6 +18,7 @@ on:
       - main.js
       - scripts/check_progressive_enhancement.py
       - scripts/maintain_storage_resilience.py
+      - scripts/maintain_header_controls.py
       - .github/workflows/progressive-enhancement.yml
   workflow_dispatch:
 
