@@ -141,6 +141,17 @@ def main():
             f"title={document_title!r}, og:title={og_title!r}, twitter:title={twitter_title!r}"
         )
 
+    if len(cv_roles) == 1:
+        role_title = cv_roles[0]
+    else:
+        role_title = ", ".join(cv_roles[:-1]) + " & " + cv_roles[-1]
+    expected_page_title = f"Taigo Sakai | {role_title}"
+    if document_title != expected_page_title:
+        raise SystemExit(
+            "document, Open Graph, and Twitter titles must match the assets/cv.txt role header: "
+            f"expected={expected_page_title!r}, actual={document_title!r}"
+        )
+
     description = single_value(parser.meta.get("description", []), "meta description")
     og_description = single_value(parser.meta.get("og:description", []), "og:description")
     twitter_description = single_value(
