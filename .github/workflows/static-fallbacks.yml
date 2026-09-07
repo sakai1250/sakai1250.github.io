@@ -7,7 +7,7 @@ on:
       - 'main.js'
       - 'style.css'
       - 'sitemap.xml'
-      - 'scripts/maintain_static_fallbacks.py'
+      - 'scripts/maintain_*.py'
       - 'scripts/run_deterministic_maintenance.py'
       - '.github/workflows/static-fallbacks.yml'
       - '.github/workflows/optimize-portfolio.yml'
