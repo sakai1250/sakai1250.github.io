@@ -12,6 +12,7 @@ on:
       - 'llms.txt'
       - 'assets/cv.txt'
       - 'scripts/maintain_profile_metadata.py'
+      - 'scripts/maintain_app_repo_links.py'
       - 'scripts/check_external_links.py'
       - '.github/workflows/external-links.yml'
   pull_request:
@@ -24,6 +25,7 @@ on:
       - 'llms.txt'
       - 'assets/cv.txt'
       - 'scripts/maintain_profile_metadata.py'
+      - 'scripts/maintain_app_repo_links.py'
       - 'scripts/check_external_links.py'
       - '.github/workflows/external-links.yml'
   schedule:
