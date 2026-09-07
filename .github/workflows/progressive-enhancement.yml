@@ -8,6 +8,7 @@ on:
       - style.css
       - main.js
       - scripts/check_progressive_enhancement.py
+      - scripts/maintain_storage_resilience.py
       - .github/workflows/progressive-enhancement.yml
   pull_request:
     paths:
@@ -15,6 +16,7 @@ on:
       - style.css
       - main.js
       - scripts/check_progressive_enhancement.py
+      - scripts/maintain_storage_resilience.py
       - .github/workflows/progressive-enhancement.yml
   workflow_dispatch:
 
