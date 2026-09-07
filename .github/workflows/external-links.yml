@@ -11,6 +11,7 @@ on:
       - '.well-known/security.txt'
       - 'llms.txt'
       - 'assets/cv.txt'
+      - 'scripts/maintain_profile_metadata.py'
       - 'scripts/check_external_links.py'
       - '.github/workflows/external-links.yml'
   pull_request:
@@ -22,6 +23,7 @@ on:
       - '.well-known/security.txt'
       - 'llms.txt'
       - 'assets/cv.txt'
+      - 'scripts/maintain_profile_metadata.py'
       - 'scripts/check_external_links.py'
       - '.github/workflows/external-links.yml'
   schedule:
