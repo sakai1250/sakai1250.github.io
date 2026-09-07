@@ -169,8 +169,10 @@ def maintain_visible_contact(text: str, contact_email: str) -> str:
 
 
 def maintain_readme_contact(text: str, contact_email: str) -> str:
-    contact_pattern = re.compile(r"(?m)^- \*\*Contact:\*\* mailto:\S+\s*$")
-    desired = f"- **Contact:** mailto:{contact_email}"
+    contact_pattern = re.compile(
+        r"(?m)^- \*\*Contact:\*\* (?:mailto:\S+|\[[^\]]+\]\(mailto:[^)]+\))\s*$"
+    )
+    desired = f"- **Contact:** [{contact_email}](mailto:{contact_email})"
     text, count = contact_pattern.subn(desired, text, count=1)
     if count != 1:
         raise SystemExit("Could not find README contact quick link")

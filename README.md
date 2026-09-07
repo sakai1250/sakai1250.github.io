@@ -19,7 +19,7 @@ Personal portfolio for Taigo Sakai, a Ph.D. student, Special Assistant, computer
 - **GitHub:** https://github.com/sakai1250
 - **Qiita:** https://qiita.com/sakai1250
 - **LinkedIn:** https://www.linkedin.com/in/sakai1250
-- **Contact:** mailto:263441505@ccmailg.meijo-u.ac.jp
+- **Contact:** [263441505@ccmailg.meijo-u.ac.jp](mailto:263441505@ccmailg.meijo-u.ac.jp)
 ## Focus
 
 - Research: continual learning, long-tailed learning, multi-view detection and tracking
