@@ -8,6 +8,10 @@ import re
 INDEX_PATH = Path("index.html")
 NOT_FOUND_PATH = Path("404.html")
 README_PATH = Path("README.md")
+LLMS_PATH = Path("llms.txt")
+SECURITY_POLICY_PATH = Path("SECURITY.md")
+SECURITY_CONTACT_PATH = Path(".well-known/security.txt")
+MAIN_JS_PATH = Path("main.js")
 CV_PATH = Path("assets/cv.txt")
 PROFILE_FIELDS = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
 
@@ -179,6 +183,48 @@ def maintain_readme_contact(text: str, contact_email: str) -> str:
     return text
 
 
+def maintain_llms_contact(text: str, contact_email: str) -> str:
+    contact_pattern = re.compile(r"(?m)^- Contact: mailto:\S+\s*$")
+    text, count = contact_pattern.subn(
+        f"- Contact: mailto:{contact_email}", text, count=1
+    )
+    if count != 1:
+        raise SystemExit("Could not find llms.txt contact field")
+    return text
+
+
+def maintain_security_policy_contact(text: str, contact_email: str) -> str:
+    contact_pattern = re.compile(
+        r"(please report it privately by email to `)[^`]+(`\.)"
+    )
+    text, count = contact_pattern.subn(
+        rf"\g<1>{contact_email}\g<2>", text, count=1
+    )
+    if count != 1:
+        raise SystemExit("Could not find SECURITY.md private contact")
+    return text
+
+
+def maintain_security_contact(text: str, contact_email: str) -> str:
+    contact_pattern = re.compile(r"(?m)^Contact: mailto:\S+\s*$")
+    text, count = contact_pattern.subn(
+        f"Contact: mailto:{contact_email}", text, count=1
+    )
+    if count != 1:
+        raise SystemExit("Could not find security.txt contact field")
+    return text
+
+
+def maintain_form_fallback_contact(text: str, contact_email: str) -> str:
+    contact_pattern = re.compile(r"(link\.href = 'mailto:)[^']+(';)")
+    text, count = contact_pattern.subn(
+        rf"\g<1>{contact_email}\g<2>", text, count=1
+    )
+    if count != 1:
+        raise SystemExit("Could not find contact form email fallback")
+    return text
+
+
 def maintain_recovery_links(
     text: str, profile_urls: dict[str, str], contact_email: str
 ) -> str:
@@ -293,6 +339,10 @@ def main() -> None:
     text = INDEX_PATH.read_text(encoding="utf-8")
     not_found_text = NOT_FOUND_PATH.read_text(encoding="utf-8")
     readme_text = README_PATH.read_text(encoding="utf-8")
+    llms_text = LLMS_PATH.read_text(encoding="utf-8")
+    security_policy_text = SECURITY_POLICY_PATH.read_text(encoding="utf-8")
+    security_contact_text = SECURITY_CONTACT_PATH.read_text(encoding="utf-8")
+    main_js_text = MAIN_JS_PATH.read_text(encoding="utf-8")
     cv_text = CV_PATH.read_text(encoding="utf-8")
     profile_urls = {label: read_cv_field(cv_text, label) for label in PROFILE_FIELDS}
     contact_email = read_cv_field(cv_text, "Email")
@@ -305,9 +355,17 @@ def main() -> None:
     text = maintain_canonical_url(text)
     not_found_text = maintain_recovery_links(not_found_text, profile_urls, contact_email)
     readme_text = maintain_readme_contact(readme_text, contact_email)
+    llms_text = maintain_llms_contact(llms_text, contact_email)
+    security_policy_text = maintain_security_policy_contact(security_policy_text, contact_email)
+    security_contact_text = maintain_security_contact(security_contact_text, contact_email)
+    main_js_text = maintain_form_fallback_contact(main_js_text, contact_email)
     INDEX_PATH.write_text(text, encoding="utf-8")
     NOT_FOUND_PATH.write_text(not_found_text, encoding="utf-8")
     README_PATH.write_text(readme_text, encoding="utf-8")
+    LLMS_PATH.write_text(llms_text, encoding="utf-8")
+    SECURITY_POLICY_PATH.write_text(security_policy_text, encoding="utf-8")
+    SECURITY_CONTACT_PATH.write_text(security_contact_text, encoding="utf-8")
+    MAIN_JS_PATH.write_text(main_js_text, encoding="utf-8")
 
 
 if __name__ == "__main__":
