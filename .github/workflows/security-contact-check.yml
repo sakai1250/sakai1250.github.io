@@ -7,6 +7,7 @@ on:
       - '.well-known/security.txt'
       - 'SECURITY.md'
       - 'assets/cv.txt'
+      - 'scripts/maintain_profile_metadata.py'
       - 'scripts/check_security_contact.py'
       - '.github/workflows/security-contact-check.yml'
   pull_request:
@@ -14,6 +15,7 @@ on:
       - '.well-known/security.txt'
       - 'SECURITY.md'
       - 'assets/cv.txt'
+      - 'scripts/maintain_profile_metadata.py'
       - 'scripts/check_security_contact.py'
       - '.github/workflows/security-contact-check.yml'
   schedule:
