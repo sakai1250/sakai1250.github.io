@@ -17,6 +17,7 @@ SOURCE_FILES = (
     ".well-known/security.txt",
     "llms.txt",
     "assets/cv.txt",
+    "assets/data.json",
 )
 HTML_FILES = ("index.html", "404.html")
 DEPLOYMENT_HOST = "sakai1250.github.io"
