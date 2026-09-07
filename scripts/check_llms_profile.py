@@ -64,12 +64,17 @@ def main():
     main_js_text = main_js_path.read_text(encoding="utf-8")
     readme_text = readme_path.read_text(encoding="utf-8")
 
+    cv_roles, cv_affiliation = read_cv_header_profile(cv_text)
+    expected_current_role = (
+        f"- Current role: {' | '.join(cv_roles)} @ {cv_affiliation}"
+    )
+
     required_identity = [
         "# Taigo Sakai",
         "English name: Taigo Sakai",
         "Japanese name: 坂井 泰吾",
         "Publication name: T. Sakai",
-        "Current role: Ph.D. student and Special Assistant at Meijo University",
+        expected_current_role,
     ]
     for item in required_identity:
         require(llms_text, item, "llms.txt")
@@ -102,26 +107,8 @@ def main():
         require(llms_text, profile, "llms.txt")
     require(llms_text, contact_mailto, "llms.txt")
 
-    shared_identity = [
-        "Taigo Sakai",
-        "Ph.D. Student",
-        "Special Assistant",
-        "Meijo University",
-    ]
-    for item in shared_identity:
-        require_casefold(cv_text, item, "assets/cv.txt")
+    require_casefold(cv_text, "Taigo Sakai", "assets/cv.txt")
     require(cv_text, "https://sakai1250.github.io/", "assets/cv.txt")
-
-    # Keep machine-readable identity checks tied to the CV header as well as the
-    # current known wording. This catches stale llms.txt data after a future role
-    # or affiliation change instead of accepting yesterday's hard-coded profile.
-    cv_roles, cv_affiliation = read_cv_header_profile(cv_text)
-    for role in cv_roles:
-        for term in role.split():
-            term = term.strip(".,/&")
-            if len(term) >= 3:
-                require_casefold(llms_text, term, "llms.txt")
-    require_casefold(llms_text, cv_affiliation, "llms.txt")
 
     # Human-facing recovery and contact routes must stay aligned with the
     # machine-readable profile so stale links do not survive on secondary pages.
