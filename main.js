@@ -616,7 +616,7 @@ function initCopyButtons() {
             const value = btn.getAttribute('data-copy') || '';
             const lang = document.documentElement.getAttribute('data-lang') || 'ja';
             const success = btn.getAttribute(`data-${lang}-success`) || 'Copied!';
-            const error = btn.getAttribute('data-error') || 'Error';
+            const error = btn.getAttribute(`data-${lang}-error`) || (lang === 'ja' ? 'コピー失敗' : 'Copy failed');
             const spans = btn.querySelectorAll('span');
             const originals = Array.from(spans).map(s => s.textContent);
 
