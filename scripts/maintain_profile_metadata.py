@@ -188,7 +188,7 @@ def maintain_visible_contact(text: str, contact_email: str) -> str:
 
 def maintain_readme_contact(text: str, contact_email: str) -> str:
     contact_pattern = re.compile(
-        r"(?m)^- \*\*Contact:\*\* (?:mailto:\S+|\[[^\]]+\]\(mailto:[^)]+\))\s*$"
+        r"(?m)^- \*\*Contact:\*\* (?:mailto:\S+|\[[^\]]+\]\(mailto:[^)]+\))[ \t]*$"
     )
     desired = f"- **Contact:** [{contact_email}](mailto:{contact_email})"
     text, count = contact_pattern.subn(desired, text, count=1)
@@ -198,7 +198,7 @@ def maintain_readme_contact(text: str, contact_email: str) -> str:
 
 
 def maintain_llms_contact(text: str, contact_email: str) -> str:
-    contact_pattern = re.compile(r"(?m)^- Contact: mailto:\S+\s*$")
+    contact_pattern = re.compile(r"(?m)^- Contact: mailto:\S+[ \t]*$")
     text, count = contact_pattern.subn(
         f"- Contact: mailto:{contact_email}", text, count=1
     )
@@ -220,7 +220,7 @@ def maintain_security_policy_contact(text: str, contact_email: str) -> str:
 
 
 def maintain_security_contact(text: str, contact_email: str) -> str:
-    contact_pattern = re.compile(r"(?m)^Contact: mailto:\S+\s*$")
+    contact_pattern = re.compile(r"(?m)^Contact: mailto:\S+[ \t]*$")
     text, count = contact_pattern.subn(
         f"Contact: mailto:{contact_email}", text, count=1
     )
