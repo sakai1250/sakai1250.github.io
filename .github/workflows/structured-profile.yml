@@ -13,6 +13,7 @@ on:
       - 'scripts/maintain_profile_metadata.py'
       - 'scripts/maintain_header_controls.py'
       - 'scripts/check_structured_profile.py'
+      - 'scripts/check_sidebar_role_derivation.py'
       - 'scripts/check_llms_profile.py'
       - '.github/workflows/structured-profile.yml'
   pull_request:
@@ -26,6 +27,7 @@ on:
       - 'scripts/maintain_profile_metadata.py'
       - 'scripts/maintain_header_controls.py'
       - 'scripts/check_structured_profile.py'
+      - 'scripts/check_sidebar_role_derivation.py'
       - 'scripts/check_llms_profile.py'
       - '.github/workflows/structured-profile.yml'
 
@@ -45,5 +47,7 @@ jobs:
           python-version: '3.14'
       - name: Validate JSON-LD person metadata
         run: python scripts/check_structured_profile.py
+      - name: Validate CV-derived sidebar roles
+        run: python scripts/check_sidebar_role_derivation.py
       - name: Validate machine-readable profile routes
         run: python scripts/check_llms_profile.py
