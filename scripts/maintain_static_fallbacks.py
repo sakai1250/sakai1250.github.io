@@ -12,15 +12,13 @@ import xml.etree.ElementTree as ET
 
 INDEX_PATH = Path("index.html")
 SITEMAP_PATH = Path("sitemap.xml")
-# Track visitor-facing sources and the transforms that can change them. Validation-only
-# check_*.py edits should not make the public portfolio look newly updated.
+# Public "last updated" dates should describe visitor-facing content, not changes to
+# maintenance code that leave the generated page unchanged.
 TRACKED_PAGE_FILES = (
     "index.html",
     "main.js",
     "style.css",
     "assets/data.json",
-    "scripts/maintain_*.py",
-    "scripts/run_deterministic_maintenance.py",
 )
 HOME_URL = "https://sakai1250.github.io/"
 SITE_TIMEZONE = ZoneInfo("Asia/Tokyo")
