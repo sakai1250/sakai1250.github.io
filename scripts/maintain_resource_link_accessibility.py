@@ -11,6 +11,8 @@ ORGANIZATION_LINK_LABELS = {
     "https://github.com/jphacks": "Organization: JPHacks",
     "https://www.jogiken.com/": "Organization: Jogiken",
 }
+AWARD_LINK_BODY = '<span lang="ja">[詳細]</span><span lang="en">[Details]</span>'
+AWARD_LINK_LABELS = {"[Link]", "[Details]", "[詳細]", "[詳細] [Details]", "[詳細][Details]"}
 
 
 def normalize_text(value: str) -> str:
@@ -39,6 +41,22 @@ def set_aria_label(anchor: str, label: str) -> str:
     else:
         opening += f' aria-label="{escaped}"'
     return opening + body
+
+
+def remove_aria_label(anchor: str) -> str:
+    opening_end = anchor.find(">")
+    if opening_end == -1:
+        return anchor
+    opening = re.sub(r'\saria-label="[^"]*"', "", anchor[:opening_end])
+    return opening + anchor[opening_end:]
+
+
+def replace_anchor_body(anchor: str, body: str) -> str:
+    opening_end = anchor.find(">")
+    closing_start = anchor.rfind("</a>")
+    if opening_end == -1 or closing_start == -1 or closing_start < opening_end:
+        return anchor
+    return anchor[: opening_end + 1] + body + anchor[closing_start:]
 
 
 def update_publication_links(text: str) -> tuple[str, int]:
@@ -73,29 +91,22 @@ def update_publication_links(text: str) -> tuple[str, int]:
 
 def update_award_links(text: str) -> tuple[str, int]:
     item_pattern = re.compile(r'<li\b[^>]*data-year="[^"]+"[^>]*>[\s\S]*?</li>')
-    anchor_pattern = re.compile(r'<a\b[^>]*>\[(?:Link|Details)\]</a>')
+    anchor_pattern = re.compile(r'<a\b[^>]*>[\s\S]*?</a>')
     updated_count = 0
 
     def update_item(match: re.Match[str]) -> str:
         nonlocal updated_count
         item = match.group(0)
-        if "[Link]" not in item and "[Details]" not in item:
-            return item
-
-        english_match = re.search(r'<span lang="en">([\s\S]*?)</span>', item)
-        if not english_match:
-            return item
-        award = normalize_text(english_match.group(1))
-        if not award:
-            return item
 
         def update_anchor(anchor_match: re.Match[str]) -> str:
             nonlocal updated_count
             anchor = anchor_match.group(0)
+            label = normalize_text(anchor)
+            if label not in AWARD_LINK_LABELS:
+                return anchor
             updated_count += 1
-            anchor = set_aria_label(anchor, f"Award details: {award}")
-            anchor = anchor.replace(">[Link]</a>", ">[Details]</a>", 1)
-            return anchor
+            anchor = remove_aria_label(anchor)
+            return replace_anchor_body(anchor, AWARD_LINK_BODY)
 
         return anchor_pattern.sub(update_anchor, item)
 
@@ -197,7 +208,7 @@ def main() -> None:
     INDEX.write_text(text, encoding="utf-8")
     print(
         f"Kept contextual accessible names on {publication_count} publication links, "
-        f"{award_count} award detail links, {app_count} app resource links, and "
+        f"localized {award_count} award detail links, kept {app_count} app resource links, and "
         f"{organization_count} organization links"
     )
 
