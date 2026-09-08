@@ -85,7 +85,36 @@ for html_path in (Path('index.html'), Path('404.html')):
             f"{missing_references}"
         )
 
+index_text = Path('index.html').read_text(encoding='utf-8')
+award_marker = '<section class="section-card" id="research-awards">'
+award_start = index_text.find(award_marker)
+award_end = index_text.find('</section>', award_start)
+if award_start == -1 or award_end == -1:
+    problems.append('index.html: missing research awards section')
+else:
+    award_section = index_text[award_start:award_end]
+    bilingual_award_link = (
+        '<span lang="ja">[詳細]</span><span lang="en">[Details]</span>'
+    )
+    award_links = award_section.count('<a ')
+    localized_links = award_section.count(bilingual_award_link)
+    if award_links == 0:
+        problems.append('index.html: research awards section has no source links')
+    elif localized_links != award_links:
+        problems.append(
+            'index.html: every award source link must expose [詳細] in Japanese '
+            f'and [Details] in English; found {localized_links}/{award_links}'
+        )
+    if 'aria-label="Award details:' in award_section:
+        problems.append(
+            'index.html: award links must not override localized visible text '
+            'with an English-only aria-label'
+        )
+
 if problems:
     raise SystemExit('\n'.join(problems))
 
-print('OK: links and buttons expose valid text, image alt text, or an ARIA accessible name')
+print(
+    'OK: links and buttons expose valid accessible names; award source links '
+    'follow the selected site language'
+)
