@@ -81,7 +81,7 @@ This catches broken or unreachable external navigation and images before they re
 - `assets/cv.txt` is the machine-readable source of truth for the current role and affiliation used by profile maintenance.
 - `llms.txt` routes machine-readable visitors to the appropriate primary sources.
 - `sitemap.xml` and `robots.txt` support search indexing.
-- `scripts/maintain_profile_metadata.py` derives the visible role, document/social titles, and JSON-LD role and affiliation from `assets/cv.txt`; update the CV source instead of duplicating those values in maintenance code.
+- `scripts/maintain_profile_metadata.py` derives the main visible role, document/social titles, and JSON-LD role and affiliation from `assets/cv.txt`; update the CV source instead of duplicating those values in maintenance code.
 - Keep the JSON-LD `Person` data aligned with the visible profile and CV, especially current affiliation and `sameAs` links that are not derived from the CV role header.
 - Keep the primary portfolio content visible without JavaScript. Do not place a full-screen loader or other overlay in front of the page that requires JavaScript to disappear; optional effects may fail without blocking research, CV, contact, or GitHub navigation.
 - When editing an app card, verify that its title, App Store URL, image, and GitHub repository all refer to the same product. In particular, `PresentMemo` is the MAIORAL repository and `otsuri_docter` is the おつりDoctor repository.
