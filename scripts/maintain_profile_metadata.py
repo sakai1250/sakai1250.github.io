@@ -266,13 +266,16 @@ def maintain_recovery_links(
     return text
 
 
-def maintain_visible_profile(text: str) -> str:
-    role = "Ph.D. Student · Special Assistant · Computer Vision Researcher"
-    empty = '<span id="typing-text"></span>'
-    filled = f'<span id="typing-text">{role}</span>'
-    if empty in text:
-        text = text.replace(empty, filled, 1)
-    elif filled not in text:
+def maintain_visible_profile(text: str, cv_text: str) -> str:
+    roles, _ = read_cv_header_profile(cv_text)
+    role = " · ".join(roles)
+    role_pattern = re.compile(r'(<span id="typing-text">)[^<]*(</span>)')
+    text, role_count = role_pattern.subn(
+        lambda match: f"{match.group(1)}{html.escape(role)}{match.group(2)}",
+        text,
+        count=1,
+    )
+    if role_count != 1:
         raise SystemExit("Could not find expected visible profile role")
 
     old_ja_department = "理工学研究科 電気電子・情報・材料工学専攻"
@@ -366,7 +369,7 @@ def main() -> None:
     )
     text = maintain_visible_profile_links(text, profile_urls)
     text = maintain_visible_contact(text, contact_email)
-    text = maintain_visible_profile(text)
+    text = maintain_visible_profile(text, cv_text)
     text = maintain_visible_education(text, cv_text)
     text = maintain_canonical_url(text)
     not_found_text = maintain_recovery_links(not_found_text, profile_urls, contact_email)
