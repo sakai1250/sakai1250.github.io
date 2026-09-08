@@ -141,6 +141,38 @@ for path in required:
     if not (root / path).exists():
         problems.append(f'missing required asset {path}')
 
+# The copy control is bilingual in its idle and success states, so failure
+# feedback must follow the same language state. Guard both the generated markup
+# and the JavaScript lookup so a maintenance change cannot reintroduce an
+# English-only `Error` state.
+index_path = root / 'index.html'
+main_path = root / 'main.js'
+maintenance_path = root / 'scripts/maintain_storage_resilience.py'
+if index_path.exists():
+    index_text = index_path.read_text(encoding='utf-8')
+    for expected in (
+        'data-ja-error="コピー失敗"',
+        'data-en-error="Copy failed"',
+    ):
+        if expected not in index_text:
+            problems.append(f'index.html: copy control is missing {expected}')
+    if 'data-error="Error"' in index_text:
+        problems.append('index.html: copy control restored the English-only data-error="Error"')
+
+if main_path.exists():
+    main_text = main_path.read_text(encoding='utf-8')
+    if "getAttribute(`data-${lang}-error`)" not in main_text:
+        problems.append('main.js: copy failure feedback is not selected from the current language')
+    if "getAttribute('data-error') || 'Error'" in main_text:
+        problems.append('main.js: copy failure feedback restored the English-only Error fallback')
+
+if maintenance_path.exists():
+    maintenance_text = maintenance_path.read_text(encoding='utf-8')
+    if "data-${lang}-error" not in maintenance_text:
+        problems.append('maintain_storage_resilience.py: localized copy failure lookup is missing')
+    if "const error = btn.getAttribute('data-error') || 'Error';" in maintenance_text:
+        problems.append('maintain_storage_resilience.py: English-only copy failure source was restored')
+
 data_path = root / 'assets/data.json'
 if data_path.exists():
     try:
