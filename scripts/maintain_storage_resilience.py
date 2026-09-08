@@ -24,6 +24,19 @@ def update_index() -> None:
         '',
         1,
     )
+
+    # Copy feedback is part of the visible bilingual control. Keep failure
+    # labels alongside the existing localized normal and success labels so a
+    # clipboard error does not switch Japanese users to an English-only state.
+    legacy_copy_error = '                  data-error="Error" type="button">'
+    localized_copy_error = (
+        '                  data-ja-error="コピー失敗" data-en-error="Copy failed" type="button">'
+    )
+    if legacy_copy_error in text:
+        text = text.replace(legacy_copy_error, localized_copy_error, 1)
+    elif localized_copy_error not in text:
+        raise SystemExit("Could not find localized copy failure attributes")
+
     INDEX.write_text(text, encoding="utf-8")
 
 
@@ -102,14 +115,14 @@ def update_main() -> None:
     # Clipboard permission and API support vary across mobile browsers. Do not
     # let the visible Copy action fail silently when navigator.clipboard is
     # unavailable or rejects a write. Use a conservative textarea fallback and
-    # surface the existing error label if both paths fail.
+    # surface a failure label in the language currently shown by the portfolio.
     resilient_copy = """function initCopyButtons() {
     document.querySelectorAll('.copy-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
             const value = btn.getAttribute('data-copy') || '';
             const lang = document.documentElement.getAttribute('data-lang') || 'ja';
             const success = btn.getAttribute(`data-${lang}-success`) || 'Copied!';
-            const error = btn.getAttribute('data-error') || 'Error';
+            const error = btn.getAttribute(`data-${lang}-error`) || (lang === 'ja' ? 'コピー失敗' : 'Copy failed');
             const spans = btn.querySelectorAll('span');
             const originals = Array.from(spans).map(s => s.textContent);
 
@@ -162,6 +175,8 @@ def update_main() -> None:
 
     if "navigator.clipboard?.writeText" not in text or "fallbackCopy" not in text:
         raise SystemExit("Clipboard resilience is incomplete")
+    if "data-${lang}-error" not in text or "data-error') || 'Error'" in text:
+        raise SystemExit("Clipboard failure feedback is not language-aware")
 
     MAIN.write_text(text, encoding="utf-8")
 
