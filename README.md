@@ -78,11 +78,11 @@ This catches broken or unreachable external navigation and images before they re
 - `main.js` handles filtering, language switching, statistics, and interaction.
 - `scripts/*.py` contains repeatable maintenance transforms and checks used by GitHub Actions; keep transforms idempotent so repeated runs do not alter already-correct content.
 - `assets/cv.pdf` is the CV linked from the site header.
-- `assets/cv.txt` mirrors the core CV content for machine-readable access.
+- `assets/cv.txt` is the machine-readable source of truth for the current role and affiliation used by profile maintenance.
 - `llms.txt` routes machine-readable visitors to the appropriate primary sources.
 - `sitemap.xml` and `robots.txt` support search indexing.
-- Keep the visible role and affiliation in `index.html` aligned with `assets/cv.txt` and `llms.txt`, including current titles such as `Special Assistant`.
-- Keep the JSON-LD `Person` data in `index.html` aligned with the visible profile and CV, especially `jobTitle`, current affiliation, and `sameAs` links.
+- `scripts/maintain_profile_metadata.py` derives the visible role, document/social titles, and JSON-LD role and affiliation from `assets/cv.txt`; update the CV source instead of duplicating those values in maintenance code.
+- Keep the JSON-LD `Person` data aligned with the visible profile and CV, especially current affiliation and `sameAs` links that are not derived from the CV role header.
 - Keep the primary portfolio content visible without JavaScript. Do not place a full-screen loader or other overlay in front of the page that requires JavaScript to disappear; optional effects may fail without blocking research, CV, contact, or GitHub navigation.
 - When editing an app card, verify that its title, App Store URL, image, and GitHub repository all refer to the same product. In particular, `PresentMemo` is the MAIORAL repository and `otsuri_docter` is the おつりDoctor repository.
 
