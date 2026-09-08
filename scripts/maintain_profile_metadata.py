@@ -2,6 +2,7 @@
 """Keep portfolio profile metadata and visible role fallbacks aligned."""
 
 from pathlib import Path
+import html
 import re
 
 
@@ -42,27 +43,23 @@ def read_cv_education_label(cv_text: str, prefix: str) -> str:
     return match.group(1)
 
 
-def maintain_page_titles(text: str) -> str:
-    old_title = "Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher"
-    new_title = "Taigo Sakai | Ph.D. Student, Special Assistant &amp; Computer Vision Researcher"
+def build_page_title(cv_text: str) -> str:
+    roles, _ = read_cv_header_profile(cv_text)
+    role_title = roles[0] if len(roles) == 1 else ", ".join(roles[:-1]) + " & " + roles[-1]
+    return f"Taigo Sakai | {role_title}"
 
-    title_fields = (
-        f"<title>{old_title}</title>",
-        f'<meta property="og:title" content="{old_title}">',
-        f'<meta name="twitter:title" content="{old_title}">',
+
+def maintain_page_titles(text: str, cv_text: str) -> str:
+    desired_title = html.escape(build_page_title(cv_text), quote=True)
+    patterns = (
+        (re.compile(r"<title>Taigo Sakai \| [^<]+</title>"), f"<title>{desired_title}</title>", "document title"),
+        (re.compile(r'<meta property="og:title" content="Taigo Sakai \| [^"]+">'), f'<meta property="og:title" content="{desired_title}">', "Open Graph title"),
+        (re.compile(r'<meta name="twitter:title" content="Taigo Sakai \| [^"]+">'), f'<meta name="twitter:title" content="{desired_title}">', "Twitter title"),
     )
-    updated_fields = (
-        f"<title>{new_title}</title>",
-        f'<meta property="og:title" content="{new_title}">',
-        f'<meta name="twitter:title" content="{new_title}">',
-    )
-
-    for old, new in zip(title_fields, updated_fields):
-        if old in text:
-            text = text.replace(old, new, 1)
-        elif new not in text:
-            raise SystemExit(f"Could not find expected profile title field: {old}")
-
+    for pattern, replacement, label in patterns:
+        text, count = pattern.subn(replacement, text, count=1)
+        if count != 1:
+            raise SystemExit(f"Could not find expected {label}")
     return text
 
 
@@ -363,7 +360,7 @@ def main() -> None:
     cv_text = CV_PATH.read_text(encoding="utf-8")
     profile_urls = {label: read_cv_field(cv_text, label) for label in PROFILE_FIELDS}
     contact_email = read_cv_field(cv_text, "Email")
-    text = maintain_page_titles(text)
+    text = maintain_page_titles(text, cv_text)
     text = maintain_structured_profile(
         text, [profile_urls[label] for label in PROFILE_FIELDS], cv_text
     )
