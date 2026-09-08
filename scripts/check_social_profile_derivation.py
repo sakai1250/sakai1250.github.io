@@ -34,6 +34,18 @@ Future University, Tokyo, Japan
     if expected_tag not in index_text:
         raise SystemExit("Current Twitter description does not match assets/cv.txt")
 
+    header_source = Path("scripts/maintain_header_controls.py").read_text(encoding="utf-8")
+    if "from maintain_social_profile import build_social_description" not in header_source:
+        raise SystemExit("Header maintenance does not reuse the CV-derived social description helper")
+    if "build_social_description(cv_text)" not in header_source:
+        raise SystemExit("Header maintenance does not derive social description from the current CV")
+    stale_literal = (
+        "Ph.D. Student and Special Assistant at Meijo University researching "
+        "Computer Vision, Continual Learning, and Multi-View Tracking."
+    )
+    if stale_literal in header_source:
+        raise SystemExit("Header maintenance still contains a hard-coded current-profile description")
+
     print("OK: social profile description derives from CV roles and affiliation")
 
 

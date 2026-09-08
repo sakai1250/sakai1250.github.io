@@ -4,6 +4,7 @@ import re
 
 import maintain_filter_accessibility
 from maintain_asset_versions import main as maintain_asset_versions
+from maintain_social_profile import build_social_description
 
 
 path = Path('index.html')
@@ -20,6 +21,7 @@ if not roles:
     raise SystemExit('assets/cv.txt has an empty role header')
 role_title = roles[0] if len(roles) == 1 else ', '.join(roles[:-1]) + ' & ' + roles[-1]
 page_title = html.escape(f'Taigo Sakai | {role_title}', quote=True)
+social_description = html.escape(build_social_description(cv_text), quote=True)
 
 def replace_title(pattern, replacement, label):
     global text
@@ -41,7 +43,7 @@ twitter_creator = '<meta name="twitter:creator" content="@ikaitaig">'
 twitter_metadata = (
     '<meta name="twitter:creator" content="@ikaitaig">\n'
     f'  <meta name="twitter:title" content="{page_title}">\n'
-    '  <meta name="twitter:description" content="Ph.D. Student and Special Assistant at Meijo University researching Computer Vision, Continual Learning, and Multi-View Tracking.">\n'
+    f'  <meta name="twitter:description" content="{social_description}">\n'
     '  <meta name="twitter:image" content="https://github.com/sakai1250.png">\n'
     '  <meta name="twitter:image:alt" content="Portrait of Taigo Sakai">'
 )
