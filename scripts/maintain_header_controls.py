@@ -1,4 +1,6 @@
 from pathlib import Path
+import html
+import re
 
 import maintain_filter_accessibility
 from maintain_asset_versions import main as maintain_asset_versions
@@ -6,37 +8,31 @@ from maintain_asset_versions import main as maintain_asset_versions
 
 path = Path('index.html')
 text = path.read_text(encoding='utf-8')
+cv_text = Path('assets/cv.txt').read_text(encoding='utf-8')
 
-# Make search results and shared links identify both the current academic stage
-# and the research field immediately. Keep older titles as migration inputs so
-# repeated maintenance remains safe across previously generated states.
-legacy_titles = (
-    '<title>Taigo Sakai | Portfolio</title>',
-    '<title>Taigo Sakai | Computer Vision Researcher</title>',
-    '<title>Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher</title>',
-)
-current_title = '<title>Taigo Sakai | Ph.D. Student, Special Assistant &amp; Computer Vision Researcher</title>'
-for legacy_title in legacy_titles:
-    if legacy_title in text:
-        text = text.replace(legacy_title, current_title, 1)
-        break
-else:
-    if current_title not in text:
-        raise SystemExit('Could not find expected document title')
+# Derive public titles from the CV role header so search results and shared links
+# cannot drift when the current academic or research role changes.
+cv_lines = [line.strip() for line in cv_text.splitlines() if line.strip()]
+if len(cv_lines) < 5 or ' | ' not in cv_lines[3]:
+    raise SystemExit('assets/cv.txt is missing the expected role header')
+roles = [role.strip() for role in cv_lines[3].split('|') if role.strip()]
+if not roles:
+    raise SystemExit('assets/cv.txt has an empty role header')
+role_title = roles[0] if len(roles) == 1 else ', '.join(roles[:-1]) + ' & ' + roles[-1]
+page_title = html.escape(f'Taigo Sakai | {role_title}', quote=True)
 
-legacy_og_titles = (
-    '<meta property="og:title" content="Taigo Sakai | Portfolio">',
-    '<meta property="og:title" content="Taigo Sakai | Computer Vision Researcher">',
-    '<meta property="og:title" content="Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher">',
+def replace_title(pattern, replacement, label):
+    global text
+    text, count = re.subn(pattern, replacement, text, count=1)
+    if count != 1:
+        raise SystemExit(f'Could not find expected {label}')
+
+replace_title(r'<title>Taigo Sakai \| [^<]+</title>', f'<title>{page_title}</title>', 'document title')
+replace_title(
+    r'<meta property="og:title" content="Taigo Sakai \| [^"]+">',
+    f'<meta property="og:title" content="{page_title}">',
+    'Open Graph title',
 )
-current_og_title = '<meta property="og:title" content="Taigo Sakai | Ph.D. Student, Special Assistant &amp; Computer Vision Researcher">'
-for legacy_og_title in legacy_og_titles:
-    if legacy_og_title in text:
-        text = text.replace(legacy_og_title, current_og_title, 1)
-        break
-else:
-    if current_og_title not in text:
-        raise SystemExit('Could not find expected Open Graph title')
 
 # Keep social-card metadata as complete as the Open Graph metadata. This makes
 # shared portfolio links identify the person and research field without relying
@@ -44,28 +40,21 @@ else:
 twitter_creator = '<meta name="twitter:creator" content="@ikaitaig">'
 twitter_metadata = (
     '<meta name="twitter:creator" content="@ikaitaig">\n'
-    '  <meta name="twitter:title" content="Taigo Sakai | Ph.D. Student, Special Assistant &amp; Computer Vision Researcher">\n'
+    f'  <meta name="twitter:title" content="{page_title}">\n'
     '  <meta name="twitter:description" content="Ph.D. Student and Special Assistant at Meijo University researching Computer Vision, Continual Learning, and Multi-View Tracking.">\n'
     '  <meta name="twitter:image" content="https://github.com/sakai1250.png">\n'
     '  <meta name="twitter:image:alt" content="Portrait of Taigo Sakai">'
 )
-legacy_twitter_titles = (
-    '<meta name="twitter:title" content="Taigo Sakai | Computer Vision Researcher">',
-    '<meta name="twitter:title" content="Taigo Sakai | Ph.D. Student &amp; Computer Vision Researcher">',
-)
-current_twitter_title = '<meta name="twitter:title" content="Taigo Sakai | Ph.D. Student, Special Assistant &amp; Computer Vision Researcher">'
 if '<meta name="twitter:title"' not in text:
     if twitter_creator not in text:
         raise SystemExit('Could not find Twitter creator metadata')
     text = text.replace(twitter_creator, twitter_metadata, 1)
 else:
-    for legacy_twitter_title in legacy_twitter_titles:
-        if legacy_twitter_title in text:
-            text = text.replace(legacy_twitter_title, current_twitter_title, 1)
-            break
-    else:
-        if current_twitter_title not in text:
-            raise SystemExit('Could not find expected Twitter title')
+    replace_title(
+        r'<meta name="twitter:title" content="Taigo Sakai \| [^"]+">',
+        f'<meta name="twitter:title" content="{page_title}">',
+        'Twitter title',
+    )
 
 og_image = '<meta property="og:image" content="https://github.com/sakai1250.png">'
 og_image_with_alt = (
