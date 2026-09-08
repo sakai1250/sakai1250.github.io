@@ -69,12 +69,24 @@ Future University, Tokyo, Japan
         raise SystemExit("Header maintenance does not reuse the CV-derived social description helper")
     if "build_social_description(cv_text)" not in header_source:
         raise SystemExit("Header maintenance does not derive social description from the current CV")
-    stale_literal = (
+    stale_social_literal = (
         "Ph.D. Student and Special Assistant at Meijo University researching "
         "Computer Vision, Continual Learning, and Multi-View Tracking."
     )
-    if stale_literal in header_source:
+    if stale_social_literal in header_source:
         raise SystemExit("Header maintenance still contains a hard-coded current-profile description")
+
+    profile_source = Path("scripts/maintain_profile_metadata.py").read_text(encoding="utf-8")
+    if "from maintain_social_profile import build_search_description" not in profile_source:
+        raise SystemExit("Profile maintenance does not reuse the CV-derived search description helper")
+    if "build_search_description(cv_text)" not in profile_source:
+        raise SystemExit("Profile maintenance does not derive search description from the current CV")
+    stale_search_literal = (
+        "名城大学大学院 博士後期課程・Special Assistant 坂井泰吾のポートフォリオ。"
+        "Computer Vision、Continual Learning、Multi-View Trackingの研究とiOS/Web開発実績を紹介しています。"
+    )
+    if stale_search_literal in profile_source:
+        raise SystemExit("Profile maintenance still contains a hard-coded current-profile search description")
 
     print("OK: social, search, and Open Graph descriptions derive from CV roles and affiliation")
 

@@ -5,6 +5,8 @@ from pathlib import Path
 import html
 import re
 
+from maintain_social_profile import build_search_description
+
 
 INDEX_PATH = Path("index.html")
 NOT_FOUND_PATH = Path("404.html")
@@ -114,19 +116,23 @@ def maintain_structured_profile(text: str, profile_urls: list[str], cv_text: str
     if match.group(2) != desired_profiles:
         text = text[: match.start(2)] + desired_profiles + text[match.end(2) :]
 
-    old_description = (
-        "名城大学大学院 博士後期課程 坂井泰吾のポートフォリオ。"
-        "Deep Learning, Computer Visionの研究や、iOS/Webアプリ開発の実績を紹介しています。"
+    desired_description = html.escape(build_search_description(cv_text), quote=True)
+    description_patterns = (
+        (
+            re.compile(r'<meta name="description"\s+content="[^"]*">', flags=re.DOTALL),
+            f'<meta name="description"\n    content="{desired_description}">',
+            "search description",
+        ),
+        (
+            re.compile(r'<meta property="og:description"\s+content="[^"]*">', flags=re.DOTALL),
+            f'<meta property="og:description"\n    content="{desired_description}">',
+            "Open Graph description",
+        ),
     )
-    new_description = (
-        "名城大学大学院 博士後期課程・Special Assistant 坂井泰吾のポートフォリオ。"
-        "Computer Vision、Continual Learning、Multi-View Trackingの研究とiOS/Web開発実績を紹介しています。"
-    )
-    count = text.count(old_description)
-    if count:
-        text = text.replace(old_description, new_description)
-    elif text.count(new_description) < 2:
-        raise SystemExit("Could not find expected profile meta descriptions")
+    for pattern, replacement, label in description_patterns:
+        text, count = pattern.subn(replacement, text, count=1)
+        if count != 1:
+            raise SystemExit(f"Could not find expected {label}")
 
     return text
 
