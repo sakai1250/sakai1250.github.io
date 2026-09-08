@@ -12,8 +12,10 @@ on:
       - 'assets/cv.txt'
       - 'scripts/maintain_profile_metadata.py'
       - 'scripts/maintain_header_controls.py'
+      - 'scripts/maintain_social_profile.py'
       - 'scripts/check_structured_profile.py'
       - 'scripts/check_sidebar_role_derivation.py'
+      - 'scripts/check_social_profile_derivation.py'
       - 'scripts/check_llms_profile.py'
       - '.github/workflows/structured-profile.yml'
   pull_request:
@@ -26,8 +28,10 @@ on:
       - 'assets/cv.txt'
       - 'scripts/maintain_profile_metadata.py'
       - 'scripts/maintain_header_controls.py'
+      - 'scripts/maintain_social_profile.py'
       - 'scripts/check_structured_profile.py'
       - 'scripts/check_sidebar_role_derivation.py'
+      - 'scripts/check_social_profile_derivation.py'
       - 'scripts/check_llms_profile.py'
       - '.github/workflows/structured-profile.yml'
 
@@ -49,5 +53,7 @@ jobs:
         run: python scripts/check_structured_profile.py
       - name: Validate CV-derived sidebar roles
         run: python scripts/check_sidebar_role_derivation.py
+      - name: Validate CV-derived social profile
+        run: python scripts/check_social_profile_derivation.py
       - name: Validate machine-readable profile routes
         run: python scripts/check_llms_profile.py

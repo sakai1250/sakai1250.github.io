@@ -6,6 +6,7 @@ import re
 
 
 PROFILE_FIELDS = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
+RESEARCH_FOCUS = "Computer Vision, Continual Learning, and Multi-View Tracking"
 
 
 class JsonLdParser(HTMLParser):
@@ -162,19 +163,15 @@ def main():
             "meta and Open Graph descriptions must match: "
             f"description={description!r}, og:description={og_description!r}"
         )
-    required_twitter_terms = (
-        "Ph.D. Student",
-        "Special Assistant",
-        "Meijo University",
-        "Computer Vision",
+
+    social_roles = cv_roles[:2]
+    expected_twitter_description = (
+        f"{' and '.join(social_roles)} at {cv_affiliation} researching {RESEARCH_FOCUS}."
     )
-    missing_twitter_terms = [
-        term for term in required_twitter_terms if term not in twitter_description
-    ]
-    if missing_twitter_terms:
+    if twitter_description != expected_twitter_description:
         raise SystemExit(
-            "Twitter description is missing current professional context: "
-            + ", ".join(missing_twitter_terms)
+            "Twitter description must match the current CV roles and affiliation: "
+            f"expected={expected_twitter_description!r}, actual={twitter_description!r}"
         )
 
     og_image = single_value(parser.meta.get("og:image", []), "og:image")
