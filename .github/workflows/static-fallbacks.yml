@@ -6,6 +6,7 @@ on:
       - 'index.html'
       - 'main.js'
       - 'style.css'
+      - 'assets/data.json'
       - 'sitemap.xml'
       - 'scripts/maintain_*.py'
       - 'scripts/run_deterministic_maintenance.py'
