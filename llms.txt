@@ -29,6 +29,7 @@ Use the machine-readable CV as the primary source for biographical, publication,
 - LinkedIn: https://www.linkedin.com/in/sakai1250
 - Qiita: https://qiita.com/sakai1250
 - Contact: mailto:263441505@ccmailg.meijo-u.ac.jp
+
 ## Research focus
 
 - Computer Vision
