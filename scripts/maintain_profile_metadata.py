@@ -36,6 +36,20 @@ def read_cv_header_profile(cv_text: str) -> tuple[list[str], str]:
     return roles, affiliation
 
 
+def build_sidebar_roles(cv_text: str) -> tuple[str, str]:
+    roles, _ = read_cv_header_profile(cv_text)
+    sidebar_roles = roles[:2]
+    if not sidebar_roles:
+        raise SystemExit("assets/cv.txt is missing roles for the profile sidebar")
+
+    localized_roles = {
+        "Ph.D. Student": "博士後期課程",
+    }
+    japanese = " · ".join(localized_roles.get(role, role) for role in sidebar_roles)
+    english = " · ".join(sidebar_roles)
+    return japanese, english
+
+
 def read_cv_education_label(cv_text: str, prefix: str) -> str:
     match = re.search(rf"^({re.escape(prefix)}[^\n]*)$", cv_text, flags=re.MULTILINE)
     if not match:
@@ -292,20 +306,28 @@ def maintain_visible_profile(text: str, cv_text: str) -> str:
     if current_en_department not in text:
         raise SystemExit("Could not find current English doctoral program wording")
 
+    japanese_sidebar_role, english_sidebar_role = build_sidebar_roles(cv_text)
     ja_pattern = re.compile(
-        r"(理工学研究科 電気・情報・材料・物質工学専攻<br>\n\s*博士後期課程)(?: · Special Assistant)+"
+        r"(理工学研究科 電気・情報・材料・物質工学専攻<br>\n\s*)[^\n<]+"
     )
-    text, ja_count = ja_pattern.subn(r"\1 · Special Assistant", text, count=1)
+    text, ja_count = ja_pattern.subn(
+        lambda match: f"{match.group(1)}{html.escape(japanese_sidebar_role)}",
+        text,
+        count=1,
+    )
     if ja_count != 1:
-        raise SystemExit("Could not normalize Japanese sidebar role")
+        raise SystemExit("Could not synchronize Japanese sidebar role")
 
     en_pattern = re.compile(
-        r"(Department of Electrical, Information, and Materials Science Engineering<br>\n\s*)"
-        r"Ph\.D\. (?:Course|Student)(?: · Special Assistant)+"
+        r"(Department of Electrical, Information, and Materials Science Engineering<br>\n\s*)[^\n<]+"
     )
-    text, en_count = en_pattern.subn(r"\1Ph.D. Student · Special Assistant", text, count=1)
+    text, en_count = en_pattern.subn(
+        lambda match: f"{match.group(1)}{html.escape(english_sidebar_role)}",
+        text,
+        count=1,
+    )
     if en_count != 1:
-        raise SystemExit("Could not normalize English sidebar role")
+        raise SystemExit("Could not synchronize English sidebar role")
 
     return text
 
