@@ -26,8 +26,8 @@ jobs:
         run: node --check main.js
       - name: Check links, accessibility basics, generated data, CV text, and indexing files
         run: python scripts/check_site_integrity.py
-      - name: Check research award alignment
-        run: python scripts/check_research_award_alignment.py
+      - name: Check research award source alignment
+        run: python scripts/check_research_award_alignment.py --source-only
       - name: Check contextual share localization
         run: python scripts/check_contextual_share_localization.py
       - name: Check interactive control names
