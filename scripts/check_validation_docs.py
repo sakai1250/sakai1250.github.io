@@ -7,6 +7,7 @@ README = Path("README.md")
 WORKFLOW = Path(".github/workflows/static.yml")
 CHECK_RE = re.compile(r"\b(?:python(?:3(?:\.14)?)?)\s+(scripts/check_[A-Za-z0-9_]+\.py)\b")
 REQUIRED_SHARED_STAGES = {
+    "Python syntax validation": "-m py_compile scripts/*.py",
     "JavaScript syntax validation": "node --check main.js",
     "deterministic maintenance": "scripts/run_deterministic_maintenance.py",
     "maintenance idempotence diff": (
