@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Keep visible portfolio fallback counts and sitemap update dates aligned."""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import html
@@ -22,6 +22,8 @@ TRACKED_PAGE_FILES = (
 )
 HOME_URL = "https://sakai1250.github.io/"
 SITE_TIMEZONE = ZoneInfo("Asia/Tokyo")
+OPTIMIZER_COMMIT_MESSAGE = "chore: update portfolio assets and optimized images"
+OPTIMIZER_PARENT_WINDOW = timedelta(minutes=30)
 STATIC_SITEMAP_FILES = {
     "https://sakai1250.github.io/assets/cv.pdf": "assets/cv.pdf",
     "https://sakai1250.github.io/assets/cv.txt": "assets/cv.txt",
@@ -30,23 +32,69 @@ STATIC_SITEMAP_FILES = {
 QIITA_FALLBACK = '''<li><a href="https://qiita.com/sakai1250" target="_blank" rel="noopener noreferrer"><span lang="ja">Qiitaプロフィールを見る</span><span lang="en">Open Qiita profile</span></a></li>'''
 
 
+def parse_git_timestamp(value: str, label: str) -> datetime:
+    try:
+        timestamp = datetime.fromisoformat(value)
+    except ValueError as exc:
+        raise SystemExit(f"Unexpected {label} timestamp: {value}") from exc
+    if timestamp.tzinfo is None:
+        raise SystemExit(f"{label.capitalize()} timestamp has no timezone: {value}")
+    return timestamp
+
+
+def effective_git_update_timestamp(tracked_file: str) -> datetime | None:
+    result = subprocess.run(
+        ["git", "log", "-1", "--format=%H%x1f%cI%x1f%s", "--", tracked_file],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    value = result.stdout.strip()
+    if not value:
+        return None
+
+    try:
+        commit_sha, timestamp_value, subject = value.split("\x1f", 2)
+    except ValueError as exc:
+        raise SystemExit(f"Unexpected git log record for {tracked_file}: {value}") from exc
+
+    timestamp = parse_git_timestamp(timestamp_value, "source update")
+    if subject != OPTIMIZER_COMMIT_MESSAGE:
+        return timestamp
+
+    parent_result = subprocess.run(
+        ["git", "show", "-s", "--format=%cI", f"{commit_sha}^"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    parent_value = parent_result.stdout.strip()
+    if not parent_value:
+        return timestamp
+
+    parent_timestamp = parse_git_timestamp(parent_value, "optimizer parent")
+    elapsed = timestamp - parent_timestamp
+    if not (timedelta(0) <= elapsed <= OPTIMIZER_PARENT_WINDOW):
+        return timestamp
+
+    previous_result = subprocess.run(
+        ["git", "log", "-1", "--format=%cI", f"{commit_sha}^", "--", tracked_file],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    previous_value = previous_result.stdout.strip()
+    if previous_value:
+        return parse_git_timestamp(previous_value, "previous content update")
+
+    return parent_timestamp
+
+
 def git_update_date(*tracked_files: str) -> str:
     dates = []
     for tracked_file in tracked_files:
-        result = subprocess.run(
-            ["git", "log", "-1", "--format=%cI", "--", tracked_file],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        value = result.stdout.strip()
-        if value:
-            try:
-                timestamp = datetime.fromisoformat(value)
-            except ValueError as exc:
-                raise SystemExit(f"Unexpected source update timestamp: {value}") from exc
-            if timestamp.tzinfo is None:
-                raise SystemExit(f"Source update timestamp has no timezone: {value}")
+        timestamp = effective_git_update_timestamp(tracked_file)
+        if timestamp is not None:
             dates.append(timestamp.astimezone(SITE_TIMEZONE).date())
 
     if not dates:
