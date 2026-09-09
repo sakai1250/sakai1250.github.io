@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(initTabs, 'Tabs');
     safeInit(initTheme, 'Theme');
     safeInit(initLanguage, 'Language');
+    safeInit(initLocalizedAccessibleNames, 'LocalizedAccessibleNames');
     safeInit(initModals, 'Modals');
     safeInit(initStats, 'Stats');
     safeInit(initSearchAndFilters, 'SearchAndFilters');
@@ -31,6 +32,19 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // === Core Functions ===
+
+function initLocalizedAccessibleNames() {
+    const sync = () => {
+        const lang = document.documentElement.dataset.lang === 'en' ? 'en' : 'ja';
+        document.querySelectorAll('[data-ja-aria-label][data-en-aria-label]').forEach(element => {
+            const label = lang === 'en' ? element.dataset.enAriaLabel : element.dataset.jaAriaLabel;
+            if (label) element.setAttribute('aria-label', label);
+        });
+    };
+
+    window.addEventListener('portfolio:languagechange', sync);
+    sync();
+}
 
 function initContextualShareLink() {
     const link = document.getElementById('share-btn');
