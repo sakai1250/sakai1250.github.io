@@ -11,6 +11,10 @@ INDEX = ROOT / "index.html"
 CV = ROOT / "assets/cv.txt"
 
 HCV_AWARD_LINE = "- HCV2026 Outstanding Paper Award - 2026"
+HCV_CV_PUBLICATION_LINE = (
+    '1. T. Sakai, K. Hotta. "NeuroGuard: Neural Gradient Update Aware of Representation Damage." '
+    'ECCV 2026 Workshop on Human-inspired Computer Vision - Oral, Outstanding Paper Award.'
+)
 HCV_PUBLICATION_MARKER = (
     'NeuroGuard: Neural Gradient Update Aware of Representation Damage,”\n'
     '                  <div class="muted">ECCV 2026 Workshop on Human-inspired Computer Vision, Oral, Malmö, Sweden.</div>'
@@ -52,7 +56,7 @@ def maintain_hcv_award(text: str, cv_text: str) -> str:
     if HCV_AWARD_LINE not in cv_text:
         return text
 
-    if "Outstanding Paper Award." not in cv_text:
+    if HCV_CV_PUBLICATION_LINE not in cv_text:
         raise SystemExit("HCV2026 award is listed in the CV but missing from the NeuroGuard publication entry")
 
     if HCV_PUBLICATION_WITH_AWARD not in text:
