@@ -74,10 +74,20 @@ def effective_git_update_timestamp(tracked_file: str) -> datetime | None:
 
     parent_timestamp = parse_git_timestamp(parent_value, "optimizer parent")
     elapsed = timestamp - parent_timestamp
-    if timedelta(0) <= elapsed <= OPTIMIZER_PARENT_WINDOW:
-        return parent_timestamp
+    if not (timedelta(0) <= elapsed <= OPTIMIZER_PARENT_WINDOW):
+        return timestamp
 
-    return timestamp
+    previous_result = subprocess.run(
+        ["git", "log", "-1", "--format=%cI", f"{commit_sha}^", "--", tracked_file],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    previous_value = previous_result.stdout.strip()
+    if previous_value:
+        return parse_git_timestamp(previous_value, "previous content update")
+
+    return parent_timestamp
 
 
 def git_update_date(*tracked_files: str) -> str:
