@@ -107,7 +107,7 @@ for expected in (
         problems.append(f'index.html: missing localized static header control name: {expected}')
 
 for expected in (
-    "language === 'ja' ? '英語に切り替え' : 'Switch to Japanese'",
+    "l === 'ja' ? '英語に切り替え' : 'Switch to Japanese'",
     "lang === 'en' ? 'Switch to light theme' : 'ライトテーマに切り替え'",
     "lang === 'en' ? 'Switch to dark theme' : 'ダークテーマに切り替え'",
     "window.dispatchEvent(new Event('portfolio:languagechange'))",
