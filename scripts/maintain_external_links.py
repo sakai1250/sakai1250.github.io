@@ -30,6 +30,10 @@ HTTP_ANCHOR_RE = re.compile(
     r'<a\b(?=[^>]*\bhref=(?P<hq>["\'])https?://.*?(?P=hq))[^>]*>',
     re.IGNORECASE,
 )
+ARXIV_VERSIONED_ABS_RE = re.compile(
+    r'(?P<prefix>https://arxiv\.org/abs/(?P<id>\d{4}\.\d{4,5}))v\d+',
+    re.IGNORECASE,
+)
 
 PAPER_HOSTS = (
     'arxiv.org/',
@@ -91,11 +95,16 @@ def remove_stale_profile_links(text: str) -> str:
     return text
 
 
+def normalize_arxiv_links(text: str) -> str:
+    return ARXIV_VERSIONED_ABS_RE.sub(r'\g<prefix>', text)
+
+
 for path in TARGET_FILES:
     if not path.exists():
         continue
     text = path.read_text(encoding='utf-8')
     updated = remove_stale_profile_links(text)
+    updated = normalize_arxiv_links(updated)
     updated = APP_TITLE_ANCHOR_RE.sub(keep_external_link_non_destructive, updated)
     updated = APP_LINKS_BLOCK_RE.sub(keep_external_links_in_block_non_destructive, updated)
     updated = ORGANIZATION_LINKS_BLOCK_RE.sub(keep_external_links_in_block_non_destructive, updated)
