@@ -29,6 +29,23 @@ HCV_AWARD_LEGACY_LABELS = (
     "ECCV 2026 Human-inspired Computer Vision Workshop Outstanding Paper Award",
     "ECCV 2026 Human-inspired Computer Vision Workshop, Outstanding Paper Award",
 )
+IEICE_AWARD_LABEL = "IEICE Tokai Branch Student Research Encouragement Award"
+IEICE_AWARD_URL = "https://www.ieice.org/tokai/student/student-shorei/"
+
+
+def maintain_award_links(text: str) -> str:
+    award_item_pattern = re.compile(
+        rf'(<li\b[^>]*data-year="2026"[^>]*>.*?{re.escape(IEICE_AWARD_LABEL)}.*?<a\s+href=")([^"]+)(")',
+        flags=re.DOTALL,
+    )
+    text, count = award_item_pattern.subn(
+        rf'\g<1>{IEICE_AWARD_URL}\g<3>',
+        text,
+        count=1,
+    )
+    if count != 1:
+        raise SystemExit("Could not find the IEICE Tokai Branch Student Research Encouragement Award detail link")
+    return text
 
 
 def maintain_hcv_award(text: str, cv_text: str) -> str:
@@ -81,6 +98,7 @@ def main() -> None:
     text = INDEX.read_text(encoding="utf-8")
     cv_text = CV.read_text(encoding="utf-8")
     updated = maintain_hcv_award(text, cv_text)
+    updated = maintain_award_links(updated)
     if updated != text:
         INDEX.write_text(updated, encoding="utf-8")
 
