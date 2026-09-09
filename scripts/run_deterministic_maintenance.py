@@ -35,6 +35,7 @@ MAINTENANCE_SCRIPTS = (
     "scripts/maintain_language_toggle_accessibility.py",
     "scripts/maintain_localized_landmark_labels.py",
     "scripts/maintain_utility_control_localization.py",
+    "scripts/maintain_modal_accessibility.py",
     "scripts/maintain_external_links.py",
     "scripts/maintain_resource_link_accessibility.py",
     "scripts/maintain_reduced_motion.py",
