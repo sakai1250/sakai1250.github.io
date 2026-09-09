@@ -35,6 +35,10 @@ HCV_AWARD_LEGACY_LABELS = (
 )
 IEICE_AWARD_LABEL = "IEICE Tokai Branch Student Research Encouragement Award"
 IEICE_AWARD_URL = "https://www.ieice.org/tokai/student/student-shorei/"
+POWER_ACADEMY_FIRST_PRIZE_LABEL = "Power Academy Electrical Education Content Contest, First Prize"
+POWER_ACADEMY_FIRST_PRIZE_URL = "https://www.power-academy.jp/info/2024/003795.html"
+POWER_ACADEMY_EXCELLENCE_LABEL = "Power Academy Electrical Education Content Contest, Excellence Award"
+POWER_ACADEMY_EXCELLENCE_URL = "https://www.power-academy.jp/event/contest/search/"
 ROBOMASTER_AWARD_LEGACY_LABEL = "RoboMaster in NorthAmerica 2024 SecondPrize"
 ROBOMASTER_AWARD_LABEL = "RoboMaster in North America 2024, Second Prize"
 ATLASFUSION_AUTHOR_LEGACY = "K.Toida,"
@@ -42,18 +46,35 @@ ATLASFUSION_AUTHOR_LABEL = "K. Toida,"
 ATLASFUSION_TITLE = "ATLASFusion: Aggregation Tracking with Location-Aware Sparse Fusion for Robust Spatio-Temporal Multi-View Pedestrian Tracking"
 
 
-def maintain_award_links(text: str) -> str:
+def sync_award_link(text: str, year: str, label: str, url: str) -> str:
     award_item_pattern = re.compile(
-        rf'(<li\b[^>]*data-year="2026"[^>]*>.*?{re.escape(IEICE_AWARD_LABEL)}.*?<a\s+href=")([^"]+)(")',
+        rf'(<li\b[^>]*data-year="{re.escape(year)}"[^>]*>.*?{re.escape(label)}.*?<a\s+href=")([^"]+)(")',
         flags=re.DOTALL,
     )
     text, count = award_item_pattern.subn(
-        rf'\g<1>{IEICE_AWARD_URL}\g<3>',
+        rf'\g<1>{url}\g<3>',
         text,
         count=1,
     )
     if count != 1:
-        raise SystemExit("Could not find the IEICE Tokai Branch Student Research Encouragement Award detail link")
+        raise SystemExit(f"Could not find the {label} detail link")
+    return text
+
+
+def maintain_award_links(text: str) -> str:
+    text = sync_award_link(text, "2026", IEICE_AWARD_LABEL, IEICE_AWARD_URL)
+    text = sync_award_link(
+        text,
+        "2023",
+        POWER_ACADEMY_FIRST_PRIZE_LABEL,
+        POWER_ACADEMY_FIRST_PRIZE_URL,
+    )
+    text = sync_award_link(
+        text,
+        "2021",
+        POWER_ACADEMY_EXCELLENCE_LABEL,
+        POWER_ACADEMY_EXCELLENCE_URL,
+    )
     return text
 
 
