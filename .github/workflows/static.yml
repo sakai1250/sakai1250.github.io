@@ -57,6 +57,8 @@ jobs:
         run: python scripts/check_contextual_share_localization.py
       - name: Validate interactive accessible names
         run: python scripts/check_control_accessible_names.py
+      - name: Validate utility control localization
+        run: python scripts/check_utility_control_localization.py
       - name: Validate form control names
         run: python scripts/check_form_control_names.py
       - name: Validate new-tab link security
