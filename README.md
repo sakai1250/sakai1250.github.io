@@ -51,7 +51,9 @@ python3.14 scripts/check_app_repo_links.py
 python3.14 scripts/check_contextual_share_localization.py
 python3.14 scripts/check_local_deep_links.py
 python3.14 scripts/check_site_integrity.py
+python3.14 scripts/check_research_award_alignment.py
 python3.14 scripts/check_control_accessible_names.py
+python3.14 scripts/check_utility_control_localization.py
 python3.14 scripts/check_form_control_names.py
 python3.14 scripts/check_new_tab_link_security.py
 python3.14 scripts/check_progressive_enhancement.py
