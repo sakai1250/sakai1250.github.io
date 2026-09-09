@@ -29,7 +29,7 @@ class Parser(HTMLParser):
         self.aria_id_refs = []
         self.img_without_alt = []
         self.html_lang = None
-        self.has_main = False
+        self.main_count = 0
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
@@ -53,7 +53,7 @@ class Parser(HTMLParser):
         if tag == 'html':
             self.html_lang = attrs.get('lang', '').strip()
         elif tag == 'main':
-            self.has_main = True
+            self.main_count += 1
         elif tag == 'img' and 'alt' not in attrs:
             self.img_without_alt.append(attrs.get('src', '<inline image>'))
 
@@ -72,8 +72,10 @@ for html_path in html_files:
 
     if not parser.html_lang:
         problems.append(f'{html_path}: <html> is missing a lang attribute')
-    if html_path.name == 'index.html' and not parser.has_main:
-        problems.append(f'{html_path}: missing <main> landmark')
+    if parser.main_count != 1:
+        problems.append(
+            f'{html_path}: expected exactly one <main> landmark; found {parser.main_count}'
+        )
     if parser.img_without_alt:
         problems.append(f'{html_path}: images missing alt attributes {parser.img_without_alt}')
     if parser.empty_refs:
