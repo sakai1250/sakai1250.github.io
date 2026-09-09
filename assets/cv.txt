@@ -50,7 +50,7 @@ Meijo University | Apr. 2020 - Mar. 2024
 
 PUBLICATIONS
 International Conferences & Workshops - Peer-Reviewed
-1. T. Sakai, K. Hotta. "NeuroGuard: Neural Gradient Update Aware of Representation Damage." ECCV 2026 Workshop on Human-inspired Computer Vision - Oral.
+1. T. Sakai, K. Hotta. "NeuroGuard: Neural Gradient Update Aware of Representation Damage." ECCV 2026 Workshop on Human-inspired Computer Vision - Oral, Outstanding Paper Award.
 2. K. Toida, T. Sakai, T. Nakamura, H. Shimizu, K. Hotta. "ATLASFusion: Aggregation Tracking with Location-Aware Sparse Fusion for Robust Spatio-Temporal Multi-View Pedestrian Tracking." ECCV 2026 Workshop on Computer Vision for Multimedia Spatial Intelligence through Time - Poster.
 3. T. Sakai, K. Hotta. "Dynamic Distillation and Gradient Consistency for Robust Long-Tailed Incremental Learning." ICIP 2026 - Poster.
 4. T. Sakai, K. Hotta. "Improving Noise Robustness in Medical Image Classification via Dynamic Integration of CNN and KAN." CARS 2026 - Poster.
@@ -80,6 +80,7 @@ ACADEMIC SERVICE
 - Technical Program Committee, ECCV 2024 Human-inspired Computer Vision Workshop - Jul. 2024 to Aug. 2024
 
 AWARDS & GRANTS
+- HCV2026 Outstanding Paper Award - 2026
 - Japan Student Services Organization (JASSO) Scholarship Repayment Exemption for Outstanding Achievement, Half Exemption - 2026
 - The Telecommunications Advancement Foundation Overseas Travel Expense Support - 2026
 - Research Grant for Graduate Students (B) - 2026
