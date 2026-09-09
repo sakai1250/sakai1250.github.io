@@ -174,6 +174,15 @@ function initTabs() {
 function initTheme() {
     const btn = document.getElementById('theme-toggle');
     const icon = document.getElementById('theme-icon');
+    const syncAccessibleName = (theme) => {
+        if (!btn) return;
+        btn.removeAttribute('aria-pressed');
+        const lang = document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'ja';
+        const label = theme === 'dark'
+            ? (lang === 'en' ? 'Switch to light theme' : 'ライトテーマに切り替え')
+            : (lang === 'en' ? 'Switch to dark theme' : 'ダークテーマに切り替え');
+        btn.setAttribute('aria-label', label);
+    };
     const set = (t, animate, persist = false) => {
         if (animate) {
             document.documentElement.classList.add('theme-transitioning');
@@ -190,15 +199,7 @@ function initTheme() {
 
 
 
-        if (btn) {
-            btn.removeAttribute('aria-pressed');
-            btn.setAttribute(
-                'aria-label',
-                t === 'dark'
-                    ? 'Switch to light theme / ライトテーマに切り替え'
-                    : 'Switch to dark theme / ダークテーマに切り替え'
-            );
-        }
+        syncAccessibleName(t);
         document.querySelectorAll('#stats-langs, #stats-general').forEach(img => {
             img.src = img.src.replace(/theme=[^&]+/, `theme=${t === 'dark' ? 'dracula' : 'default'}`);
         });
@@ -206,6 +207,7 @@ function initTheme() {
         if (metaThemeColor) metaThemeColor.setAttribute('content', t === 'dark' ? '#09131F' : '#F7F3EA');
     };
     if (btn) btn.addEventListener('click', () => set(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark', true, true));
+    window.addEventListener('portfolio:languagechange', () => syncAccessibleName(document.documentElement.getAttribute('data-theme') || 'dark'));
     set(safeStorageGet('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'), false);
 }
 
@@ -702,11 +704,10 @@ function initLanguage() {
         if (btn) {
             btn.setAttribute(
                 'aria-label',
-                l === 'ja'
-                    ? 'Switch to English / 英語に切り替え'
-                    : 'Switch to Japanese / 日本語に切り替え'
+                l === 'ja' ? '英語に切り替え' : 'Switch to Japanese'
             );
         }
+        window.dispatchEvent(new Event('portfolio:languagechange'));
         const s = document.getElementById('search');
         if (s) s.placeholder = s.getAttribute(`data-${l}-placeholder`);
         

@@ -65,9 +65,7 @@
         if (languageButton) {
           languageButton.setAttribute(
             'aria-label',
-            language === 'ja'
-              ? 'Switch to English / 英語に切り替え'
-              : 'Switch to Japanese / 日本語に切り替え'
+            language === 'ja' ? '英語に切り替え' : 'Switch to Japanese'
           );
         }
       });
@@ -84,13 +82,12 @@
       window.addEventListener('DOMContentLoaded', () => {
         const themeButton = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
+        const language = document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'ja';
         if (themeButton) {
-          themeButton.setAttribute(
-            'aria-label',
-            theme === 'dark'
-              ? 'Switch to light theme / ライトテーマに切り替え'
-              : 'Switch to dark theme / ダークテーマに切り替え'
-          );
+          const label = theme === 'dark'
+            ? (language === 'en' ? 'Switch to light theme' : 'ライトテーマに切り替え')
+            : (language === 'en' ? 'Switch to dark theme' : 'ダークテーマに切り替え');
+          themeButton.setAttribute('aria-label', label);
         }
         if (themeIcon) themeIcon.textContent = theme === 'dark' ? '☾' : '☀︎';
       });
@@ -144,11 +141,11 @@
           </div>
 
           <div class="header-actions">
-            <button class="header-btn" id="lang-toggle" type="button" aria-label="Switch to English / 英語に切り替え">
+            <button class="header-btn" id="lang-toggle" type="button" aria-label="英語に切り替え">
               <span lang="ja">EN</span>
               <span lang="en">JA</span>
             </button>
-            <button class="header-btn" id="theme-toggle" type="button" aria-label="Switch to light theme / ライトテーマに切り替え">
+            <button class="header-btn" id="theme-toggle" type="button" aria-label="ライトテーマに切り替え">
               <span id="theme-icon" aria-hidden="true">☾</span>
             </button>
             <a href="#contact" class="header-btn scroll-link">
@@ -1101,7 +1098,7 @@
     </div>
   </div>
 
-  <script src="main.js?v=4a50661e24ab"></script>
+  <script src="main.js?v=8a19a9f8f7d5"></script>
 </body>
 
 </html>
