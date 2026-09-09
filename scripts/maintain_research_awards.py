@@ -35,6 +35,8 @@ HCV_AWARD_LEGACY_LABELS = (
 )
 IEICE_AWARD_LABEL = "IEICE Tokai Branch Student Research Encouragement Award"
 IEICE_AWARD_URL = "https://www.ieice.org/tokai/student/student-shorei/"
+ROBOMASTER_AWARD_LEGACY_LABEL = "RoboMaster in NorthAmerica 2024 SecondPrize"
+ROBOMASTER_AWARD_LABEL = "RoboMaster in North America 2024, Second Prize"
 
 
 def maintain_award_links(text: str) -> str:
@@ -49,6 +51,18 @@ def maintain_award_links(text: str) -> str:
     )
     if count != 1:
         raise SystemExit("Could not find the IEICE Tokai Branch Student Research Encouragement Award detail link")
+    return text
+
+
+def maintain_award_labels(text: str) -> str:
+    if ROBOMASTER_AWARD_LEGACY_LABEL in text:
+        text = text.replace(
+            ROBOMASTER_AWARD_LEGACY_LABEL,
+            ROBOMASTER_AWARD_LABEL,
+            1,
+        )
+    if ROBOMASTER_AWARD_LABEL not in text:
+        raise SystemExit("Could not find the normalized RoboMaster award label")
     return text
 
 
@@ -103,6 +117,7 @@ def main() -> None:
     cv_text = CV.read_text(encoding="utf-8")
     updated = maintain_hcv_award(text, cv_text)
     updated = maintain_award_links(updated)
+    updated = maintain_award_labels(updated)
     if updated != text:
         INDEX.write_text(updated, encoding="utf-8")
 
