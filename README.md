@@ -40,7 +40,7 @@ Then open `http://localhost:8000`.
 
 ## Local validation
 
-Use Python 3.14 and Node 24 for maintenance and validation so local runs match GitHub Actions. Install the maintenance dependency and run the same deterministic checks used by CI:
+Use Python 3.14 and Node 24 for maintenance and validation so local runs match GitHub Actions. Install the maintenance dependency and run the core deterministic checks used by post-optimization validation:
 
 ```bash
 python3.14 -m pip install -r requirements-maintenance.txt
@@ -59,9 +59,11 @@ python3.14 scripts/check_structured_profile.py
 python3.14 scripts/check_llms_profile.py
 python3.14 scripts/check_year_filter_coverage.py
 git diff --exit-code -- index.html 404.html main.js style.css sitemap.xml README.md llms.txt SECURITY.md .well-known/security.txt
+python3.14 scripts/maintain_static_fallbacks.py
+git diff --exit-code -- index.html sitemap.xml
 ```
 
-If the final command reports changes, include the generated maintenance updates in the same branch before pushing.
+If either diff command reports changes, include the generated maintenance updates in the same branch before pushing. The second pass deliberately runs static fallback maintenance on an already-maintained tree so local validation catches ordering or idempotence regressions that the post-optimization workflow also checks.
 
 External URLs are checked by a separate network-dependent workflow. When changing publication, CV, profile, organization, app, or repository URLs, run the same check locally when network access is available:
 
