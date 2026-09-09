@@ -325,10 +325,10 @@ function initModals() {
     const img = document.getElementById('modal-img'), title = document.getElementById('modal-title'), desc = document.getElementById('modal-desc'), links = document.getElementById('modal-links');
     let opener = null;
 
-    dialog?.setAttribute('role', 'dialog');
-    dialog?.setAttribute('aria-modal', 'true');
-    dialog?.setAttribute('aria-labelledby', 'modal-title');
-    dialog?.setAttribute('aria-describedby', 'modal-desc');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'modal-title');
+    modal.setAttribute('aria-describedby', 'modal-desc');
 
     const close = () => {
         if (!modal.classList.contains('open')) return;
