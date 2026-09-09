@@ -24,6 +24,9 @@ HCV_AWARD_ITEM = """                <li data-year="2026"><span class="badge-year
                   <span lang="en">ECCV 2026 Human-inspired Computer Vision Workshop, Outstanding Paper Award</span>
                 </li>
 """
+HCV_AWARD_VISIBLE_MARKER = (
+    "ECCV 2026 Human-inspired Computer Vision Workshop, Outstanding Paper Award"
+)
 
 
 def maintain_hcv_award(text: str, cv_text: str) -> str:
@@ -47,7 +50,7 @@ def maintain_hcv_award(text: str, cv_text: str) -> str:
         raise SystemExit("Could not find the public Awards section")
 
     awards = match.group(2)
-    if "HCV 2026 Human-inspired Computer Vision Workshop, Outstanding Paper Award" not in awards:
+    if HCV_AWARD_VISIBLE_MARKER not in awards:
         awards = HCV_AWARD_ITEM + awards
         text = text[: match.start(2)] + awards + text[match.end(2) :]
         match = awards_pattern.search(text)
