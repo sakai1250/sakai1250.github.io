@@ -23,8 +23,7 @@ if helper not in text:
         raise SystemExit("Could not find theme toggle helper anchor")
     text = text.replace(helper_anchor, helper_anchor + helper, 1)
 
-legacy_blocks = (
-    """        if (btn) {
+legacy_bilingual_block = """        if (btn) {
             btn.removeAttribute('aria-pressed');
             btn.setAttribute(
                 'aria-label',
@@ -32,17 +31,27 @@ legacy_blocks = (
                     ? 'Switch to light theme / ライトテーマに切り替え'
                     : 'Switch to dark theme / ダークテーマに切り替え'
             );
-        }""",
-    "        if (btn) btn.setAttribute('aria-pressed', String(t === 'dark'));",
-)
+        }"""
+legacy_pressed_line = "        if (btn) btn.setAttribute('aria-pressed', String(t === 'dark'));"
 current_action = "        syncAccessibleName(t);"
+
 if current_action not in text:
-    for legacy in legacy_blocks:
-        if legacy in text:
-            text = text.replace(legacy, current_action, 1)
-            break
+    if legacy_bilingual_block in text:
+        text = text.replace(legacy_bilingual_block, current_action, 1)
+    elif legacy_pressed_line in text:
+        text = text.replace(legacy_pressed_line, current_action, 1)
     else:
         raise SystemExit("Could not find expected theme toggle state handling")
+
+# Storage-resilience maintenance can restore the historical pressed-state line
+# before this transform runs. Once the language-aware action exists, absorb any
+# compatibility leftovers instead of leaving a second source of button state.
+for legacy in (legacy_bilingual_block, legacy_pressed_line):
+    while legacy in text:
+        if "\n" + legacy in text:
+            text = text.replace("\n" + legacy, "", 1)
+        else:
+            text = text.replace(legacy, "", 1)
 
 listener = (
     "    window.addEventListener('portfolio:languagechange', () => "
@@ -54,9 +63,8 @@ if listener not in text:
         raise SystemExit("Could not find theme toggle listener anchor")
     text = text.replace(listener_anchor, listener_anchor + listener, 1)
 
-for legacy in legacy_blocks:
-    if legacy in text:
-        raise SystemExit("Theme toggle still exposes legacy mixed-language state handling")
+if legacy_bilingual_block in text or legacy_pressed_line in text:
+    raise SystemExit("Theme toggle still exposes legacy state handling")
 if text.count(helper) != 1 or text.count(current_action) != 1 or text.count(listener) != 1:
     raise SystemExit("Theme toggle language-aware accessible-name handling must appear exactly once")
 
