@@ -37,6 +37,9 @@ IEICE_AWARD_LABEL = "IEICE Tokai Branch Student Research Encouragement Award"
 IEICE_AWARD_URL = "https://www.ieice.org/tokai/student/student-shorei/"
 ROBOMASTER_AWARD_LEGACY_LABEL = "RoboMaster in NorthAmerica 2024 SecondPrize"
 ROBOMASTER_AWARD_LABEL = "RoboMaster in North America 2024, Second Prize"
+ATLASFUSION_AUTHOR_LEGACY = "K.Toida,"
+ATLASFUSION_AUTHOR_LABEL = "K. Toida,"
+ATLASFUSION_TITLE = "ATLASFusion: Aggregation Tracking with Location-Aware Sparse Fusion for Robust Spatio-Temporal Multi-View Pedestrian Tracking"
 
 
 def maintain_award_links(text: str) -> str:
@@ -63,6 +66,21 @@ def maintain_award_labels(text: str) -> str:
         )
     if ROBOMASTER_AWARD_LABEL not in text:
         raise SystemExit("Could not find the normalized RoboMaster award label")
+    return text
+
+
+def maintain_publication_labels(text: str) -> str:
+    publication_pattern = re.compile(
+        rf'(<li\b[^>]*data-year="2026"[^>]*>\s*<span class="badge-year">2026</span>\s*){re.escape(ATLASFUSION_AUTHOR_LEGACY)}(.*?{re.escape(ATLASFUSION_TITLE)})',
+        flags=re.DOTALL,
+    )
+    text, count = publication_pattern.subn(
+        rf'\g<1>{ATLASFUSION_AUTHOR_LABEL}\g<2>',
+        text,
+        count=1,
+    )
+    if count == 0 and f"{ATLASFUSION_AUTHOR_LABEL} <b>T. Sakai</b>" not in text:
+        raise SystemExit("Could not find the normalized ATLASFusion author entry")
     return text
 
 
@@ -118,6 +136,7 @@ def main() -> None:
     updated = maintain_hcv_award(text, cv_text)
     updated = maintain_award_links(updated)
     updated = maintain_award_labels(updated)
+    updated = maintain_publication_labels(updated)
     if updated != text:
         INDEX.write_text(updated, encoding="utf-8")
 
