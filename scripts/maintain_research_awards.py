@@ -19,13 +19,15 @@ HCV_PUBLICATION_WITH_AWARD = (
     'NeuroGuard: Neural Gradient Update Aware of Representation Damage,”\n'
     '                  <div class="muted">ECCV 2026 Workshop on Human-inspired Computer Vision, Oral, Outstanding Paper Award, Malmö, Sweden.</div>'
 )
-HCV_AWARD_ITEM = """                <li data-year="2026"><span class="badge-year">2026</span>
-                  <span lang="ja">ECCV 2026 Human-inspired Computer Vision Workshop Outstanding Paper Award</span>
-                  <span lang="en">ECCV 2026 Human-inspired Computer Vision Workshop, Outstanding Paper Award</span>
+HCV_AWARD_LABEL = "HCV2026 Outstanding Paper Award"
+HCV_AWARD_ITEM = f"""                <li data-year="2026"><span class="badge-year">2026</span>
+                  <span lang="ja">{HCV_AWARD_LABEL}</span>
+                  <span lang="en">{HCV_AWARD_LABEL}</span>
                 </li>
 """
-HCV_AWARD_VISIBLE_MARKER = (
-    "ECCV 2026 Human-inspired Computer Vision Workshop, Outstanding Paper Award"
+HCV_AWARD_LEGACY_LABELS = (
+    "ECCV 2026 Human-inspired Computer Vision Workshop Outstanding Paper Award",
+    "ECCV 2026 Human-inspired Computer Vision Workshop, Outstanding Paper Award",
 )
 
 
@@ -50,13 +52,17 @@ def maintain_hcv_award(text: str, cv_text: str) -> str:
         raise SystemExit("Could not find the public Awards section")
 
     awards = match.group(2)
-    if HCV_AWARD_VISIBLE_MARKER not in awards:
+    for legacy_label in HCV_AWARD_LEGACY_LABELS:
+        awards = awards.replace(legacy_label, HCV_AWARD_LABEL)
+
+    if HCV_AWARD_LABEL not in awards:
         awards = HCV_AWARD_ITEM + awards
-        text = text[: match.start(2)] + awards + text[match.end(2) :]
-        match = awards_pattern.search(text)
-        if not match:
-            raise SystemExit("Awards section became invalid after HCV2026 insertion")
-        awards = match.group(2)
+
+    text = text[: match.start(2)] + awards + text[match.end(2) :]
+    match = awards_pattern.search(text)
+    if not match:
+        raise SystemExit("Awards section became invalid after HCV2026 synchronization")
+    awards = match.group(2)
 
     award_count = len(re.findall(r'<li\b[^>]*data-year="\d{4}"', awards))
     text, count = re.subn(
