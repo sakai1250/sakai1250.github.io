@@ -86,6 +86,36 @@ for html_path in (Path('index.html'), Path('404.html')):
         )
 
 index_text = Path('index.html').read_text(encoding='utf-8')
+main_text = Path('main.js').read_text(encoding='utf-8')
+
+for mixed_label in (
+    'Switch to English / 英語に切り替え',
+    'Switch to Japanese / 日本語に切り替え',
+    'Switch to light theme / ライトテーマに切り替え',
+    'Switch to dark theme / ダークテーマに切り替え',
+):
+    if mixed_label in index_text or mixed_label in main_text:
+        problems.append(
+            f'header controls must follow the active site language; mixed label remains: {mixed_label}'
+        )
+
+for expected in (
+    'id="lang-toggle" type="button" aria-label="英語に切り替え"',
+    'id="theme-toggle" type="button" aria-label="ライトテーマに切り替え"',
+):
+    if expected not in index_text:
+        problems.append(f'index.html: missing localized static header control name: {expected}')
+
+for expected in (
+    "language === 'ja' ? '英語に切り替え' : 'Switch to Japanese'",
+    "lang === 'en' ? 'Switch to light theme' : 'ライトテーマに切り替え'",
+    "lang === 'en' ? 'Switch to dark theme' : 'ダークテーマに切り替え'",
+    "window.dispatchEvent(new Event('portfolio:languagechange'))",
+    "window.addEventListener('portfolio:languagechange'",
+):
+    if expected not in main_text:
+        problems.append(f'main.js: missing language-aware header control behavior: {expected}')
+
 award_marker = '<section class="section-card" id="research-awards">'
 award_start = index_text.find(award_marker)
 award_end = index_text.find('</section>', award_start)
@@ -115,6 +145,6 @@ if problems:
     raise SystemExit('\n'.join(problems))
 
 print(
-    'OK: links and buttons expose valid accessible names; award source links '
-    'follow the selected site language'
+    'OK: links and buttons expose valid accessible names; header controls and '
+    'award source links follow the selected site language'
 )
