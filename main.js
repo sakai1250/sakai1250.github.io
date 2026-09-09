@@ -38,8 +38,12 @@ function initContextualShareLink() {
 
     const sync = () => {
         const pageUrl = `${window.location.origin}${window.location.pathname}${window.location.search}${window.location.hash}`;
+        const lang = document.documentElement.dataset.lang === 'en' ? 'en' : 'ja';
+        const shareText = lang === 'ja'
+            ? '坂井泰吾のポートフォリオです。'
+            : "Check out Taigo Sakai's Portfolio!";
         const params = new URLSearchParams({
-            text: "Check out Taigo Sakai's Portfolio!",
+            text: shareText,
             url: pageUrl,
             via: 'ikaitaig'
         });
@@ -52,7 +56,6 @@ function initContextualShareLink() {
     window.addEventListener('hashchange', sync);
     sync();
 }
-
 
 function safeStorageGet(key) {
     try { return localStorage.getItem(key); } catch { return null; }
