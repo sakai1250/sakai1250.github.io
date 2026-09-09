@@ -48,6 +48,7 @@ python3.14 -m py_compile scripts/*.py
 node --check main.js
 python3.14 scripts/run_deterministic_maintenance.py
 python3.14 scripts/check_app_repo_links.py
+python3.14 scripts/check_contextual_share_localization.py
 python3.14 scripts/check_local_deep_links.py
 python3.14 scripts/check_site_integrity.py
 python3.14 scripts/check_control_accessible_names.py
@@ -56,6 +57,8 @@ python3.14 scripts/check_new_tab_link_security.py
 python3.14 scripts/check_progressive_enhancement.py
 python3.14 scripts/check_security_contact.py
 python3.14 scripts/check_structured_profile.py
+python3.14 scripts/check_sidebar_role_derivation.py
+python3.14 scripts/check_social_profile_derivation.py
 python3.14 scripts/check_llms_profile.py
 python3.14 scripts/check_year_filter_coverage.py
 git diff --exit-code -- index.html 404.html main.js style.css sitemap.xml README.md llms.txt SECURITY.md .well-known/security.txt
