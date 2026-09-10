@@ -5,10 +5,12 @@ import re
 
 
 INDEX = Path("index.html")
+NOT_FOUND = Path("404.html")
 STYLE = Path("style.css")
 MAIN = Path("main.js")
 
 index = INDEX.read_text(encoding="utf-8")
+not_found = NOT_FOUND.read_text(encoding="utf-8")
 style = STYLE.read_text(encoding="utf-8")
 main = MAIN.read_text(encoding="utf-8")
 problems = []
@@ -98,6 +100,12 @@ parser.feed(index)
 if parser.h1_count != 1:
     problems.append(
         f"Static index must contain exactly one primary <h1> heading; found {parser.h1_count}."
+    )
+not_found_parser = LinkParser()
+not_found_parser.feed(not_found)
+if not_found_parser.h1_count != 1:
+    problems.append(
+        f"Static 404 page must contain exactly one primary <h1> heading; found {not_found_parser.h1_count}."
     )
 if parser.blocking_external_stylesheets:
     problems.append(
