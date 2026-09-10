@@ -46,6 +46,7 @@ class LinkParser(HTMLParser):
         self.primary_tab_aria_current = {}
         self.toc_hidden = {}
         self.h1_count = 0
+        self.robots_directives = set()
 
     def handle_starttag(self, tag, attrs):
         values = dict(attrs)
@@ -53,6 +54,13 @@ class LinkParser(HTMLParser):
         element_id = values.get("id")
         if tag == "h1":
             self.h1_count += 1
+        if tag == "meta" and values.get("name", "").casefold() == "robots":
+            content = values.get("content", "")
+            self.robots_directives.update(
+                directive.strip().casefold()
+                for directive in content.split(",")
+                if directive.strip()
+            )
         if tag == "a" and element_id in {"research-tab", "engineer-tab"}:
             self.primary_tab_classes[element_id] = set(values.get("class", "").split())
             self.primary_tab_aria_current[element_id] = values.get("aria-current")
@@ -115,6 +123,10 @@ not_found_titles = re.findall(
 if len(not_found_titles) != 1 or not not_found_titles[0].strip():
     problems.append(
         f"Static 404 page must contain exactly one non-empty document title; found {len(not_found_titles)}."
+    )
+if "noindex" not in not_found_parser.robots_directives:
+    problems.append(
+        "Static 404 page must keep a robots noindex directive so fallback content is not indexed as a portfolio page."
     )
 if parser.blocking_external_stylesheets:
     problems.append(
