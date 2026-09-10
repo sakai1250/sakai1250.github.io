@@ -43,11 +43,14 @@ class LinkParser(HTMLParser):
         self.primary_tab_classes = {}
         self.primary_tab_aria_current = {}
         self.toc_hidden = {}
+        self.h1_count = 0
 
     def handle_starttag(self, tag, attrs):
         values = dict(attrs)
         attr_names = {name for name, _ in attrs}
         element_id = values.get("id")
+        if tag == "h1":
+            self.h1_count += 1
         if tag == "a" and element_id in {"research-tab", "engineer-tab"}:
             self.primary_tab_classes[element_id] = set(values.get("class", "").split())
             self.primary_tab_aria_current[element_id] = values.get("aria-current")
@@ -92,6 +95,10 @@ if "classList.add('reveal-item')" in main or 'classList.add("reveal-item")' in m
 
 parser = LinkParser()
 parser.feed(index)
+if parser.h1_count != 1:
+    problems.append(
+        f"Static index must contain exactly one primary <h1> heading; found {parser.h1_count}."
+    )
 if parser.blocking_external_stylesheets:
     problems.append(
         "Render-blocking external stylesheet detected: "
