@@ -101,9 +101,16 @@ language_button_action = (
     '<button class="header-btn" id="lang-toggle" type="button" '
     'aria-label="Switch to English / 英語に切り替え">'
 )
+language_button_localized = (
+    '<button class="header-btn" id="lang-toggle" type="button" '
+    'aria-label="英語に切り替え">'
+)
 if language_button in text:
     text = text.replace(language_button, language_button_accessible, 1)
-elif language_button_accessible not in text and language_button_action not in text:
+elif all(
+    marker not in text
+    for marker in (language_button_accessible, language_button_action, language_button_localized)
+):
     raise SystemExit('Could not find language toggle button')
 
 theme_button = (
@@ -118,9 +125,16 @@ theme_button_action = (
     '<button class="header-btn" id="theme-toggle" type="button" '
     'aria-label="Switch to light theme / ライトテーマに切り替え">'
 )
+theme_button_localized = (
+    '<button class="header-btn" id="theme-toggle" type="button" '
+    'aria-label="ライトテーマに切り替え">'
+)
 if theme_button in text:
     text = text.replace(theme_button, theme_button_accessible, 1)
-elif theme_button_accessible not in text and theme_button_action not in text:
+elif all(
+    marker not in text
+    for marker in (theme_button_accessible, theme_button_action, theme_button_localized)
+):
     raise SystemExit('Could not find theme toggle button')
 
 # The theme control already has an accessible name. Its moon/sun glyph is only
