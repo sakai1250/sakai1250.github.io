@@ -107,6 +107,15 @@ if not_found_parser.h1_count != 1:
     problems.append(
         f"Static 404 page must contain exactly one primary <h1> heading; found {not_found_parser.h1_count}."
     )
+not_found_titles = re.findall(
+    r"<title(?:\s[^>]*)?>(.*?)</title>",
+    not_found,
+    flags=re.IGNORECASE | re.DOTALL,
+)
+if len(not_found_titles) != 1 or not not_found_titles[0].strip():
+    problems.append(
+        f"Static 404 page must contain exactly one non-empty document title; found {len(not_found_titles)}."
+    )
 if parser.blocking_external_stylesheets:
     problems.append(
         "Render-blocking external stylesheet detected: "
