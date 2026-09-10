@@ -312,15 +312,29 @@ if app_thumbnail_alt in text:
 elif app_thumbnail_decorative not in text:
     raise SystemExit('Could not find app thumbnail accessibility markers')
 
-# Utility controls sit outside the main language-toggle labels. Give each one a
-# bilingual accessible name so screen-reader users do not encounter a mixed
-# Japanese/English control surface after switching the visible language.
-utility_labels = {
-    'aria-label="Back to top"': 'aria-label="Back to top / トップへ戻る"',
-    'aria-label="目次"': 'aria-label="Table of contents / 目次"',
-    'aria-label="Close"': 'aria-label="Close / 閉じる"',
-}
-for old_label, bilingual_label in utility_labels.items():
+# Utility controls are localized later in the maintenance flow. Accept the
+# current localized form as already valid so correct HTML does not have to be
+# converted back to a legacy mixed-language label before this script runs.
+utility_labels = (
+    (
+        'aria-label="Back to top"',
+        'aria-label="Back to top / トップへ戻る"',
+        'aria-label="トップへ戻る" data-ja-aria-label="トップへ戻る" data-en-aria-label="Back to top"',
+    ),
+    (
+        'aria-label="目次"',
+        'aria-label="Table of contents / 目次"',
+        'aria-label="目次" data-ja-aria-label="目次" data-en-aria-label="Table of contents"',
+    ),
+    (
+        'aria-label="Close"',
+        'aria-label="Close / 閉じる"',
+        'aria-label="閉じる" data-ja-aria-label="閉じる" data-en-aria-label="Close"',
+    ),
+)
+for old_label, bilingual_label, localized_label in utility_labels:
+    if localized_label in text:
+        continue
     if old_label in text:
         text = text.replace(old_label, bilingual_label, 1)
     elif bilingual_label not in text:
