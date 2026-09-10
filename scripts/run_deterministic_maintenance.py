@@ -20,7 +20,6 @@ MAINTENANCE_SCRIPTS = (
     "scripts/maintain_stable_section_ids.py",
     "scripts/maintain_contact_form.py",
     "scripts/prepare_header_section_reordering.py",
-    "scripts/prepare_utility_control_maintenance.py",
     "scripts/maintain_header_controls.py",
     "scripts/maintain_social_profile.py",
     "scripts/maintain_app_thumbnail_dimensions.py",
