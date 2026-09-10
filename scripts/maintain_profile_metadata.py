@@ -27,12 +27,9 @@ def read_cv_field(cv_text: str, label: str) -> str:
 
 
 def read_cv_header_profile(cv_text: str) -> tuple[list[str], str]:
-    lines = [line.strip() for line in cv_text.splitlines() if line.strip()]
-    role_indexes = [
-        index
-        for index, line in enumerate(lines[:-1])
-        if " | " in line and not re.match(r"^[A-Za-z][A-Za-z ]*:\s*", line)
-    ]
+    preamble = cv_text.split("\n\n", 1)[0]
+    lines = [line.strip() for line in preamble.splitlines() if line.strip()]
+    role_indexes = [index for index, line in enumerate(lines[:-1]) if " | " in line]
     if len(role_indexes) != 1:
         raise SystemExit("assets/cv.txt must contain exactly one role header followed by affiliation")
 
