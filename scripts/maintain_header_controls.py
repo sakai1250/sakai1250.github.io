@@ -204,7 +204,10 @@ def find_research_section(english_heading):
     heading_pos = text.find(heading, research_start)
     if heading_pos == -1:
         raise SystemExit(f'Could not find research section: {english_heading}')
-    section_start = text.rfind('<section class="section-card">', research_start, heading_pos)
+    section_matches = list(
+        re.finditer(r'<section\b[^>]*\bclass="[^"]*\bsection-card\b[^"]*"[^>]*>', text[research_start:heading_pos])
+    )
+    section_start = research_start + section_matches[-1].start() if section_matches else -1
     section_end = text.find('</section>', heading_pos)
     if section_start == -1 or section_end == -1:
         raise SystemExit(f'Could not bound research section: {english_heading}')
