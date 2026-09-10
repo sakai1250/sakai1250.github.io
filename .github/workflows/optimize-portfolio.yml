@@ -47,6 +47,8 @@ jobs:
               'if local_path.is_file():',
               'return local_web_path',
               'if filename not in expected_files:',
+              'local_img.startswith("assets/thumbnails/")',
+              'sync_index_app_thumbnails(data["apps"])',
           ]
           missing = [snippet for snippet in required if snippet not in text]
           if missing:
