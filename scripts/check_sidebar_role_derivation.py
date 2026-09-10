@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Verify that sidebar roles follow the CV header instead of fixed role text."""
+"""Verify that CV-derived roles and titles do not depend on fixed line positions."""
 
 from pathlib import Path
 
-from maintain_profile_metadata import build_sidebar_roles, read_cv_header_profile
+from maintain_profile_metadata import build_page_title, build_sidebar_roles, read_cv_header_profile
 
 
 def main() -> None:
@@ -27,6 +27,10 @@ Meijo University, Japan
     if affiliation != "Meijo University":
         raise SystemExit(f"CV affiliation was not found after the role header: {affiliation!r}")
 
+    expected_title = "Taigo Sakai | Ph.D. Student, Visiting Researcher & Computer Vision Researcher"
+    if build_page_title(synthetic_cv) != expected_title:
+        raise SystemExit("Page title did not follow the content-based CV role parser")
+
     ambiguous_cv = synthetic_cv.replace(
         "Ph.D. Student | Visiting Researcher | Computer Vision Researcher\n",
         "Ph.D. Student | Visiting Researcher | Computer Vision Researcher\nResearcher | Engineer\n",
@@ -46,7 +50,15 @@ Meijo University, Japan
     if english not in index_text:
         raise SystemExit(f"Current English sidebar role is not CV-derived: {english!r}")
 
-    print("OK: sidebar roles derive from the CV role header without fixed line positions")
+    header_source = Path("scripts/maintain_header_controls.py").read_text(encoding="utf-8")
+    if "from maintain_profile_metadata import build_page_title" not in header_source:
+        raise SystemExit("Header title maintenance does not reuse the shared CV page-title parser")
+    if "build_page_title(cv_text)" not in header_source:
+        raise SystemExit("Header title maintenance does not derive its title from the shared CV parser")
+    if "cv_lines[3]" in header_source:
+        raise SystemExit("Header title maintenance still depends on the fourth non-empty CV line")
+
+    print("OK: CV-derived roles and titles do not depend on fixed line positions")
 
 
 if __name__ == "__main__":
