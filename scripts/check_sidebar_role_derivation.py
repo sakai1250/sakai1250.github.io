@@ -27,7 +27,10 @@ Meijo University, Japan
     if affiliation != "Meijo University":
         raise SystemExit(f"CV affiliation was not found after the role header: {affiliation!r}")
 
-    ambiguous_cv = synthetic_cv + "\nResearcher | Engineer\nAnother University, Japan\n"
+    ambiguous_cv = synthetic_cv.replace(
+        "Ph.D. Student | Visiting Researcher | Computer Vision Researcher\n",
+        "Ph.D. Student | Visiting Researcher | Computer Vision Researcher\nResearcher | Engineer\n",
+    )
     try:
         read_cv_header_profile(ambiguous_cv)
     except SystemExit:
