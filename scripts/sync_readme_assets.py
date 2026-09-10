@@ -78,6 +78,8 @@ def sync_index_app_thumbnails(apps: dict[str, dict]) -> None:
     """Use cached app thumbnails in static cards when an exact repo match exists."""
     text = INDEX_FILE.read_text(encoding="utf-8")
     original = text
+    apps_section_start = text.find('id="engineer-my-apps-and-services"')
+    search_start = apps_section_start if apps_section_start >= 0 else 0
 
     for full_repo, app in apps.items():
         local_img = str(app.get("img", "")).strip()
@@ -85,11 +87,11 @@ def sync_index_app_thumbnails(apps: dict[str, dict]) -> None:
             continue
 
         repo_url = f"https://github.com/{full_repo}"
-        repo_pos = text.find(repo_url)
+        repo_pos = text.find(repo_url, search_start)
         if repo_pos < 0:
             continue
 
-        card_start = text.rfind('<div class="app-card"', 0, repo_pos)
+        card_start = text.rfind('<div class="app-card"', search_start, repo_pos)
         img_start = text.find("<img", card_start, repo_pos) if card_start >= 0 else -1
         img_end = text.find(">", img_start, repo_pos) if img_start >= 0 else -1
         if img_start < 0 or img_end < 0:
