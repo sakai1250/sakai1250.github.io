@@ -232,21 +232,28 @@ if engineer_filter_label not in html or all_filter_button not in html:
 
 # The filter chips act as one control set, not a collection of unrelated
 # buttons. Group and name both rows so screen readers announce the purpose
-# before users move through the individual filter choices.
+# before users move through the individual filter choices. Current localized
+# names are already valid and must not be rewritten to legacy mixed labels.
 filter_groups = {
     '<div class="filter-row year-filter">': (
         '<div class="filter-row year-filter" role="group" '
-        'aria-label="Filter research outputs by year / 研究業績を年度で絞り込む">'
+        'aria-label="Filter research outputs by year / 研究業績を年度で絞り込む">',
+        '<div class="filter-row year-filter" role="group" aria-label="研究業績を年度で絞り込む" '
+        'data-ja-aria-label="研究業績を年度で絞り込む" '
+        'data-en-aria-label="Filter research outputs by year">',
     ),
     '<div class="filter-row">': (
         '<div class="filter-row" role="group" '
-        'aria-label="Filter engineering work / 開発実績を絞り込む">'
+        'aria-label="Filter engineering work / 開発実績を絞り込む">',
+        '<div class="filter-row" role="group" aria-label="開発実績を絞り込む" '
+        'data-ja-aria-label="開発実績を絞り込む" '
+        'data-en-aria-label="Filter engineering work">',
     ),
 }
-for plain_row, named_row in filter_groups.items():
+for plain_row, (legacy_named_row, localized_named_row) in filter_groups.items():
     if plain_row in html:
-        html = html.replace(plain_row, named_row, 1)
-    elif named_row not in html:
+        html = html.replace(plain_row, legacy_named_row, 1)
+    elif legacy_named_row not in html and localized_named_row not in html:
         raise SystemExit(f"Could not find filter group: {plain_row}")
 
 status_html = (
