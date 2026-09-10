@@ -17,6 +17,7 @@ README_URL = "https://raw.githubusercontent.com/sakai1250/sakai1250/main/Readme.
 ASSETS_DIR = ROOT / "assets"
 THUMB_DIR = ASSETS_DIR / "thumbnails"
 DATA_FILE = ASSETS_DIR / "data.json"
+INDEX_FILE = ROOT / "index.html"
 
 
 def extract_images(content: str, header_pattern: str) -> list[dict[str, str]]:
@@ -71,6 +72,45 @@ def sync_app_thumbnail(full_repo: str, img_src: str) -> str:
             print(f"Using cached thumbnail for {full_repo}: {local_web_path}")
             return local_web_path
         return img_src
+
+
+def sync_index_app_thumbnails(apps: dict[str, dict]) -> None:
+    """Use cached app thumbnails in static cards when an exact repo match exists."""
+    text = INDEX_FILE.read_text(encoding="utf-8")
+    original = text
+
+    for full_repo, app in apps.items():
+        local_img = str(app.get("img", "")).strip()
+        if not local_img.startswith("assets/thumbnails/"):
+            continue
+
+        repo_url = f"https://github.com/{full_repo}"
+        repo_pos = text.find(repo_url)
+        if repo_pos < 0:
+            continue
+
+        card_start = text.rfind('<div class="app-card"', 0, repo_pos)
+        img_start = text.find("<img", card_start, repo_pos) if card_start >= 0 else -1
+        img_end = text.find(">", img_start, repo_pos) if img_start >= 0 else -1
+        if img_start < 0 or img_end < 0:
+            continue
+
+        img_tag = text[img_start : img_end + 1]
+        if 'class="app-thumb"' not in img_tag:
+            continue
+
+        updated_tag, count = re.subn(
+            r'\bsrc=(["\']).*?\1',
+            f'src="{local_img}"',
+            img_tag,
+            count=1,
+            flags=re.IGNORECASE,
+        )
+        if count:
+            text = text[:img_start] + updated_tag + text[img_end + 1 :]
+
+    if text != original:
+        INDEX_FILE.write_text(text, encoding="utf-8")
 
 
 def main() -> None:
@@ -139,6 +179,7 @@ def main() -> None:
         json.dumps(data, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+    sync_index_app_thumbnails(data["apps"])
 
 
 if __name__ == "__main__":
