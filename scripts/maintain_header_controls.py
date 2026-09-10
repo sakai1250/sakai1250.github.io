@@ -4,6 +4,7 @@ import re
 
 import maintain_filter_accessibility
 from maintain_asset_versions import main as maintain_asset_versions
+from maintain_profile_metadata import build_page_title
 from maintain_social_profile import build_social_description
 
 
@@ -11,16 +12,9 @@ path = Path('index.html')
 text = path.read_text(encoding='utf-8')
 cv_text = Path('assets/cv.txt').read_text(encoding='utf-8')
 
-# Derive public titles from the CV role header so search results and shared links
-# cannot drift when the current academic or research role changes.
-cv_lines = [line.strip() for line in cv_text.splitlines() if line.strip()]
-if len(cv_lines) < 5 or ' | ' not in cv_lines[3]:
-    raise SystemExit('assets/cv.txt is missing the expected role header')
-roles = [role.strip() for role in cv_lines[3].split('|') if role.strip()]
-if not roles:
-    raise SystemExit('assets/cv.txt has an empty role header')
-role_title = roles[0] if len(roles) == 1 else ', '.join(roles[:-1]) + ' & ' + roles[-1]
-page_title = html.escape(f'Taigo Sakai | {role_title}', quote=True)
+# Reuse the profile parser for public titles so every maintenance step interprets
+# the CV role header with the same content-based rules.
+page_title = html.escape(build_page_title(cv_text), quote=True)
 social_description = html.escape(build_social_description(cv_text), quote=True)
 
 def replace_title(pattern, replacement, label):
