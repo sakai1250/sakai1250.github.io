@@ -2,7 +2,8 @@
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import urlsplit
-import re
+
+from maintain_profile_metadata import read_cv_field
 
 
 def main() -> None:
@@ -36,10 +37,7 @@ def main() -> None:
         raise SystemExit('Contact must include a mailto: or https:// URI')
 
     cv_text = Path('assets/cv.txt').read_text(encoding='utf-8')
-    cv_email_match = re.search(r'^Email:\s*(\S+@\S+)\s*$', cv_text, flags=re.MULTILINE)
-    if not cv_email_match:
-        raise SystemExit('assets/cv.txt is missing a machine-readable Email field')
-    profile_email = cv_email_match.group(1)
+    profile_email = read_cv_field(cv_text, 'Email')
     expected_mailto = f'mailto:{profile_email}'
     if expected_mailto not in contacts:
         raise SystemExit(
