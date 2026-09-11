@@ -7,7 +7,7 @@ import html
 import re
 from pathlib import Path
 
-from profile_descriptions import build_social_description
+from profile_descriptions import build_search_description, build_social_description
 
 
 def replace_meta(text: str, pattern: re.Pattern[str], replacement: str, label: str) -> str:
