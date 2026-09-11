@@ -11,6 +11,7 @@ def main() -> None:
     synthetic_cv = """TAIGO SAKAI
 Japanese name: 坂井 泰吾
 Publication name: T. Sakai
+ORCID: https://orcid.org/0000-0000-0000-0000
 Ph.D. Student | Visiting Researcher | Computer Vision Researcher
 Future University, Tokyo, Japan
 """
