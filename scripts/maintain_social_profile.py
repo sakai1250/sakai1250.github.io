@@ -19,13 +19,16 @@ AFFILIATION_LABELS_JA = {
 
 
 def read_cv_social_profile(cv_text: str) -> tuple[list[str], str]:
-    lines = [line.strip() for line in cv_text.splitlines() if line.strip()]
-    if len(lines) < 5 or " | " not in lines[3]:
-        raise SystemExit("assets/cv.txt is missing the expected role and affiliation header")
+    preamble = cv_text.split("\n\n", 1)[0]
+    lines = [line.strip() for line in preamble.splitlines() if line.strip()]
+    role_indexes = [index for index, line in enumerate(lines[:-1]) if " | " in line]
+    if len(role_indexes) != 1:
+        raise SystemExit("assets/cv.txt must contain exactly one role header followed by affiliation")
 
-    roles = [role.strip() for role in lines[3].split("|") if role.strip()]
-    affiliation = lines[4].split(",", 1)[0].strip()
-    if not roles or not affiliation:
+    role_index = role_indexes[0]
+    roles = [role.strip() for role in lines[role_index].split("|") if role.strip()]
+    affiliation = lines[role_index + 1].split(",", 1)[0].strip()
+    if not roles or not affiliation or ":" in affiliation:
         raise SystemExit("assets/cv.txt has an incomplete role or affiliation header")
     return roles, affiliation
 
