@@ -50,13 +50,22 @@ Meijo University, Japan
     if english not in index_text:
         raise SystemExit(f"Current English sidebar role is not CV-derived: {english!r}")
 
+    # Public title metadata belongs to maintain_profile_metadata.py. Header
+    # maintenance must not grow a second CV-title parser or rewrite the same
+    # title tags again.
     header_source = Path("scripts/maintain_header_controls.py").read_text(encoding="utf-8")
-    if "from maintain_profile_metadata import build_page_title" not in header_source:
-        raise SystemExit("Header title maintenance does not reuse the shared CV page-title parser")
-    if "build_page_title(cv_text)" not in header_source:
-        raise SystemExit("Header title maintenance does not derive its title from the shared CV parser")
-    if "cv_lines[3]" in header_source:
-        raise SystemExit("Header title maintenance still depends on the fourth non-empty CV line")
+    duplicate_title_markers = (
+        "build_page_title",
+        "<title>",
+        "og:title",
+        "twitter:title",
+    )
+    duplicate_markers = [marker for marker in duplicate_title_markers if marker in header_source]
+    if duplicate_markers:
+        raise SystemExit(
+            "Header maintenance duplicates profile title ownership: "
+            + ", ".join(duplicate_markers)
+        )
 
     print("OK: CV-derived roles and titles do not depend on fixed line positions")
 
