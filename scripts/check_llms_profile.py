@@ -3,7 +3,7 @@ import json
 import re
 from pathlib import Path
 
-from maintain_profile_metadata import read_cv_field, read_cv_header_profile
+from cv_profile import read_cv_field, read_cv_header_profile
 
 
 def require(text, needle, source):
