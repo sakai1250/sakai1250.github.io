@@ -76,7 +76,7 @@ def compile_scripts() -> None:
 
 
 def run_scripts() -> None:
-    validate_maintenance_registry()
+    compile_scripts()
     for relative_path in MAINTENANCE_SCRIPTS:
         subprocess.run(
             [sys.executable, str(ROOT / relative_path)],
