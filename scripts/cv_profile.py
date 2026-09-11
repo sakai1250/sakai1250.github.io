@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 """Parse machine-readable profile fields from assets/cv.txt."""
 
+import re
+
+
+def read_cv_field(cv_text: str, label: str) -> str:
+    match = re.search(rf"^{re.escape(label)}:\s*(\S+)\s*$", cv_text, flags=re.MULTILINE)
+    if not match:
+        raise SystemExit(f"assets/cv.txt is missing a machine-readable {label} field")
+    return match.group(1)
+
 
 def read_cv_header_profile(cv_text: str) -> tuple[list[str], str]:
     preamble = cv_text.split("\n\n", 1)[0]
