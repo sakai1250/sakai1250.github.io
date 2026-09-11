@@ -5,7 +5,7 @@ from pathlib import Path
 import html
 import re
 
-from cv_profile import read_cv_header_profile
+from cv_profile import read_cv_field, read_cv_header_profile
 from maintain_social_profile import build_search_description
 
 
@@ -18,13 +18,6 @@ SECURITY_CONTACT_PATH = Path(".well-known/security.txt")
 MAIN_JS_PATH = Path("main.js")
 CV_PATH = Path("assets/cv.txt")
 PROFILE_FIELDS = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
-
-
-def read_cv_field(cv_text: str, label: str) -> str:
-    match = re.search(rf"^{re.escape(label)}:\s*(\S+)\s*$", cv_text, flags=re.MULTILINE)
-    if not match:
-        raise SystemExit(f"assets/cv.txt is missing a machine-readable {label} field")
-    return match.group(1)
 
 
 def build_sidebar_roles(cv_text: str) -> tuple[str, str]:
