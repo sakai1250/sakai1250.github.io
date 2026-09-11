@@ -3,7 +3,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from maintain_profile_metadata import read_cv_field
+from cv_profile import read_cv_field
 
 
 def main() -> None:
