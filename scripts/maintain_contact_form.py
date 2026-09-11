@@ -1,14 +1,13 @@
 import re
 from pathlib import Path
 
+from maintain_profile_metadata import read_cv_field
+
 path = Path('main.js')
 text = path.read_text(encoding='utf-8')
 
 cv_text = Path('assets/cv.txt').read_text(encoding='utf-8')
-email_match = re.search(r'^Email:\s*(\S+)\s*$', cv_text, re.MULTILINE)
-if not email_match:
-    raise SystemExit('Could not find Email field in assets/cv.txt')
-contact_email = email_match.group(1)
+contact_email = read_cv_field(cv_text, 'Email')
 
 contact_replacement = r'''function initContactForm() {
     const f = document.getElementById('contact-form');
