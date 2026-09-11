@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import py_compile
 import subprocess
 import sys
 from pathlib import Path
@@ -72,7 +71,8 @@ def validate_maintenance_registry() -> None:
 def compile_scripts() -> None:
     validate_maintenance_registry()
     for script_path in sorted((ROOT / "scripts").glob("*.py")):
-        py_compile.compile(str(script_path), doraise=True)
+        source = script_path.read_text(encoding="utf-8")
+        compile(source, str(script_path), "exec")
 
 
 def run_scripts() -> None:
