@@ -3,7 +3,8 @@
 
 from pathlib import Path
 
-from maintain_profile_metadata import build_page_title, build_sidebar_roles, read_cv_header_profile
+from cv_profile import read_cv_header_profile
+from maintain_profile_metadata import build_page_title, build_sidebar_roles
 
 
 def main() -> None:
