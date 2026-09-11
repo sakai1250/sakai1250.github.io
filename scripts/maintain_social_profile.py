@@ -7,6 +7,8 @@ import html
 import re
 from pathlib import Path
 
+from cv_profile import read_cv_header_profile
+
 
 RESEARCH_FOCUS = "Computer Vision, Continual Learning, and Multi-View Tracking"
 SEARCH_RESEARCH_FOCUS = "Computer Vision、Continual Learning、Multi-View Tracking"
@@ -18,30 +20,15 @@ AFFILIATION_LABELS_JA = {
 }
 
 
-def read_cv_social_profile(cv_text: str) -> tuple[list[str], str]:
-    preamble = cv_text.split("\n\n", 1)[0]
-    lines = [line.strip() for line in preamble.splitlines() if line.strip()]
-    role_indexes = [index for index, line in enumerate(lines[:-1]) if " | " in line]
-    if len(role_indexes) != 1:
-        raise SystemExit("assets/cv.txt must contain exactly one role header followed by affiliation")
-
-    role_index = role_indexes[0]
-    roles = [role.strip() for role in lines[role_index].split("|") if role.strip()]
-    affiliation = lines[role_index + 1].split(",", 1)[0].strip()
-    if not roles or not affiliation or ":" in affiliation:
-        raise SystemExit("assets/cv.txt has an incomplete role or affiliation header")
-    return roles, affiliation
-
-
 def build_social_description(cv_text: str) -> str:
-    roles, affiliation = read_cv_social_profile(cv_text)
+    roles, affiliation = read_cv_header_profile(cv_text)
     visible_roles = roles[:2]
     role_phrase = " and ".join(visible_roles)
     return f"{role_phrase} at {affiliation} researching {RESEARCH_FOCUS}."
 
 
 def build_search_description(cv_text: str) -> str:
-    roles, affiliation = read_cv_social_profile(cv_text)
+    roles, affiliation = read_cv_header_profile(cv_text)
     visible_roles = roles[:2]
     localized_roles = [ROLE_LABELS_JA.get(role, role) for role in visible_roles]
     localized_affiliation = AFFILIATION_LABELS_JA.get(affiliation, affiliation)
