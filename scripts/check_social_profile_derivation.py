@@ -4,7 +4,7 @@
 from html import escape
 from pathlib import Path
 
-from maintain_social_profile import build_search_description, build_social_description
+from profile_descriptions import build_search_description, build_social_description
 
 
 def main() -> None:
@@ -82,8 +82,8 @@ Future University, Tokyo, Japan
         raise SystemExit("Maintenance still contains a hard-coded current-profile description")
 
     profile_source = Path("scripts/maintain_profile_metadata.py").read_text(encoding="utf-8")
-    if "from maintain_social_profile import build_search_description" not in profile_source:
-        raise SystemExit("Profile maintenance does not reuse the CV-derived search description helper")
+    if "from profile_descriptions import build_search_description" not in profile_source:
+        raise SystemExit("Profile maintenance does not import the search description from its owner")
     if "build_search_description(cv_text)" not in profile_source:
         raise SystemExit("Profile maintenance does not derive search description from the current CV")
     stale_search_literal = (
