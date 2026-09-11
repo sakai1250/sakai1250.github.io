@@ -3,7 +3,7 @@ import json
 import re
 from pathlib import Path
 
-from maintain_profile_metadata import read_cv_header_profile
+from maintain_profile_metadata import read_cv_field, read_cv_header_profile
 
 
 def require(text, needle, source):
@@ -30,13 +30,6 @@ def read_person_json_ld(index_text):
         if data.get("@type") == "Person":
             return data
     raise SystemExit("index.html is missing Person JSON-LD")
-
-
-def read_cv_field(cv_text, label):
-    match = re.search(rf"^{re.escape(label)}:\s*(\S+)\s*$", cv_text, flags=re.MULTILINE)
-    if not match:
-        raise SystemExit(f"assets/cv.txt is missing a machine-readable {label} field")
-    return match.group(1)
 
 
 def main():
