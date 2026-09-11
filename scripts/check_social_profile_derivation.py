@@ -64,17 +64,21 @@ Future University, Tokyo, Japan
     if expected_og_tag not in index_text:
         raise SystemExit("Current Open Graph description does not match assets/cv.txt")
 
+    # Social description ownership belongs to the dedicated social-profile
+    # transform. Header maintenance should not duplicate that CV-derived logic.
     header_source = Path("scripts/maintain_header_controls.py").read_text(encoding="utf-8")
-    if "from maintain_social_profile import build_social_description" not in header_source:
-        raise SystemExit("Header maintenance does not reuse the CV-derived social description helper")
-    if "build_social_description(cv_text)" not in header_source:
-        raise SystemExit("Header maintenance does not derive social description from the current CV")
+    if "build_social_description" in header_source:
+        raise SystemExit("Header maintenance duplicates social-description ownership")
+
+    social_source = Path("scripts/maintain_social_profile.py").read_text(encoding="utf-8")
+    if "build_social_description(cv_text)" not in social_source:
+        raise SystemExit("Social-profile maintenance does not derive description from the current CV")
     stale_social_literal = (
         "Ph.D. Student and Special Assistant at Meijo University researching "
         "Computer Vision, Continual Learning, and Multi-View Tracking."
     )
-    if stale_social_literal in header_source:
-        raise SystemExit("Header maintenance still contains a hard-coded current-profile description")
+    if stale_social_literal in social_source or stale_social_literal in header_source:
+        raise SystemExit("Maintenance still contains a hard-coded current-profile description")
 
     profile_source = Path("scripts/maintain_profile_metadata.py").read_text(encoding="utf-8")
     if "from maintain_social_profile import build_search_description" not in profile_source:
