@@ -1,56 +1,12 @@
 from pathlib import Path
-import html
 import re
 
 import maintain_filter_accessibility
 from maintain_asset_versions import main as maintain_asset_versions
-from maintain_profile_metadata import build_page_title
-from maintain_social_profile import build_social_description
 
 
 path = Path('index.html')
 text = path.read_text(encoding='utf-8')
-cv_text = Path('assets/cv.txt').read_text(encoding='utf-8')
-
-# Reuse the profile parser for public titles so every maintenance step interprets
-# the CV role header with the same content-based rules.
-page_title = html.escape(build_page_title(cv_text), quote=True)
-social_description = html.escape(build_social_description(cv_text), quote=True)
-
-def replace_title(pattern, replacement, label):
-    global text
-    text, count = re.subn(pattern, replacement, text, count=1)
-    if count != 1:
-        raise SystemExit(f'Could not find expected {label}')
-
-replace_title(r'<title>Taigo Sakai \| [^<]+</title>', f'<title>{page_title}</title>', 'document title')
-replace_title(
-    r'<meta property="og:title" content="Taigo Sakai \| [^"]+">',
-    f'<meta property="og:title" content="{page_title}">',
-    'Open Graph title',
-)
-
-# Keep social-card metadata as complete as the Open Graph metadata. This makes
-# shared portfolio links identify the person and research field without relying
-# on platform-specific fallback behavior.
-twitter_creator = '<meta name="twitter:creator" content="@ikaitaig">'
-twitter_metadata = (
-    '<meta name="twitter:creator" content="@ikaitaig">\n'
-    f'  <meta name="twitter:title" content="{page_title}">\n'
-    f'  <meta name="twitter:description" content="{social_description}">\n'
-    '  <meta name="twitter:image" content="https://github.com/sakai1250.png">\n'
-    '  <meta name="twitter:image:alt" content="Portrait of Taigo Sakai">'
-)
-if '<meta name="twitter:title"' not in text:
-    if twitter_creator not in text:
-        raise SystemExit('Could not find Twitter creator metadata')
-    text = text.replace(twitter_creator, twitter_metadata, 1)
-else:
-    replace_title(
-        r'<meta name="twitter:title" content="Taigo Sakai \| [^"]+">',
-        f'<meta name="twitter:title" content="{page_title}">',
-        'Twitter title',
-    )
 
 og_image = '<meta property="og:image" content="https://github.com/sakai1250.png">'
 og_image_with_alt = (
