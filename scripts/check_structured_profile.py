@@ -4,6 +4,8 @@ from pathlib import Path
 import json
 import re
 
+from maintain_profile_metadata import read_cv_header_profile
+
 
 PROFILE_FIELDS = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
 RESEARCH_FOCUS = "Computer Vision, Continual Learning, and Multi-View Tracking"
@@ -69,18 +71,6 @@ def read_cv_field(cv_text, label):
     if not match:
         raise SystemExit(f"assets/cv.txt is missing a machine-readable {label} field")
     return match.group(1)
-
-
-def read_cv_header_profile(cv_text):
-    lines = [line.strip() for line in cv_text.splitlines() if line.strip()]
-    if len(lines) < 5 or " | " not in lines[3]:
-        raise SystemExit("assets/cv.txt is missing the expected role and affiliation header")
-
-    roles = [role.strip() for role in lines[3].split("|") if role.strip()]
-    affiliation = lines[4].split(",", 1)[0].strip()
-    if not roles or not affiliation:
-        raise SystemExit("assets/cv.txt has an incomplete role or affiliation header")
-    return roles, affiliation
 
 
 def main():
