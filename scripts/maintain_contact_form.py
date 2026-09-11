@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-from maintain_profile_metadata import read_cv_field
+from cv_profile import read_cv_field
 
 path = Path('main.js')
 text = path.read_text(encoding='utf-8')
