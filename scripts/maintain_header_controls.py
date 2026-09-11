@@ -1,7 +1,6 @@
 from pathlib import Path
 import re
 
-import maintain_filter_accessibility
 from maintain_asset_versions import main as maintain_asset_versions
 
 
