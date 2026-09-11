@@ -3,7 +3,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 import json
 
-from maintain_profile_metadata import read_cv_field, read_cv_header_profile
+from cv_profile import read_cv_field, read_cv_header_profile
 
 
 PROFILE_FIELDS = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
