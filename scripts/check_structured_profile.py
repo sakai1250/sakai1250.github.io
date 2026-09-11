@@ -2,9 +2,8 @@
 from html.parser import HTMLParser
 from pathlib import Path
 import json
-import re
 
-from maintain_profile_metadata import read_cv_header_profile
+from maintain_profile_metadata import read_cv_field, read_cv_header_profile
 
 
 PROFILE_FIELDS = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
@@ -64,13 +63,6 @@ def single_value(values, label):
     if not value:
         raise SystemExit(f"{label} must not be empty")
     return value
-
-
-def read_cv_field(cv_text, label):
-    match = re.search(rf"^{re.escape(label)}:\s*(\S+)\s*$", cv_text, flags=re.MULTILINE)
-    if not match:
-        raise SystemExit(f"assets/cv.txt is missing a machine-readable {label} field")
-    return match.group(1)
 
 
 def main():
