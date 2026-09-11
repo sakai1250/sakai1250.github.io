@@ -264,43 +264,6 @@ if app_thumbnail_alt in text:
 elif app_thumbnail_decorative not in text:
     raise SystemExit('Could not find app thumbnail accessibility markers')
 
-# Name the top-level tab list by what it actually switches. "Primary sections"
-# is vague when announced without visual context; this identifies the two views
-# directly for screen-reader users. The localized form is already the final
-# generated state and must not be forced through the older mixed label.
-primary_nav_generic = '<nav class="tab-nav header-tab-nav" aria-label="Primary sections">'
-primary_nav_descriptive = (
-    '<nav class="tab-nav header-tab-nav" '
-    'aria-label="Research and engineering / 研究と開発">'
-)
-primary_nav_localized = (
-    '<nav class="tab-nav header-tab-nav" aria-label="研究と開発" '
-    'data-ja-aria-label="研究と開発" data-en-aria-label="Research and engineering">'
-)
-if primary_nav_generic in text:
-    text = text.replace(primary_nav_generic, primary_nav_descriptive, 1)
-elif primary_nav_descriptive not in text and primary_nav_localized not in text:
-    raise SystemExit('Could not find primary tab navigation landmark')
-
-# Name navigation landmarks by their purpose rather than their visual contents.
-# "Cards" does not tell screen-reader users that this control moves between
-# portfolio sections such as research, awards, and engineering work. Accept the
-# current localized form as already valid.
-section_nav_generic = '<nav id="section-tab-nav" class="section-tab-nav" aria-label="Cards"></nav>'
-section_nav_descriptive = (
-    '<nav id="section-tab-nav" class="section-tab-nav" '
-    'aria-label="Portfolio sections / ポートフォリオ内の項目"></nav>'
-)
-section_nav_localized = (
-    '<nav id="section-tab-nav" class="section-tab-nav" aria-label="ポートフォリオ内の項目" '
-    'data-ja-aria-label="ポートフォリオ内の項目" '
-    'data-en-aria-label="Portfolio sections"></nav>'
-)
-if section_nav_generic in text:
-    text = text.replace(section_nav_generic, section_nav_descriptive, 1)
-elif section_nav_descriptive not in text and section_nav_localized not in text:
-    raise SystemExit('Could not find section navigation landmark')
-
 path.write_text(text, encoding='utf-8')
 
 # Keep browser cache keys tied to the current file contents. The optimization
