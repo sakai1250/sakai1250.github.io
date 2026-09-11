@@ -6,7 +6,7 @@ import html
 import re
 
 from cv_profile import read_cv_field, read_cv_header_profile
-from maintain_social_profile import build_search_description
+from profile_descriptions import build_search_description
 
 
 INDEX_PATH = Path("index.html")
