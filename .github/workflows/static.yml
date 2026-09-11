@@ -49,8 +49,8 @@ jobs:
               exit 1
             fi
           done
-      - name: Validate maintenance script syntax
-        run: python -m py_compile scripts/*.py
+      - name: Validate maintenance script syntax and registry
+        run: python scripts/run_deterministic_maintenance.py --compile-only
       - name: Validate JavaScript syntax
         run: node --check main.js
       - name: Validate site integrity
