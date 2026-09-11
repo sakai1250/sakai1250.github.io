@@ -44,12 +44,34 @@ MAINTENANCE_SCRIPTS = (
 )
 
 
+def validate_maintenance_registry() -> None:
+    discovered = {
+        str(path.relative_to(ROOT))
+        for path in (ROOT / "scripts").glob("maintain_*.py")
+    }
+    registered = set(MAINTENANCE_SCRIPTS)
+
+    missing = sorted(discovered - registered)
+    stale = sorted(registered - discovered)
+    if not missing and not stale:
+        return
+
+    details = []
+    if missing:
+        details.append("unregistered maintenance scripts: " + ", ".join(missing))
+    if stale:
+        details.append("missing registered scripts: " + ", ".join(stale))
+    raise SystemExit("Maintenance registry mismatch: " + "; ".join(details))
+
+
 def compile_scripts() -> None:
+    validate_maintenance_registry()
     for script_path in sorted((ROOT / "scripts").glob("*.py")):
         py_compile.compile(str(script_path), doraise=True)
 
 
 def run_scripts() -> None:
+    validate_maintenance_registry()
     for relative_path in MAINTENANCE_SCRIPTS:
         subprocess.run(
             [sys.executable, str(ROOT / relative_path)],
@@ -63,7 +85,7 @@ def main() -> None:
     parser.add_argument(
         "--compile-only",
         action="store_true",
-        help="Compile every Python script under scripts/ without executing it.",
+        help="Validate the maintenance registry and compile every Python script under scripts/ without executing it.",
     )
     args = parser.parse_args()
 
