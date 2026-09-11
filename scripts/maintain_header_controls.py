@@ -86,53 +86,8 @@ if skip_link_ja_only in text:
 elif skip_link_bilingual not in text:
     raise SystemExit('Could not find skip link')
 
-language_button = '<button class="header-btn" id="lang-toggle" type="button">'
-language_button_accessible = (
-    '<button class="header-btn" id="lang-toggle" type="button" '
-    'aria-label="Switch language / 言語切り替え">'
-)
-language_button_action = (
-    '<button class="header-btn" id="lang-toggle" type="button" '
-    'aria-label="Switch to English / 英語に切り替え">'
-)
-language_button_localized = (
-    '<button class="header-btn" id="lang-toggle" type="button" '
-    'aria-label="英語に切り替え">'
-)
-if language_button in text:
-    text = text.replace(language_button, language_button_accessible, 1)
-elif all(
-    marker not in text
-    for marker in (language_button_accessible, language_button_action, language_button_localized)
-):
-    raise SystemExit('Could not find language toggle button')
-
-theme_button = (
-    '<button class="header-btn" id="theme-toggle" type="button" '
-    'aria-label="テーマ切り替え">'
-)
-theme_button_accessible = (
-    '<button class="header-btn" id="theme-toggle" type="button" '
-    'aria-label="Switch theme / テーマ切り替え">'
-)
-theme_button_action = (
-    '<button class="header-btn" id="theme-toggle" type="button" '
-    'aria-label="Switch to light theme / ライトテーマに切り替え">'
-)
-theme_button_localized = (
-    '<button class="header-btn" id="theme-toggle" type="button" '
-    'aria-label="ライトテーマに切り替え">'
-)
-if theme_button in text:
-    text = text.replace(theme_button, theme_button_accessible, 1)
-elif all(
-    marker not in text
-    for marker in (theme_button_accessible, theme_button_action, theme_button_localized)
-):
-    raise SystemExit('Could not find theme toggle button')
-
-# The theme control already has an accessible name. Its moon/sun glyph is only
-# visual state decoration, so do not make screen readers announce it as text.
+# The theme control's accessible name is maintained by the dedicated theme
+# accessibility transform. Header maintenance only owns the decorative icon.
 theme_icon = '<span id="theme-icon">☾</span>'
 theme_icon_decorative = '<span id="theme-icon" aria-hidden="true">☾</span>'
 if theme_icon in text:
