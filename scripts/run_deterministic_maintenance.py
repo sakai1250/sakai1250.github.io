@@ -43,9 +43,14 @@ MAINTENANCE_SCRIPTS = (
     "scripts/maintain_static_fallbacks.py",
 )
 
+SHARED_HELPERS = (
+    "scripts/cv_profile.py",
+    "scripts/profile_descriptions.py",
+)
+
 
 def compile_scripts() -> None:
-    for relative_path in MAINTENANCE_SCRIPTS:
+    for relative_path in (*SHARED_HELPERS, *MAINTENANCE_SCRIPTS):
         py_compile.compile(str(ROOT / relative_path), doraise=True)
 
 
@@ -63,7 +68,7 @@ def main() -> None:
     parser.add_argument(
         "--compile-only",
         action="store_true",
-        help="Compile the maintenance scripts without executing them.",
+        help="Compile the maintenance scripts and shared helpers without executing them.",
     )
     args = parser.parse_args()
 
