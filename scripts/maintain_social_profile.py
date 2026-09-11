@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Synchronize social and search profile metadata with the CV role header."""
+"""Provide profile description builders and synchronize Twitter metadata."""
 
 from __future__ import annotations
 
@@ -51,31 +51,12 @@ def main() -> None:
     text = path.read_text(encoding="utf-8")
     cv_text = Path("assets/cv.txt").read_text(encoding="utf-8")
     social_description = html.escape(build_social_description(cv_text), quote=True)
-    search_description = html.escape(build_search_description(cv_text), quote=True)
 
     text = replace_meta(
         text,
         re.compile(r'<meta name="twitter:description" content="[^"]*">'),
         f'<meta name="twitter:description" content="{social_description}">',
         "Twitter description",
-    )
-    text = replace_meta(
-        text,
-        re.compile(
-            r'<meta name="description"\s+content="[^"]*">',
-            flags=re.DOTALL,
-        ),
-        f'<meta name="description"\n    content="{search_description}">',
-        "search description",
-    )
-    text = replace_meta(
-        text,
-        re.compile(
-            r'<meta property="og:description"\s+content="[^"]*">',
-            flags=re.DOTALL,
-        ),
-        f'<meta property="og:description"\n    content="{search_description}">',
-        "Open Graph description",
     )
 
     path.write_text(text, encoding="utf-8")
