@@ -51,12 +51,17 @@ def validate_maintenance_registry() -> None:
     }
     registered = set(MAINTENANCE_SCRIPTS)
 
+    duplicates = sorted(
+        path for path in registered if MAINTENANCE_SCRIPTS.count(path) > 1
+    )
     missing = sorted(discovered - registered)
     stale = sorted(registered - discovered)
-    if not missing and not stale:
+    if not duplicates and not missing and not stale:
         return
 
     details = []
+    if duplicates:
+        details.append("duplicate maintenance registrations: " + ", ".join(duplicates))
     if missing:
         details.append("unregistered maintenance scripts: " + ", ".join(missing))
     if stale:
