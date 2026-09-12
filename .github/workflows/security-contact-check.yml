@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - '.python-version'
       - '.well-known/security.txt'
       - 'SECURITY.md'
       - 'assets/cv.txt'
@@ -12,6 +13,7 @@ on:
       - '.github/workflows/security-contact-check.yml'
   pull_request:
     paths:
+      - '.python-version'
       - '.well-known/security.txt'
       - 'SECURITY.md'
       - 'assets/cv.txt'
@@ -35,7 +37,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
-          python-version: '3.14'
+          python-version-file: '.python-version'
       - name: Validate security contact metadata
         run: python scripts/check_security_contact.py
       - name: Verify deployed security contact
