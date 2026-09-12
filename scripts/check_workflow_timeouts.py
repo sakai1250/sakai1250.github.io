@@ -6,6 +6,7 @@ from pathlib import Path
 WORKFLOWS_DIR = Path(".github/workflows")
 MAX_TIMEOUT_MINUTES = 30
 JOB_RE = re.compile(r"^  ([A-Za-z0-9_-]+):\s*$")
+RUNS_ON_RE = re.compile(r"^    runs-on:\s*(?:\S.*)?$")
 TIMEOUT_RE = re.compile(r"^    timeout-minutes:\s*(\d+)\s*(?:#.*)?$")
 
 
@@ -45,7 +46,7 @@ for pattern in ("*.yml", "*.yaml"):
     for workflow in sorted(WORKFLOWS_DIR.glob(pattern)):
         text = workflow.read_text(encoding="utf-8")
         for job_name, job_lines in workflow_jobs(text):
-            if not any(re.match(r"^    runs-on:\s*\S+", line) for line in job_lines):
+            if not any(RUNS_ON_RE.match(line) for line in job_lines):
                 continue
 
             runner_jobs += 1
