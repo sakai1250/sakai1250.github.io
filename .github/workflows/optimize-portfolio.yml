@@ -37,26 +37,7 @@ jobs:
         run: python scripts/sync_readme_assets.py
 
       - name: Guard thumbnail cache fallback policy
-        run: |
-          python <<'PY'
-          from pathlib import Path
-
-          text = Path('scripts/sync_readme_assets.py').read_text(encoding='utf-8')
-          required = [
-              'expected_files.add(filename)',
-              'if local_path.is_file():',
-              'return local_web_path',
-              'if filename not in expected_files:',
-              'local_img.startswith("assets/thumbnails/")',
-              'sync_index_app_thumbnails(data["apps"])',
-          ]
-          missing = [snippet for snippet in required if snippet not in text]
-          if missing:
-              raise SystemExit(f'Thumbnail cache fallback policy is incomplete: {missing}')
-          legacy_cleanup = 'if filename not in ' + 'generated_files:'
-          if legacy_cleanup in text:
-              raise SystemExit('Thumbnail cleanup still depends on current-run download success')
-          PY
+        run: python scripts/check_thumbnail_cache_policy.py
 
       - name: Keep deterministic portfolio maintenance aligned
         run: python scripts/run_deterministic_maintenance.py
