@@ -48,6 +48,7 @@ python3.14 scripts/run_deterministic_maintenance.py --compile-only
 node --check main.js
 python3.14 scripts/run_deterministic_maintenance.py
 python3.14 scripts/check_app_repo_links.py
+python3.14 scripts/check_thumbnail_cache_policy.py
 python3.14 scripts/check_contextual_share_localization.py
 python3.14 scripts/check_local_deep_links.py
 python3.14 scripts/check_site_integrity.py
