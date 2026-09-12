@@ -94,6 +94,19 @@ def main():
     require_casefold(cv_text, "Taigo Sakai", "assets/cv.txt")
     require(cv_text, "https://sakai1250.github.io/", "assets/cv.txt")
 
+    # Publication resources in the machine-readable CV should stay identical to
+    # the human-facing portfolio so researchers and recruiters do not get two
+    # different destinations for the same work.
+    cv_publication_urls = re.findall(
+        r"^\s+(?:Paper|Program):\s+(https?://\S+)\s*$",
+        cv_text,
+        flags=re.MULTILINE,
+    )
+    if not cv_publication_urls:
+        raise SystemExit("assets/cv.txt is missing publication resource links")
+    for publication_url in cv_publication_urls:
+        require(index_text, f'href="{publication_url}"', "index.html")
+
     # Human-facing recovery and contact routes must stay aligned with the
     # machine-readable profile so stale links do not survive on secondary pages.
     require(index_text, contact_mailto, "index.html")
