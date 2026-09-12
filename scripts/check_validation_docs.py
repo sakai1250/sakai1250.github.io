@@ -5,6 +5,8 @@ from pathlib import Path
 
 README = Path("README.md")
 WORKFLOW = Path(".github/workflows/static.yml")
+WORKFLOWS_DIR = Path(".github/workflows")
+SCRIPTS_DIR = Path("scripts")
 CHECK_RE = re.compile(r"\b(?:python(?:3(?:\.\d+)?)?)\s+(scripts/check_[A-Za-z0-9_]+\.py)\b")
 REQUIRED_SHARED_STAGES = {
     "Python syntax and maintenance registry validation": "scripts/run_deterministic_maintenance.py --compile-only",
@@ -32,6 +34,14 @@ def read_local_validation_block(text: str) -> str:
 
 def check_scripts(text: str) -> set[str]:
     return set(CHECK_RE.findall(text))
+
+
+def registered_workflow_checks() -> set[str]:
+    registered: set[str] = set()
+    for pattern in ("*.yml", "*.yaml"):
+        for workflow in WORKFLOWS_DIR.glob(pattern):
+            registered.update(check_scripts(workflow.read_text(encoding="utf-8")))
+    return registered
 
 
 def require_shared_stage(label: str, command: str, readme_block: str, workflow_text: str) -> None:
@@ -73,11 +83,28 @@ if only_readme or only_workflow:
 if not workflow_checks:
     raise SystemExit("No scripts/check_*.py validations found in static.yml")
 
+all_checks = {path.as_posix() for path in SCRIPTS_DIR.glob("check_*.py")}
+registered_checks = registered_workflow_checks()
+unregistered_checks = sorted(all_checks - registered_checks)
+stale_registrations = sorted(registered_checks - all_checks)
+
+if unregistered_checks or stale_registrations:
+    if unregistered_checks:
+        print("Check scripts not run by any workflow:")
+        for path in unregistered_checks:
+            print(f"  - {path}")
+    if stale_registrations:
+        print("Workflow references to missing check scripts:")
+        for path in stale_registrations:
+            print(f"  - {path}")
+    raise SystemExit(1)
+
 for stage_label, stage_command in REQUIRED_SHARED_STAGES.items():
     require_shared_stage(stage_label, stage_command, readme_block, workflow_text)
 
 print(
     "Validation documentation aligned: "
-    f"{len(workflow_checks)} deterministic checks and "
+    f"{len(workflow_checks)} deterministic checks, "
+    f"{len(registered_checks)} workflow-registered checks, and "
     f"{len(REQUIRED_SHARED_STAGES)} shared validation stages"
 )
