@@ -19,6 +19,13 @@ THUMB_DIR = ASSETS_DIR / "thumbnails"
 DATA_FILE = ASSETS_DIR / "data.json"
 INDEX_FILE = ROOT / "index.html"
 
+ORGANIZATION_ALT_BY_SRC = {
+    "https://github.com/user-attachments/assets/06029876-4a7b-44fe-8df6-cac6bbbf8391": "RM-NAGOYASHACHIHOKO",
+    "https://github.com/user-attachments/assets/3df7dbab-02ff-494d-b468-3bf755043a2c": "JPHacks",
+    "https://github.com/user-attachments/assets/7109b8d7-da71-4b8d-8858-773980b358d5": "Jogiken",
+}
+GENERIC_ORGANIZATION_ALTS = {"GitHub画像"}
+
 
 def extract_images(content: str, header_pattern: str) -> list[dict[str, str]]:
     pattern = re.compile(
@@ -48,6 +55,24 @@ def extract_images(content: str, header_pattern: str) -> list[dict[str, str]]:
                 }
             )
     return images
+
+
+def normalize_organization_alts(items: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Replace generic source README labels with stable organization names."""
+    for item in items:
+        alt = item.get("alt", "").strip()
+        src = item.get("src", "").strip()
+        if alt and alt not in GENERIC_ORGANIZATION_ALTS:
+            continue
+
+        replacement = ORGANIZATION_ALT_BY_SRC.get(src)
+        if not replacement:
+            raise SystemExit(
+                "Organization badge has generic alt text with an unknown image source: "
+                f"{src!r}"
+            )
+        item["alt"] = replacement
+    return items
 
 
 def sync_app_thumbnail(full_repo: str, img_src: str) -> str:
@@ -130,7 +155,9 @@ def main() -> None:
     data["badges"]["badges-frameworks"] = extract_images(
         content, r"Frameworks|Tools|ツール|技術"
     )
-    data["badges"]["badges-orgs"] = extract_images(content, r"Organizations|所属")
+    data["badges"]["badges-orgs"] = normalize_organization_alts(
+        extract_images(content, r"Organizations|所属")
+    )
 
     apps_match = re.search(
         r"^##\s+My Apps\s*$([\s\S]*?)(?=^##\s|\Z)",
