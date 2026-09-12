@@ -9,7 +9,7 @@ TOP_LEVEL_PERMISSIONS_RE = re.compile(
     r"(?m)^permissions:\s*\n((?:^[ \t]+[^\n]+\n?)*)"
 )
 CONTENTS_PERMISSION_RE = re.compile(r"(?m)^  contents:\s*(read|write)\s*$")
-NESTED_PERMISSIONS_RE = re.compile(r"(?m)^[ \t]+permissions:\s*(?:$|[\[{])")
+NESTED_PERMISSIONS_RE = re.compile(r"(?m)^[ \t]+permissions\s*:")
 
 
 def workflow_paths() -> list[Path]:
