@@ -40,7 +40,7 @@ Then open `http://localhost:8000`.
 
 ## Local validation
 
-Use Python 3.14 and Node 24 for maintenance and validation so local runs match GitHub Actions. Install the maintenance dependency and run the core deterministic checks used by post-optimization validation:
+Use the Python version declared in `.python-version` (currently 3.14) and Node 24 for maintenance and validation so local runs match GitHub Actions. Install the maintenance dependency and run the core deterministic checks used by post-optimization validation:
 
 ```bash
 python3.14 -m pip install -r requirements-maintenance.txt
@@ -85,6 +85,7 @@ This catches broken or unreachable external navigation and images before they re
 - `index.html` contains the portfolio content and page structure.
 - `style.css` controls the visual presentation and light/dark themes.
 - `main.js` handles filtering, language switching, statistics, and interaction.
+- `.python-version` is the single Python runtime version used by GitHub Actions; update it when changing the maintenance runtime.
 - `scripts/*.py` contains repeatable maintenance transforms and checks used by GitHub Actions; keep transforms idempotent so repeated runs do not alter already-correct content.
 - `assets/cv.pdf` is the CV linked from the site header.
 - `assets/cv.txt` is the machine-readable source of truth for the current role and affiliation used by profile maintenance.
