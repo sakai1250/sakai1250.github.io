@@ -75,6 +75,8 @@ jobs:
         run: python scripts/check_year_filter_coverage.py
       - name: Validate app repository links
         run: python scripts/check_app_repo_links.py
+      - name: Validate thumbnail cache policy
+        run: python scripts/check_thumbnail_cache_policy.py
       - name: Validate structured profile
         run: python scripts/check_structured_profile.py
       - name: Validate CV-derived sidebar roles
