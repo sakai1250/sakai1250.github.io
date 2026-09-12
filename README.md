@@ -40,36 +40,37 @@ Then open `http://localhost:8000`.
 
 ## Local validation
 
-Use the Python version declared in `.python-version` (currently 3.14) and Node 24 for maintenance and validation so local runs match GitHub Actions. Install the maintenance dependency and run the core deterministic checks used by post-optimization validation:
+Use the Python version declared in `.python-version` and Node 24 for maintenance and validation so local runs match GitHub Actions. Install the maintenance dependency and run the core deterministic checks used by post-optimization validation:
 
 ```bash
-python3.14 -m pip install -r requirements-maintenance.txt
-python3.14 scripts/run_deterministic_maintenance.py --compile-only
+PYTHON="python$(cat .python-version)"
+"$PYTHON" -m pip install -r requirements-maintenance.txt
+"$PYTHON" scripts/run_deterministic_maintenance.py --compile-only
 node --check main.js
-python3.14 scripts/run_deterministic_maintenance.py
-python3.14 scripts/check_app_repo_links.py
-python3.14 scripts/check_thumbnail_cache_policy.py
-python3.14 scripts/check_contextual_share_localization.py
-python3.14 scripts/check_local_deep_links.py
-python3.14 scripts/check_site_integrity.py
-python3.14 scripts/check_research_award_alignment.py
-python3.14 scripts/check_control_accessible_names.py
-python3.14 scripts/check_utility_control_localization.py
-python3.14 scripts/check_form_control_names.py
-python3.14 scripts/check_new_tab_link_security.py
-python3.14 scripts/check_progressive_enhancement.py
-python3.14 scripts/check_security_contact.py
-python3.14 scripts/check_structured_profile.py
-python3.14 scripts/check_sidebar_role_derivation.py
-python3.14 scripts/check_social_profile_derivation.py
-python3.14 scripts/check_llms_profile.py
-python3.14 scripts/check_year_filter_coverage.py
-python3.14 scripts/check_python_runtime_alignment.py
-python3.14 scripts/check_github_action_pins.py
-python3.14 scripts/check_workflow_permissions.py
-python3.14 scripts/check_validation_docs.py
+"$PYTHON" scripts/run_deterministic_maintenance.py
+"$PYTHON" scripts/check_app_repo_links.py
+"$PYTHON" scripts/check_thumbnail_cache_policy.py
+"$PYTHON" scripts/check_contextual_share_localization.py
+"$PYTHON" scripts/check_local_deep_links.py
+"$PYTHON" scripts/check_site_integrity.py
+"$PYTHON" scripts/check_research_award_alignment.py
+"$PYTHON" scripts/check_control_accessible_names.py
+"$PYTHON" scripts/check_utility_control_localization.py
+"$PYTHON" scripts/check_form_control_names.py
+"$PYTHON" scripts/check_new_tab_link_security.py
+"$PYTHON" scripts/check_progressive_enhancement.py
+"$PYTHON" scripts/check_security_contact.py
+"$PYTHON" scripts/check_structured_profile.py
+"$PYTHON" scripts/check_sidebar_role_derivation.py
+"$PYTHON" scripts/check_social_profile_derivation.py
+"$PYTHON" scripts/check_llms_profile.py
+"$PYTHON" scripts/check_year_filter_coverage.py
+"$PYTHON" scripts/check_python_runtime_alignment.py
+"$PYTHON" scripts/check_github_action_pins.py
+"$PYTHON" scripts/check_workflow_permissions.py
+"$PYTHON" scripts/check_validation_docs.py
 git diff --exit-code -- index.html 404.html main.js style.css sitemap.xml README.md llms.txt SECURITY.md .well-known/security.txt
-python3.14 scripts/maintain_static_fallbacks.py
+"$PYTHON" scripts/maintain_static_fallbacks.py
 git diff --exit-code -- index.html sitemap.xml
 ```
 
@@ -78,7 +79,8 @@ If either diff command reports changes, include the generated maintenance update
 External URLs are checked by a separate network-dependent workflow. When changing publication, CV, profile, organization, app, or repository URLs, run the same check locally when network access is available:
 
 ```bash
-python3.14 scripts/check_external_links.py
+PYTHON="python$(cat .python-version)"
+"$PYTHON" scripts/check_external_links.py
 ```
 
 This catches broken or unreachable external navigation and images before they reach researchers, recruiters, or other visitors, while keeping transient network failures separate from deterministic local checks.
@@ -88,7 +90,7 @@ This catches broken or unreachable external navigation and images before they re
 - `index.html` contains the portfolio content and page structure.
 - `style.css` controls the visual presentation and light/dark themes.
 - `main.js` handles filtering, language switching, statistics, and interaction.
-- `.python-version` is the single Python runtime version used by GitHub Actions; update it when changing the maintenance runtime.
+- `.python-version` is the single Python runtime version used by GitHub Actions and the documented local validation commands; update it when changing the maintenance runtime.
 - `scripts/*.py` contains repeatable maintenance transforms and checks used by GitHub Actions; keep transforms idempotent so repeated runs do not alter already-correct content.
 - `assets/cv.pdf` is the CV linked from the site header.
 - `assets/cv.txt` is the machine-readable source of truth for the current role and affiliation used by profile maintenance.
