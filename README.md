@@ -68,6 +68,7 @@ node --check main.js
 "$PYTHON" scripts/check_python_runtime_alignment.py
 "$PYTHON" scripts/check_github_action_pins.py
 "$PYTHON" scripts/check_workflow_permissions.py
+"$PYTHON" scripts/check_workflow_timeouts.py
 "$PYTHON" scripts/check_validation_docs.py
 git diff --exit-code -- index.html 404.html main.js style.css sitemap.xml README.md llms.txt SECURITY.md .well-known/security.txt
 "$PYTHON" scripts/maintain_static_fallbacks.py
