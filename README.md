@@ -66,6 +66,7 @@ python3.14 scripts/check_llms_profile.py
 python3.14 scripts/check_year_filter_coverage.py
 python3.14 scripts/check_python_runtime_alignment.py
 python3.14 scripts/check_github_action_pins.py
+python3.14 scripts/check_workflow_permissions.py
 python3.14 scripts/check_validation_docs.py
 git diff --exit-code -- index.html 404.html main.js style.css sitemap.xml README.md llms.txt SECURITY.md .well-known/security.txt
 python3.14 scripts/maintain_static_fallbacks.py
