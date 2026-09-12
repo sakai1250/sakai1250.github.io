@@ -62,9 +62,16 @@ def normalize_organization_alts(items: list[dict[str, str]]) -> list[dict[str, s
     for item in items:
         alt = item.get("alt", "").strip()
         src = item.get("src", "").strip()
+        if alt and alt not in GENERIC_ORGANIZATION_ALTS:
+            continue
+
         replacement = ORGANIZATION_ALT_BY_SRC.get(src)
-        if replacement and (not alt or alt in GENERIC_ORGANIZATION_ALTS):
-            item["alt"] = replacement
+        if not replacement:
+            raise SystemExit(
+                "Organization badge has generic alt text with an unknown image source: "
+                f"{src!r}"
+            )
+        item["alt"] = replacement
     return items
 
 
