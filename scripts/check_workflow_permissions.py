@@ -9,6 +9,7 @@ TOP_LEVEL_PERMISSIONS_RE = re.compile(
     r"(?m)^permissions:\s*\n((?:^[ \t]+[^\n]+\n?)*)"
 )
 CONTENTS_PERMISSION_RE = re.compile(r"(?m)^  contents:\s*(read|write)\s*$")
+NESTED_PERMISSIONS_RE = re.compile(r"(?m)^[ \t]+permissions:\s*(?:$|[\[{])")
 
 
 def workflow_paths() -> list[Path]:
@@ -26,6 +27,13 @@ if not paths:
 
 for path in paths:
     text = path.read_text(encoding="utf-8")
+
+    # A job-level permissions block overrides the workflow-level token policy and
+    # could silently reintroduce write access in a workflow that otherwise looks
+    # read-only. Keep permissions owned at the workflow level only.
+    if NESTED_PERMISSIONS_RE.search(text):
+        errors.append(f"{path}: job-level or nested permissions overrides are not allowed")
+
     match = TOP_LEVEL_PERMISSIONS_RE.search(text)
     if not match:
         errors.append(f"{path}: missing explicit top-level permissions block")
@@ -61,5 +69,6 @@ if errors:
 print(
     "Workflow permissions aligned: "
     f"{len(paths)} workflows declare explicit least-privilege contents access; "
+    "no nested permission overrides; "
     f"write access limited to {', '.join(str(path) for path in sorted(WRITE_ALLOWED))}"
 )
