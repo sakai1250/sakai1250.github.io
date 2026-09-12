@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import html
 import json
 import re
 from pathlib import Path
@@ -14,6 +15,14 @@ def require(text, needle, source):
 def require_casefold(text, needle, source):
     if needle.casefold() not in text.casefold():
         raise SystemExit(f"{source} is missing required profile content: {needle}")
+
+
+def normalize_text(text):
+    return " ".join(text.split())
+
+
+def visible_html_text(fragment):
+    return normalize_text(html.unescape(re.sub(r"<[^>]+>", " ", fragment)))
 
 
 def read_person_json_ld(index_text):
@@ -94,18 +103,35 @@ def main():
     require_casefold(cv_text, "Taigo Sakai", "assets/cv.txt")
     require(cv_text, "https://sakai1250.github.io/", "assets/cv.txt")
 
-    # Publication resources in the machine-readable CV should stay identical to
-    # the human-facing portfolio so researchers and recruiters do not get two
-    # different destinations for the same work.
-    cv_publication_urls = re.findall(
-        r"^\s+(?:Paper|Program):\s+(https?://\S+)\s*$",
+    # Publication resources in the machine-readable CV should stay attached to
+    # the same publication in the human-facing portfolio. Checking only that a
+    # URL exists somewhere in index.html would miss accidentally swapped links.
+    cv_publications = re.findall(
+        r'^\d+\.\s+[^\n]*?"([^"\n]+)"[^\n]*\n\s+(Paper|Program):\s+(https?://\S+)\s*$',
         cv_text,
         flags=re.MULTILINE,
     )
-    if not cv_publication_urls:
+    if not cv_publications:
         raise SystemExit("assets/cv.txt is missing publication resource links")
-    for publication_url in cv_publication_urls:
-        require(index_text, f'href="{publication_url}"', "index.html")
+
+    publication_items = re.findall(r"<li\b[^>]*>.*?</li>", index_text, flags=re.DOTALL | re.IGNORECASE)
+    for title, resource_label, publication_url in cv_publications:
+        linked_items = [
+            item
+            for item in publication_items
+            if f'href="{publication_url}"' in item
+        ]
+        if len(linked_items) != 1:
+            raise SystemExit(
+                "index.html must contain exactly one publication item for CV resource: "
+                f"{publication_url} (found {len(linked_items)})"
+            )
+        item_text = visible_html_text(linked_items[0])
+        if normalize_text(title).casefold() not in item_text.casefold():
+            raise SystemExit(
+                f"index.html {resource_label} link is attached to the wrong publication: "
+                f"{title} -> {publication_url}"
+            )
 
     # Human-facing recovery and contact routes must stay aligned with the
     # machine-readable profile so stale links do not survive on secondary pages.
