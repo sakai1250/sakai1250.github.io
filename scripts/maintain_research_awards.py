@@ -24,10 +24,16 @@ HCV_PUBLICATION_WITH_AWARD = (
     '                  <div class="muted">ECCV 2026 Workshop on Human-inspired Computer Vision, Oral, Outstanding Paper Award, Malmö, Sweden.</div>'
 )
 HCV_AWARD_LABEL = "HCV2026 Outstanding Paper Award"
+HCV_AWARD_URL = "https://arxiv.org/abs/2608.08068"
+HCV_AWARD_LINK = (
+    f'                  <a href="{HCV_AWARD_URL}" target="_blank" '
+    'style="display:inline-block; margin-top:4px; font-size:12px; font-weight:bold; color:var(--accent);" '
+    'rel="noopener noreferrer"><span lang="ja">[論文]</span><span lang="en">[Paper]</span></a>\n'
+)
 HCV_AWARD_ITEM = f"""                <li data-year="2026"><span class="badge-year">2026</span>
                   <span lang="ja">{HCV_AWARD_LABEL}</span>
                   <span lang="en">{HCV_AWARD_LABEL}</span>
-                </li>
+{HCV_AWARD_LINK}                </li>
 """
 HCV_AWARD_LEGACY_LABELS = (
     "ECCV 2026 Human-inspired Computer Vision Workshop Outstanding Paper Award",
@@ -131,6 +137,18 @@ def maintain_hcv_award(text: str, cv_text: str) -> str:
 
     if HCV_AWARD_LABEL not in awards:
         awards = HCV_AWARD_ITEM + awards
+    elif HCV_AWARD_URL not in awards:
+        award_item_pattern = re.compile(
+            rf'(<li\b[^>]*data-year="2026"[^>]*>.*?{re.escape(HCV_AWARD_LABEL)}.*?)(\n\s*</li>)',
+            flags=re.DOTALL,
+        )
+        awards, link_count = award_item_pattern.subn(
+            lambda award_match: f"{award_match.group(1)}\n{HCV_AWARD_LINK.rstrip()}{award_match.group(2)}",
+            awards,
+            count=1,
+        )
+        if link_count != 1:
+            raise SystemExit("Could not add the HCV2026 paper link to the award entry")
 
     text = text[: match.start(2)] + awards + text[match.end(2) :]
     match = awards_pattern.search(text)
