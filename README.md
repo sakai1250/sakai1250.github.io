@@ -40,7 +40,7 @@ Then open `http://localhost:8000`.
 
 ## Local validation
 
-Use the Python version declared in `.python-version` and Node 24 for maintenance and validation so local runs match GitHub Actions. Install the maintenance dependency and run the core deterministic checks used by post-optimization validation:
+Use the Python version declared in `.python-version` and the Node version declared in `.node-version` for maintenance and validation so local runs match GitHub Actions. Install the maintenance dependency and run the core deterministic checks used by post-optimization validation:
 
 ```bash
 PYTHON="python$(cat .python-version)"
@@ -66,6 +66,7 @@ node --check main.js
 "$PYTHON" scripts/check_llms_profile.py
 "$PYTHON" scripts/check_year_filter_coverage.py
 "$PYTHON" scripts/check_python_runtime_alignment.py
+"$PYTHON" scripts/check_node_runtime_alignment.py
 "$PYTHON" scripts/check_github_action_pins.py
 "$PYTHON" scripts/check_workflow_permissions.py
 "$PYTHON" scripts/check_workflow_timeouts.py
@@ -92,6 +93,7 @@ This catches broken or unreachable external navigation and images before they re
 - `style.css` controls the visual presentation and light/dark themes.
 - `main.js` handles filtering, language switching, statistics, and interaction.
 - `.python-version` is the single Python runtime version used by GitHub Actions and the documented local validation commands; update it when changing the maintenance runtime.
+- `.node-version` is the single Node runtime version used by GitHub Actions and local JavaScript validation; update it when changing the JavaScript validation runtime.
 - `scripts/*.py` contains repeatable maintenance transforms and checks used by GitHub Actions; keep transforms idempotent so repeated runs do not alter already-correct content.
 - `assets/cv.pdf` is the CV linked from the site header.
 - `assets/cv.txt` is the machine-readable source of truth for the current role and affiliation used by profile maintenance.
