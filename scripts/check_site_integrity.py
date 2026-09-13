@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-from datetime import date
+from datetime import datetime
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlsplit
+from zoneinfo import ZoneInfo
 import json
 import re
 import xml.etree.ElementTree as ET
@@ -13,6 +14,7 @@ problems = []
 total_ids = 0
 total_refs = 0
 html_ids = {}
+SITE_TIMEZONE = ZoneInfo('Asia/Tokyo')
 
 # The modal image is populated from the selected app card immediately before the
 # dialog opens. Keeping its initial src empty avoids shipping a fake placeholder
@@ -257,6 +259,7 @@ if sitemap.exists():
         ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
         url_nodes = tree.findall('.//sm:url', ns)
         locs = []
+        site_today = datetime.now(SITE_TIMEZONE).date()
         for url_node in url_nodes:
             loc_node = url_node.find('sm:loc', ns)
             if loc_node is None or not loc_node.text or not loc_node.text.strip():
@@ -271,8 +274,8 @@ if sitemap.exists():
             else:
                 lastmod = lastmod_node.text.strip()
                 try:
-                    parsed_lastmod = date.fromisoformat(lastmod)
-                    if parsed_lastmod > date.today():
+                    parsed_lastmod = datetime.strptime(lastmod, '%Y-%m-%d').date()
+                    if parsed_lastmod > site_today:
                         problems.append(
                             f'sitemap.xml: {loc} has future <lastmod> date {lastmod!r}'
                         )
