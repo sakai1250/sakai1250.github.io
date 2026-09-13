@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -254,9 +255,33 @@ if sitemap.exists():
     try:
         tree = ET.parse(sitemap)
         ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
-        locs = [node.text.strip() for node in tree.findall('.//sm:loc', ns) if node.text]
+        url_nodes = tree.findall('.//sm:url', ns)
+        locs = []
+        for url_node in url_nodes:
+            loc_node = url_node.find('sm:loc', ns)
+            if loc_node is None or not loc_node.text or not loc_node.text.strip():
+                problems.append('sitemap.xml: <url> entry is missing a non-empty <loc>')
+                continue
+            loc = loc_node.text.strip()
+            locs.append(loc)
+
+            lastmod_node = url_node.find('sm:lastmod', ns)
+            if lastmod_node is None or not lastmod_node.text or not lastmod_node.text.strip():
+                problems.append(f'sitemap.xml: {loc} is missing <lastmod>')
+            else:
+                lastmod = lastmod_node.text.strip()
+                try:
+                    date.fromisoformat(lastmod)
+                except ValueError:
+                    problems.append(
+                        f'sitemap.xml: {loc} has invalid ISO date in <lastmod>: {lastmod!r}'
+                    )
+
         if not locs:
             problems.append('sitemap.xml: no <loc> entries')
+        duplicate_locs = sorted({loc for loc in locs if locs.count(loc) > 1})
+        if duplicate_locs:
+            problems.append(f'sitemap.xml: duplicate <loc> entries {duplicate_locs}')
         required_locs = {
             'https://sakai1250.github.io/',
             'https://sakai1250.github.io/assets/cv.pdf',
