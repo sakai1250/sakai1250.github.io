@@ -299,9 +299,13 @@ if sitemap.exists():
             )
         for loc in locs:
             parsed = urlsplit(loc)
+            if parsed.scheme != 'https':
+                problems.append(f'sitemap.xml: URL must use HTTPS: {loc}')
             if parsed.netloc != 'sakai1250.github.io':
                 problems.append(f'sitemap.xml: unexpected host in {loc}')
                 continue
+            if parsed.query or parsed.fragment:
+                problems.append(f'sitemap.xml: URL must not contain query or fragment: {loc}')
             path = parsed.path or '/'
             if path == '/':
                 continue
