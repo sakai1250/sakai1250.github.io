@@ -137,6 +137,12 @@ def main():
                 f"index.html {resource_label} link is attached to the wrong publication: "
                 f"{title} -> {publication_url}"
             )
+        expected_resource_label = f"[{resource_label}]"
+        if expected_resource_label not in item_text:
+            raise SystemExit(
+                "index.html publication resource label must match assets/cv.txt: "
+                f"{title} expected {expected_resource_label}"
+            )
 
     # Human-facing recovery and contact routes must stay aligned with the
     # machine-readable profile so stale links do not survive on secondary pages.
