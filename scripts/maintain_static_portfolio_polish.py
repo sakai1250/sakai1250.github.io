@@ -91,6 +91,11 @@ def update_index() -> None:
         'id="stats-general" alt="GitHub activity statistics for Taigo Sakai"',
         1,
     )
+    text = text.replace(
+        '<div class="app-thumb"\n                    style="display:flex;align-items:center;justify-content:center;background:#0d1117;font-size:24px;">🎮',
+        '<div class="app-thumb" aria-hidden="true"\n                    style="display:flex;align-items:center;justify-content:center;background:#0d1117;font-size:24px;">🎮',
+        1,
+    )
     text = text.replace('<span class="cursor" aria-hidden="true"></span>', '', 1)
     text = re.sub(
         r'\n  <script src="effects\.js\?v=[^"]+"></script>',
@@ -110,6 +115,8 @@ def update_index() -> None:
         raise SystemExit("GitHub languages image is missing descriptive alt text")
     if 'id="stats-general" alt="GitHub activity statistics for Taigo Sakai"' not in text:
         raise SystemExit("GitHub stats image is missing descriptive alt text")
+    if '<div class="app-thumb" aria-hidden="true"\n                    style="display:flex;align-items:center;justify-content:center;background:#0d1117;font-size:24px;">🎮' not in text:
+        raise SystemExit("decorative game placeholder is exposed to assistive technology")
     if 'effects.js' in text or 'class="cursor"' in text:
         raise SystemExit("obsolete effects.js runtime markup is still present")
     if 'header-bottom' in text or 'data-jump=' in text or 'header-hint' in text:
