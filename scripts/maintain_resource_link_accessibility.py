@@ -11,6 +11,9 @@ ORGANIZATION_LINK_LABELS = {
     "https://github.com/jphacks": "Organization: JPHacks",
     "https://www.jogiken.com/": "Organization: Jogiken",
 }
+HCV_AWARD_PAPER_URL = "https://arxiv.org/abs/2608.08068"
+HCV_AWARD_PAPER_LABEL = "Paper: NeuroGuard: Neural Gradient Update Aware of Representation Damage"
+HCV_AWARD_LINK_LABEL = "[論文] [Paper]"
 AWARD_LINK_BODY = '<span lang="ja">[詳細]</span><span lang="en">[Details]</span>'
 AWARD_LINK_LABELS = {"[Link]", "[Details]", "[詳細]", "[詳細] [Details]", "[詳細][Details]"}
 
@@ -102,6 +105,9 @@ def update_award_links(text: str) -> tuple[str, int]:
             nonlocal updated_count
             anchor = anchor_match.group(0)
             label = normalize_text(anchor)
+            if f'href="{HCV_AWARD_PAPER_URL}"' in anchor and label == HCV_AWARD_LINK_LABEL:
+                updated_count += 1
+                return set_aria_label(anchor, HCV_AWARD_PAPER_LABEL)
             if label not in AWARD_LINK_LABELS:
                 return anchor
             updated_count += 1
