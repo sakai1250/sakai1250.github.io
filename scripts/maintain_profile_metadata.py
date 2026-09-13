@@ -144,7 +144,7 @@ def maintain_visible_profile_links(text: str, profile_urls: dict[str, str]) -> s
         def sync_anchor(anchor_match: re.Match[str]) -> str:
             current_url = anchor_match.group(2)
             desired_url = profile_urls[field]
-            if current_url == desired_url or current_url.startswith(desired_url + "&"):
+            if current_url == desired_url:
                 return anchor_match.group(0)
             return f"{anchor_match.group(1)}{desired_url}{anchor_match.group(3)}"
 
