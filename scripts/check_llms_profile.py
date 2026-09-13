@@ -21,6 +21,10 @@ def normalize_text(text):
     return " ".join(text.split())
 
 
+def normalize_publication_title(text):
+    return normalize_text(text).rstrip(".,，。")
+
+
 def visible_html_text(fragment):
     return normalize_text(html.unescape(re.sub(r"<[^>]+>", " ", fragment)))
 
@@ -127,7 +131,8 @@ def main():
                 f"{publication_url} (found {len(linked_items)})"
             )
         item_text = visible_html_text(linked_items[0])
-        if normalize_text(title).casefold() not in item_text.casefold():
+        expected_title = normalize_publication_title(title)
+        if expected_title.casefold() not in item_text.casefold():
             raise SystemExit(
                 f"index.html {resource_label} link is attached to the wrong publication: "
                 f"{title} -> {publication_url}"
