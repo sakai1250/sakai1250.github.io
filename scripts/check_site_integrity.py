@@ -309,10 +309,20 @@ if sitemap.exists():
 
 robots = root / 'robots.txt'
 if robots.exists():
-    text = robots.read_text(encoding='utf-8')
-    expected = 'Sitemap: https://sakai1250.github.io/sitemap.xml'
-    if expected not in text:
-        problems.append('robots.txt: sitemap declaration is missing or incorrect')
+    lines = [line.strip() for line in robots.read_text(encoding='utf-8').splitlines() if line.strip()]
+    expected_sitemap = 'Sitemap: https://sakai1250.github.io/sitemap.xml'
+    sitemap_lines = [line for line in lines if line.lower().startswith('sitemap:')]
+    if sitemap_lines != [expected_sitemap]:
+        problems.append(
+            'robots.txt: expected exactly one canonical sitemap declaration; '
+            f'found {sitemap_lines}'
+        )
+    if 'User-agent: *' not in lines:
+        problems.append('robots.txt: wildcard user-agent policy is missing')
+    if 'Allow: /' not in lines:
+        problems.append('robots.txt: root allow directive is missing')
+    if 'Disallow: /' in lines:
+        problems.append('robots.txt: root is blocked from crawling')
 
 if problems:
     raise SystemExit('\n'.join(problems))
