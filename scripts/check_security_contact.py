@@ -27,6 +27,8 @@ def main() -> None:
         raise SystemExit(f'Missing required security.txt fields: {missing}')
     if len(fields['Expires']) != 1:
         raise SystemExit('security.txt must contain exactly one Expires field')
+    if len(fields['Preferred-Languages']) != 1:
+        raise SystemExit('security.txt must contain exactly one Preferred-Languages field')
 
     canonical = fields['Canonical'][0]
     expected = 'https://sakai1250.github.io/.well-known/security.txt'
