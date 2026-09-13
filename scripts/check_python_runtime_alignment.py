@@ -11,10 +11,18 @@ VERSION_FILE_RE = re.compile(
     re.MULTILINE,
 )
 HARDCODED_VERSION_RE = re.compile(r"^\s*python-version:\s*", re.MULTILINE)
+PYTHON_EXECUTABLE_VERSION_RE = re.compile(r"^\d+\.\d+$")
 
 version_lines = [line.strip() for line in PYTHON_VERSION.read_text(encoding="utf-8").splitlines() if line.strip()]
 if len(version_lines) != 1:
     raise SystemExit(".python-version must contain exactly one non-empty version line")
+
+version = version_lines[0]
+if not PYTHON_EXECUTABLE_VERSION_RE.fullmatch(version):
+    raise SystemExit(
+        ".python-version must use major.minor format (for example, 3.13) so the "
+        "README local-validation command python$(cat .python-version) remains executable"
+    )
 
 failures: list[str] = []
 checked_steps = 0
@@ -45,5 +53,5 @@ if failures:
 
 print(
     f"Python runtime source aligned: {checked_steps} setup-python step(s) use "
-    f".python-version ({version_lines[0]})"
+    f".python-version ({version})"
 )
