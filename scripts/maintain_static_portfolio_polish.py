@@ -81,6 +81,16 @@ def update_index() -> None:
         'href="https://github.com/sakai1250" target="_blank" class="header-btn" rel="noopener noreferrer"',
         1,
     )
+    text = text.replace(
+        'id="stats-langs" alt="Top Langs"',
+        'id="stats-langs" alt="Most used GitHub languages for Taigo Sakai"',
+        1,
+    )
+    text = text.replace(
+        'id="stats-general" alt="github stats"',
+        'id="stats-general" alt="GitHub activity statistics for Taigo Sakai"',
+        1,
+    )
     text = text.replace('<span class="cursor" aria-hidden="true"></span>', '', 1)
     text = re.sub(
         r'\n  <script src="effects\.js\?v=[^"]+"></script>',
@@ -96,6 +106,10 @@ def update_index() -> None:
         raise SystemExit("CV header action was not made primary")
     if 'href="https://github.com/sakai1250" target="_blank" class="header-btn primary"' in text:
         raise SystemExit("GitHub header action is still primary")
+    if 'id="stats-langs" alt="Most used GitHub languages for Taigo Sakai"' not in text:
+        raise SystemExit("GitHub languages image is missing descriptive alt text")
+    if 'id="stats-general" alt="GitHub activity statistics for Taigo Sakai"' not in text:
+        raise SystemExit("GitHub stats image is missing descriptive alt text")
     if 'effects.js' in text or 'class="cursor"' in text:
         raise SystemExit("obsolete effects.js runtime markup is still present")
     if 'header-bottom' in text or 'data-jump=' in text or 'header-hint' in text:
