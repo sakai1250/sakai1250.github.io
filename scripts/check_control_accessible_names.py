@@ -126,18 +126,30 @@ else:
     bilingual_award_link = (
         '<span lang="ja">[詳細]</span><span lang="en">[Details]</span>'
     )
+    hcv_paper_link = (
+        'href="https://arxiv.org/abs/2608.08068"'
+    )
+    bilingual_hcv_paper_text = (
+        '<span lang="ja">[論文]</span><span lang="en">[Paper]</span>'
+    )
     award_links = award_section.count('<a ')
-    localized_links = award_section.count(bilingual_award_link)
+    localized_detail_links = award_section.count(bilingual_award_link)
+    contextual_paper_links = min(
+        award_section.count(hcv_paper_link),
+        award_section.count(bilingual_hcv_paper_text),
+    )
+    valid_source_links = localized_detail_links + contextual_paper_links
     if award_links == 0:
         problems.append('index.html: research awards section has no source links')
-    elif localized_links != award_links:
+    elif valid_source_links != award_links:
         problems.append(
-            'index.html: every award source link must expose [詳細] in Japanese '
-            f'and [Details] in English; found {localized_links}/{award_links}'
+            'index.html: every award source link must expose either localized '
+            '[詳細]/[Details] text or the contextual HCV paper source; '
+            f'found {valid_source_links}/{award_links}'
         )
     if 'aria-label="Award details:' in award_section:
         problems.append(
-            'index.html: award links must not override localized visible text '
+            'index.html: award detail links must not override localized visible text '
             'with an English-only aria-label'
         )
 
@@ -146,5 +158,5 @@ if problems:
 
 print(
     'OK: links and buttons expose valid accessible names; header controls and '
-    'award source links follow the selected site language'
+    'award source links follow their intended localized or contextual labels'
 )
