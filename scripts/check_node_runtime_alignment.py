@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import subprocess
 from pathlib import Path
 
 WORKFLOW_DIR = Path(".github/workflows")
@@ -15,6 +16,29 @@ HARDCODED_VERSION_RE = re.compile(r"^\s*node-version:\s*", re.MULTILINE)
 version_lines = [line.strip() for line in NODE_VERSION.read_text(encoding="utf-8").splitlines() if line.strip()]
 if len(version_lines) != 1:
     raise SystemExit(".node-version must contain exactly one non-empty version line")
+
+declared_version = version_lines[0]
+if not re.fullmatch(r"\d+", declared_version):
+    raise SystemExit(".node-version must contain a single Node major version such as 24")
+
+try:
+    runtime_version = subprocess.run(
+        ["node", "--version"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+except (FileNotFoundError, subprocess.CalledProcessError) as exc:
+    raise SystemExit("Node is unavailable; install the version declared in .node-version") from exc
+
+runtime_match = re.fullmatch(r"v(\d+)(?:\.\d+){2}", runtime_version)
+if runtime_match is None:
+    raise SystemExit(f"Could not parse `node --version` output: {runtime_version!r}")
+if runtime_match.group(1) != declared_version:
+    raise SystemExit(
+        f"Local Node major version {runtime_match.group(1)} does not match .node-version "
+        f"({declared_version})"
+    )
 
 failures: list[str] = []
 checked_steps = 0
@@ -44,6 +68,6 @@ if failures:
     raise SystemExit(1)
 
 print(
-    f"Node runtime source aligned: {checked_steps} setup-node step(s) use "
-    f".node-version ({version_lines[0]})"
+    f"Node runtime aligned: local {runtime_version}; {checked_steps} setup-node step(s) use "
+    f".node-version ({declared_version})"
 )
