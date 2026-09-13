@@ -178,10 +178,15 @@ def main():
     if not isinstance(same_as, list):
         raise SystemExit("Person JSON-LD sameAs must be a list")
     required_profiles = {read_cv_field(cv_text, label) for label in PROFILE_FIELDS}
-    missing_profiles = sorted(required_profiles - set(same_as))
-    if missing_profiles:
+    if len(same_as) != len(set(same_as)):
+        raise SystemExit("Person JSON-LD sameAs must not contain duplicate profile links")
+    actual_profiles = set(same_as)
+    if actual_profiles != required_profiles:
+        missing_profiles = sorted(required_profiles - actual_profiles)
+        unexpected_profiles = sorted(actual_profiles - required_profiles)
         raise SystemExit(
-            f"Person JSON-LD is missing professional profile links from assets/cv.txt: {missing_profiles}"
+            "Person JSON-LD sameAs must exactly match professional profile links from assets/cv.txt: "
+            f"missing={missing_profiles}, unexpected={unexpected_profiles}"
         )
 
     affiliation = person.get("affiliation")
