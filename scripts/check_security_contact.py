@@ -25,6 +25,8 @@ def main() -> None:
     missing = [key for key in required if not fields.get(key)]
     if missing:
         raise SystemExit(f'Missing required security.txt fields: {missing}')
+    if len(fields['Expires']) != 1:
+        raise SystemExit('security.txt must contain exactly one Expires field')
 
     canonical = fields['Canonical'][0]
     expected = 'https://sakai1250.github.io/.well-known/security.txt'
