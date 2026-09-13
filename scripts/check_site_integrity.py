@@ -271,7 +271,11 @@ if sitemap.exists():
             else:
                 lastmod = lastmod_node.text.strip()
                 try:
-                    date.fromisoformat(lastmod)
+                    parsed_lastmod = date.fromisoformat(lastmod)
+                    if parsed_lastmod > date.today():
+                        problems.append(
+                            f'sitemap.xml: {loc} has future <lastmod> date {lastmod!r}'
+                        )
                 except ValueError:
                     problems.append(
                         f'sitemap.xml: {loc} has invalid ISO date in <lastmod>: {lastmod!r}'
