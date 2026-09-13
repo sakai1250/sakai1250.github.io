@@ -71,6 +71,11 @@ def main() -> None:
         raise SystemExit(
             f'security.txt expires in fewer than 30 days: {expires.isoformat()}'
         )
+    if expires - now >= timedelta(days=365):
+        raise SystemExit(
+            'security.txt Expires should remain less than one year in the future: '
+            f'{expires.isoformat()}'
+        )
 
     policy = fields.get('Policy', [])
     if policy and not all(urlsplit(value).scheme == 'https' for value in policy):
