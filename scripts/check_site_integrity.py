@@ -260,6 +260,7 @@ if sitemap.exists():
         url_nodes = tree.findall('.//sm:url', ns)
         locs = []
         site_today = datetime.now(SITE_TIMEZONE).date()
+        valid_changefreqs = {'always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never'}
         for url_node in url_nodes:
             loc_node = url_node.find('sm:loc', ns)
             if loc_node is None or not loc_node.text or not loc_node.text.strip():
@@ -282,6 +283,26 @@ if sitemap.exists():
                 except ValueError:
                     problems.append(
                         f'sitemap.xml: {loc} has invalid ISO date in <lastmod>: {lastmod!r}'
+                    )
+
+            changefreq_node = url_node.find('sm:changefreq', ns)
+            if changefreq_node is not None:
+                changefreq = (changefreq_node.text or '').strip()
+                if changefreq not in valid_changefreqs:
+                    problems.append(
+                        f'sitemap.xml: {loc} has invalid <changefreq> value {changefreq!r}'
+                    )
+
+            priority_node = url_node.find('sm:priority', ns)
+            if priority_node is not None:
+                priority = (priority_node.text or '').strip()
+                try:
+                    priority_value = float(priority)
+                    if not 0.0 <= priority_value <= 1.0:
+                        raise ValueError
+                except ValueError:
+                    problems.append(
+                        f'sitemap.xml: {loc} has invalid <priority> value {priority!r}'
                     )
 
         if not locs:
