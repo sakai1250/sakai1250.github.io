@@ -160,8 +160,38 @@ def section_block(text: str, english_title: str) -> str:
     raise SystemExit(f"Could not find section: {english_title}")
 
 
+def maintain_academic_service_section(text: str) -> str:
+    pattern = re.compile(
+        r'<section class="section-card">\s*'
+        r'<h2 class="section-title">\s*'
+        r'<span lang="ja">ボランティア</span>\s*'
+        r'<span lang="en">Volunteer</span>\s*'
+        r'</h2>'
+    )
+    replacement = (
+        '<section class="section-card" id="research-academic-service">\n'
+        '              <h2 class="section-title">\n'
+        '                <span lang="ja">学術活動</span>\n'
+        '                <span lang="en">Academic Service</span>\n'
+        '              </h2>'
+    )
+    text, count = pattern.subn(replacement, text, count=1)
+    if count == 1:
+        return text
+
+    if (
+        '<section class="section-card" id="research-academic-service">' in text
+        and '<span lang="ja">学術活動</span>' in text
+        and '<span lang="en">Academic Service</span>' in text
+    ):
+        return text
+
+    raise SystemExit("Could not find the academic service section")
+
+
 def update_index(lastmod_value: str) -> dict[str, int]:
     text = INDEX_PATH.read_text(encoding="utf-8")
+    text = maintain_academic_service_section(text)
 
     for tab_id, is_current in (("research", True), ("engineer", False)):
         pattern = re.compile(rf'<a\b(?=[^>]*\bid="{tab_id}-tab")[^>]*>')
