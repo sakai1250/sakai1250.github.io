@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
 
 WORKFLOW_DIR = Path(".github/workflows")
@@ -22,6 +23,12 @@ if not PYTHON_EXECUTABLE_VERSION_RE.fullmatch(version):
     raise SystemExit(
         ".python-version must use major.minor format (for example, 3.13) so the "
         "README local-validation command python$(cat .python-version) remains executable"
+    )
+
+runtime_version = f"{sys.version_info.major}.{sys.version_info.minor}"
+if runtime_version != version:
+    raise SystemExit(
+        f"Local Python version {runtime_version} does not match .python-version ({version})"
     )
 
 failures: list[str] = []
@@ -52,6 +59,6 @@ if failures:
     raise SystemExit(1)
 
 print(
-    f"Python runtime source aligned: {checked_steps} setup-python step(s) use "
+    f"Python runtime aligned: local {runtime_version}; {checked_steps} setup-python step(s) use "
     f".python-version ({version})"
 )
