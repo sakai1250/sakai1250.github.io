@@ -16,6 +16,8 @@ SOURCE_FILES = (
     "SECURITY.md",
     ".well-known/security.txt",
     "llms.txt",
+    "robots.txt",
+    "sitemap.xml",
     "assets/cv.txt",
     "assets/data.json",
 )
