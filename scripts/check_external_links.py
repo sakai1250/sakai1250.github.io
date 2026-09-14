@@ -106,6 +106,13 @@ def check_url(url, allow_method_not_allowed=False):
                 )
                 with urlopen(request, timeout=15) as response:
                     status = response.status
+                    final_url = response.geturl()
+                if urlsplit(url).scheme.lower() == "https" and is_insecure_external_http(final_url):
+                    return (
+                        False,
+                        status,
+                        f"HTTPS redirects to insecure HTTP URL: {final_url}",
+                    )
                 error = None
                 success = 200 <= status < 400
                 break
