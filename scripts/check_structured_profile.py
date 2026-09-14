@@ -160,14 +160,17 @@ def main():
 
     og_image = single_value(parser.meta.get("og:image", []), "og:image")
     twitter_image = single_value(parser.meta.get("twitter:image", []), "twitter:image")
-    if og_image != twitter_image:
+    person_image = str(person.get("image", "")).strip()
+    if not person_image:
+        raise SystemExit("Person JSON-LD is missing image")
+    if len({og_image, twitter_image, person_image}) != 1:
         raise SystemExit(
-            "Open Graph and Twitter preview images must match: "
-            f"og:image={og_image!r}, twitter:image={twitter_image!r}"
+            "Open Graph, Twitter, and Person JSON-LD images must match: "
+            f"og:image={og_image!r}, twitter:image={twitter_image!r}, person.image={person_image!r}"
         )
     if og_image != PROFILE_IMAGE_URL:
         raise SystemExit(
-            "Social preview image must use the canonical portfolio portrait: "
+            "Social preview and Person JSON-LD image must use the canonical portfolio portrait: "
             f"expected={PROFILE_IMAGE_URL!r}, actual={og_image!r}"
         )
 
