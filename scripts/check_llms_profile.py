@@ -108,8 +108,10 @@ def main():
     require(cv_text, "https://sakai1250.github.io/", "assets/cv.txt")
 
     # Publication resources in the machine-readable CV should stay attached to
-    # the same publication in the human-facing portfolio. Checking only that a
-    # URL exists somewhere in index.html would miss accidentally swapped links.
+    # the same publication in the human-facing portfolio. Scope the check to the
+    # list item identified by the publication title so a legitimate reuse of the
+    # same paper URL elsewhere, such as an award source link, does not look like
+    # a duplicate publication.
     cv_publications = re.findall(
         r'^\d+\.\s+[^\n]*?"([^"\n]+)"[^\n]*\n\s+(Paper|Program):\s+(https?://\S+)\s*$',
         cv_text,
@@ -120,23 +122,24 @@ def main():
 
     publication_items = re.findall(r"<li\b[^>]*>.*?</li>", index_text, flags=re.DOTALL | re.IGNORECASE)
     for title, resource_label, publication_url in cv_publications:
-        linked_items = [
+        expected_title = normalize_publication_title(title)
+        title_items = [
             item
             for item in publication_items
-            if f'href="{publication_url}"' in item
+            if expected_title.casefold() in visible_html_text(item).casefold()
         ]
-        if len(linked_items) != 1:
+        if len(title_items) != 1:
             raise SystemExit(
-                "index.html must contain exactly one publication item for CV resource: "
-                f"{publication_url} (found {len(linked_items)})"
+                "index.html must contain exactly one publication item for CV title: "
+                f"{title} (found {len(title_items)})"
             )
-        item_text = visible_html_text(linked_items[0])
-        expected_title = normalize_publication_title(title)
-        if expected_title.casefold() not in item_text.casefold():
+        publication_item = title_items[0]
+        if f'href="{publication_url}"' not in publication_item:
             raise SystemExit(
                 f"index.html {resource_label} link is attached to the wrong publication: "
                 f"{title} -> {publication_url}"
             )
+        item_text = visible_html_text(publication_item)
         expected_resource_label = f"[{resource_label}]"
         if expected_resource_label not in item_text:
             raise SystemExit(
