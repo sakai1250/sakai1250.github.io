@@ -54,6 +54,7 @@ node --check main.js
 "$PYTHON" scripts/check_contextual_share_localization.py
 "$PYTHON" scripts/check_local_deep_links.py
 "$PYTHON" scripts/check_site_integrity.py
+"$PYTHON" scripts/check_css_asset_references.py
 "$PYTHON" scripts/check_research_award_alignment.py
 "$PYTHON" scripts/check_control_accessible_names.py
 "$PYTHON" scripts/check_utility_control_localization.py
