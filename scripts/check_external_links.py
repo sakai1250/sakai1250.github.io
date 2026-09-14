@@ -56,6 +56,17 @@ def hostname(url):
         return ""
 
 
+def is_insecure_external_http(url):
+    try:
+        parsed = urlsplit(url)
+    except ValueError:
+        return False
+    return (
+        parsed.scheme.lower() == "http"
+        and (parsed.hostname or "").lower() not in {"localhost", "127.0.0.1", "::1"}
+    )
+
+
 def collect_links():
     parser = LinkParser()
     for path in HTML_FILES:
@@ -144,12 +155,19 @@ def check_url(url, allow_method_not_allowed=False):
 def main():
     event_name = os.environ.get("GITHUB_EVENT_NAME", "")
     collected_links, non_get_form_actions = collect_links()
+    insecure_links = sorted(url for url in collected_links if is_insecure_external_http(url))
     links = {
-        url for url in collected_links if should_check(url, event_name)
+        url
+        for url in collected_links
+        if not is_insecure_external_http(url) and should_check(url, event_name)
     }
 
     failures = []
     print(f"Checking {len(links)} external links, stylesheets, form actions, and images")
+
+    for url in insecure_links:
+        failures.append((url, None, "insecure HTTP URL; use HTTPS"))
+        print(f"FAIL HTTP: {url} use HTTPS")
 
     for url in sorted(links):
         success, status, error = check_url(
@@ -162,7 +180,9 @@ def main():
             print(f"OK   {status}: {url}")
 
     if failures:
-        raise SystemExit(f"{len(failures)} external link(s), stylesheet(s), form action(s), or image(s) are broken or unreachable")
+        raise SystemExit(
+            f"{len(failures)} external link(s), stylesheet(s), form action(s), or image(s) are broken, insecure, or unreachable"
+        )
 
 
 if __name__ == "__main__":
