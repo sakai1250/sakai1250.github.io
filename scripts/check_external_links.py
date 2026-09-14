@@ -21,6 +21,7 @@ SOURCE_FILES = (
 )
 HTML_FILES = ("index.html", "404.html")
 DEPLOYMENT_HOST = "sakai1250.github.io"
+SOCIAL_IMAGE_META_KEYS = {"og:image", "twitter:image"}
 
 
 class LinkParser(HTMLParser):
@@ -38,6 +39,10 @@ class LinkParser(HTMLParser):
             url = attrs.get("src", "")
         elif tag == "link" and "stylesheet" in attrs.get("rel", "").split():
             url = attrs.get("href", "")
+        elif tag == "meta":
+            meta_key = (attrs.get("property") or attrs.get("name") or "").lower()
+            if meta_key in SOCIAL_IMAGE_META_KEYS:
+                url = attrs.get("content", "")
         elif tag == "form":
             url = attrs.get("action", "")
             if (
