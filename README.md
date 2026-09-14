@@ -80,14 +80,14 @@ git diff --exit-code -- index.html sitemap.xml
 
 If either diff command reports changes, include the generated maintenance updates in the same branch before pushing. The second pass deliberately runs static fallback maintenance on an already-maintained tree so local validation catches ordering or idempotence regressions that the post-optimization workflow also checks.
 
-External URLs are checked by a separate network-dependent workflow. When changing publication, CV, profile, organization, app, repository, stylesheet, or form-action URLs, run the same check locally when network access is available:
+External URLs are checked by a separate network-dependent workflow. When changing publication, CV, profile, organization, app, repository, stylesheet, form-action, sitemap, or robots URLs, run the same check locally when network access is available:
 
 ```bash
 PYTHON="python$(cat .python-version)"
 "$PYTHON" scripts/check_external_links.py
 ```
 
-This catches broken or unreachable external navigation, images, stylesheets, and form actions, rejects insecure external HTTP URLs, and detects HTTPS links that redirect to HTTP before those problems reach researchers, recruiters, or other visitors. Localhost URLs used for local preview remain outside the network check.
+This catches broken or unreachable external navigation, images, stylesheets, form actions, and search-indexing URLs, rejects insecure external HTTP URLs, and detects HTTPS links that redirect to HTTP before those problems reach researchers, recruiters, or other visitors. Localhost URLs used for local preview remain outside the network check.
 
 ## Maintenance
 
