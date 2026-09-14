@@ -22,9 +22,11 @@ SOURCE_FILES = (
     "assets/data.json",
 )
 HTML_FILES = ("index.html", "404.html")
+CSS_FILES = ("style.css",)
 SITEMAP_FILE = "sitemap.xml"
 DEPLOYMENT_HOST = "sakai1250.github.io"
 SOCIAL_IMAGE_META_KEYS = {"og:image", "twitter:image"}
+CSS_URL_RE = re.compile(r"url\(\s*(['\"]?)(.*?)\1\s*\)", re.IGNORECASE)
 
 
 class LinkParser(HTMLParser):
@@ -84,6 +86,13 @@ def collect_links():
     url_pattern = re.compile(r"https?://[^\s<>\"'`)\]]+")
     for path in SOURCE_FILES:
         links.update(url_pattern.findall(Path(path).read_text(encoding="utf-8")))
+
+    for path in CSS_FILES:
+        css_text = Path(path).read_text(encoding="utf-8")
+        for match in CSS_URL_RE.finditer(css_text):
+            url = match.group(2).strip()
+            if url.startswith(("http://", "https://")):
+                links.add(url)
 
     sitemap_root = ET.parse(SITEMAP_FILE).getroot()
     for element in sitemap_root.iter():
