@@ -9,6 +9,7 @@ from urllib.request import Request, urlopen
 import os
 import re
 import time
+import xml.etree.ElementTree as ET
 
 
 SOURCE_FILES = (
@@ -17,11 +18,11 @@ SOURCE_FILES = (
     ".well-known/security.txt",
     "llms.txt",
     "robots.txt",
-    "sitemap.xml",
     "assets/cv.txt",
     "assets/data.json",
 )
 HTML_FILES = ("index.html", "404.html")
+SITEMAP_FILE = "sitemap.xml"
 DEPLOYMENT_HOST = "sakai1250.github.io"
 SOCIAL_IMAGE_META_KEYS = {"og:image", "twitter:image"}
 
@@ -83,6 +84,14 @@ def collect_links():
     url_pattern = re.compile(r"https?://[^\s<>\"'`)\]]+")
     for path in SOURCE_FILES:
         links.update(url_pattern.findall(Path(path).read_text(encoding="utf-8")))
+
+    sitemap_root = ET.parse(SITEMAP_FILE).getroot()
+    for element in sitemap_root.iter():
+        if element.tag.rsplit("}", 1)[-1] == "loc" and element.text:
+            url = element.text.strip()
+            if url.startswith(("http://", "https://")):
+                links.add(url)
+
     return links, parser.non_get_form_actions
 
 
