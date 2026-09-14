@@ -8,6 +8,8 @@ from cv_profile import read_cv_field, read_cv_header_profile
 
 PROFILE_FIELDS = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
 RESEARCH_FOCUS = "Computer Vision, Continual Learning, and Multi-View Tracking"
+PROFILE_IMAGE_URL = "https://sakai1250.github.io/assets/avatar.jpg"
+PROFILE_IMAGE_ALT = "Portrait of Taigo Sakai"
 
 
 class JsonLdParser(HTMLParser):
@@ -163,6 +165,11 @@ def main():
             "Open Graph and Twitter preview images must match: "
             f"og:image={og_image!r}, twitter:image={twitter_image!r}"
         )
+    if og_image != PROFILE_IMAGE_URL:
+        raise SystemExit(
+            "Social preview image must use the canonical portfolio portrait: "
+            f"expected={PROFILE_IMAGE_URL!r}, actual={og_image!r}"
+        )
 
     og_image_alt = single_value(parser.meta.get("og:image:alt", []), "og:image:alt")
     twitter_image_alt = single_value(
@@ -172,6 +179,11 @@ def main():
         raise SystemExit(
             "Open Graph and Twitter preview image alt text must match: "
             f"og:image:alt={og_image_alt!r}, twitter:image:alt={twitter_image_alt!r}"
+        )
+    if og_image_alt != PROFILE_IMAGE_ALT:
+        raise SystemExit(
+            "Social preview image alt text must identify the portfolio owner: "
+            f"expected={PROFILE_IMAGE_ALT!r}, actual={og_image_alt!r}"
         )
 
     same_as = person.get("sameAs")
