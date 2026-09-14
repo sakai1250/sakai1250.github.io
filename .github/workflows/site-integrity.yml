@@ -28,8 +28,18 @@ jobs:
           node-version-file: '.node-version'
       - name: Check JavaScript syntax
         run: node --check main.js
+      - name: Check Python runtime source
+        run: python scripts/check_python_runtime_alignment.py
       - name: Check Node runtime source
         run: python scripts/check_node_runtime_alignment.py
+      - name: Check GitHub Action pins
+        run: python scripts/check_github_action_pins.py
+      - name: Check workflow permissions
+        run: python scripts/check_workflow_permissions.py
+      - name: Check workflow timeout policy
+        run: python scripts/check_workflow_timeouts.py
+      - name: Check documented local validation
+        run: python scripts/check_validation_docs.py
       - name: Check links, accessibility basics, generated data, CV text, and indexing files
         run: python scripts/check_site_integrity.py
       - name: Check research award source alignment
