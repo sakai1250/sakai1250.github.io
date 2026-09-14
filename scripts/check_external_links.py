@@ -125,8 +125,12 @@ def check_url(url, allow_method_not_allowed=False):
                 status = exc.code
                 error = str(exc)
 
+                # A HEAD request can be challenged even when GET is public; verify with GET.
+                if status == 401 and method == "HEAD":
+                    break
+
                 # These responses usually mean the page exists but rejects automation.
-                if status in (401, 403, 429) or (
+                if status in (403, 429) or (
                     status == 999
                     and (host == "linkedin.com" or host.endswith(".linkedin.com"))
                 ):
