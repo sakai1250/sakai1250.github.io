@@ -36,6 +36,8 @@ class LinkParser(HTMLParser):
             url = attrs.get("href", "")
         elif tag == "img":
             url = attrs.get("src", "")
+        elif tag == "link" and "stylesheet" in attrs.get("rel", "").split():
+            url = attrs.get("href", "")
         elif tag == "form":
             url = attrs.get("action", "")
             if (
@@ -147,7 +149,7 @@ def main():
     }
 
     failures = []
-    print(f"Checking {len(links)} external links, form actions, and images")
+    print(f"Checking {len(links)} external links, stylesheets, form actions, and images")
 
     for url in sorted(links):
         success, status, error = check_url(
@@ -160,7 +162,7 @@ def main():
             print(f"OK   {status}: {url}")
 
     if failures:
-        raise SystemExit(f"{len(failures)} external link(s), form action(s), or image(s) are broken or unreachable")
+        raise SystemExit(f"{len(failures)} external link(s), stylesheet(s), form action(s), or image(s) are broken or unreachable")
 
 
 if __name__ == "__main__":
