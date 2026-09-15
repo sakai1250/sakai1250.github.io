@@ -19,6 +19,10 @@ def main() -> None:
 
     index = Path("index.html").read_text(encoding="utf-8")
     require(index, f"<title>{name} |", "index.html")
+    require(index, f'property="og:title" content="{name} |', "index.html")
+    require(index, f'name="twitter:title" content="{name} |', "index.html")
+    require(index, f"<h1 class=\"header-name\">{name}</h1>", "index.html")
+    require(index, f"<div class=\"profile-name\">{name}</div>", "index.html")
     require(index, f'content="Portrait of {name}"', "index.html")
 
     person_blocks = re.findall(
