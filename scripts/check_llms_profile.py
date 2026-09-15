@@ -65,13 +65,14 @@ def main():
     role_text = " | ".join(cv_roles)
     expected_summary_role = f"> {role_text} @ {cv_affiliation}"
     expected_current_role = f"- Current role: {role_text} @ {cv_affiliation}"
+    japanese_name = read_cv_field(cv_text, "Japanese name")
     publication_name = read_cv_field(cv_text, "Publication name")
 
     required_identity = [
         f"# {name}",
         expected_summary_role,
         f"English name: {name}",
-        "Japanese name: 坂井 泰吾",
+        f"Japanese name: {japanese_name}",
         f"Publication name: {publication_name}",
         expected_current_role,
     ]
