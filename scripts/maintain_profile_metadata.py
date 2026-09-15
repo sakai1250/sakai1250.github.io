@@ -61,6 +61,17 @@ def maintain_page_titles(text: str, cv_text: str) -> str:
     return text
 
 
+def maintain_not_found_title(text: str, cv_text: str) -> str:
+    name = html.escape(read_cv_name(cv_text))
+    title_pattern = re.compile(r"<title>ページが見つかりません \| [^<]+</title>")
+    text, count = title_pattern.subn(
+        f"<title>ページが見つかりません | {name}</title>", text, count=1
+    )
+    if count != 1:
+        raise SystemExit("Could not find expected 404 document title")
+    return text
+
+
 def maintain_structured_profile(text: str, profile_urls: list[str], cv_text: str) -> str:
     cv_roles, cv_affiliation = read_cv_header_profile(cv_text)
     desired_title = f'"jobTitle": "{" / ".join(cv_roles)}"'
@@ -382,6 +393,7 @@ def main() -> None:
     text = maintain_visible_profile(text, cv_text)
     text = maintain_visible_education(text, cv_text)
     text = maintain_canonical_url(text)
+    not_found_text = maintain_not_found_title(not_found_text, cv_text)
     not_found_text = maintain_recovery_links(not_found_text, profile_urls, contact_email)
     readme_text = maintain_readme_contact(readme_text, contact_email)
     llms_text = maintain_llms_contact(llms_text, contact_email)
