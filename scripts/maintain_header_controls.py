@@ -1,13 +1,16 @@
 from pathlib import Path
 import re
 
+from cv_profile import read_cv_name
+
 path = Path('index.html')
 text = path.read_text(encoding='utf-8')
+profile_name = read_cv_name(Path('assets/cv.txt').read_text(encoding='utf-8'))
 
 og_image = '<meta property="og:image" content="https://github.com/sakai1250.png">'
 og_image_with_alt = (
     '<meta property="og:image" content="https://github.com/sakai1250.png">\n'
-    '  <meta property="og:image:alt" content="Portrait of Taigo Sakai">'
+    f'  <meta property="og:image:alt" content="Portrait of {profile_name}">'
 )
 if '<meta property="og:image:alt"' not in text:
     if og_image not in text:
@@ -94,7 +97,7 @@ elif share_local_class not in text:
 # static page into a blank screen. The page is useful immediately without it.
 loading_markup = (
     '  <div id="loading-screen" aria-hidden="true">\n'
-    '    <div class="spinner">Taigo Sakai</div>\n'
+    f'    <div class="spinner">{profile_name}</div>\n'
     '  </div>\n'
 )
 if loading_markup in text:
@@ -199,7 +202,7 @@ elif cv_action_primary not in text:
 
 # The portrait sits immediately beside the visible name and identity. Announcing
 # the same name again for the image adds noise without conveying new content.
-header_avatar = 'class="header-avatar" src="assets/avatar.jpg" alt="Taigo Sakai"'
+header_avatar = f'class="header-avatar" src="assets/avatar.jpg" alt="{profile_name}"'
 header_avatar_decorative = 'class="header-avatar" src="assets/avatar.jpg" alt=""'
 if header_avatar in text:
     text = text.replace(header_avatar, header_avatar_decorative, 1)
