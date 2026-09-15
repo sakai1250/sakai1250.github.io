@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 from pathlib import Path
 
+from cv_profile import read_cv_field, read_cv_name
+
 
 main = Path('main.js').read_text(encoding='utf-8')
 maintenance = Path('scripts/maintain_contextual_share_link.py').read_text(encoding='utf-8')
+cv_text = Path('assets/cv.txt').read_text(encoding='utf-8')
+english_name = read_cv_name(cv_text)
+japanese_name = read_cv_field(cv_text, 'Japanese name').replace(' ', '')
 
 shared_markers = (
     "document.documentElement.dataset.lang === 'en' ? 'en' : 'ja'",
-    "'坂井泰吾のポートフォリオです。'",
-    '"Check out Taigo Sakai\'s Portfolio!"',
+    f"'{japanese_name}のポートフォリオです。'",
+    f'"Check out {english_name}\'s Portfolio!"',
     'text: shareText,',
     "via: 'ikaitaig'",
     '`${window.location.origin}${window.location.pathname}${window.location.search}${window.location.hash}`',
@@ -23,7 +28,7 @@ for name, text in (
         if marker not in text:
             problems.append(f'{name}: missing contextual share marker {marker!r}')
 
-if 'text: "Check out Taigo Sakai\'s Portfolio!"' in main:
+if f'text: "Check out {english_name}\'s Portfolio!"' in main:
     problems.append('main.js: share text reverted to an English-only direct assignment')
 
 if problems:
