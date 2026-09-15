@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build CV-derived profile descriptions shared by metadata transforms."""
 
-from cv_profile import read_cv_header_profile
+from cv_profile import read_cv_field, read_cv_header_profile
 
 
 RESEARCH_FOCUS = "Computer Vision, Continual Learning, and Multi-View Tracking"
@@ -23,11 +23,12 @@ def build_social_description(cv_text: str) -> str:
 
 def build_search_description(cv_text: str) -> str:
     roles, affiliation = read_cv_header_profile(cv_text)
+    japanese_name = read_cv_field(cv_text, "Japanese name").replace(" ", "")
     visible_roles = roles[:2]
     localized_roles = [ROLE_LABELS_JA.get(role, role) for role in visible_roles]
     localized_affiliation = AFFILIATION_LABELS_JA.get(affiliation, affiliation)
     role_phrase = "・".join(localized_roles)
     return (
-        f"{localized_affiliation} {role_phrase} 坂井泰吾のポートフォリオ。"
+        f"{localized_affiliation} {role_phrase} {japanese_name}のポートフォリオ。"
         f"{SEARCH_RESEARCH_FOCUS}の研究とiOS/Web開発実績を紹介しています。"
     )
