@@ -4,7 +4,7 @@ import json
 import re
 from pathlib import Path
 
-from cv_profile import read_cv_field, read_cv_header_profile
+from cv_profile import read_cv_field, read_cv_header_profile, read_cv_name
 
 
 def require(text, needle, source):
@@ -61,15 +61,16 @@ def main():
     readme_text = readme_path.read_text(encoding="utf-8")
 
     cv_roles, cv_affiliation = read_cv_header_profile(cv_text)
+    name = read_cv_name(cv_text)
     role_text = " | ".join(cv_roles)
     expected_summary_role = f"> {role_text} @ {cv_affiliation}"
     expected_current_role = f"- Current role: {role_text} @ {cv_affiliation}"
     publication_name = read_cv_field(cv_text, "Publication name")
 
     required_identity = [
-        "# Taigo Sakai",
+        f"# {name}",
         expected_summary_role,
-        "English name: Taigo Sakai",
+        f"English name: {name}",
         "Japanese name: 坂井 泰吾",
         f"Publication name: {publication_name}",
         expected_current_role,
@@ -105,7 +106,7 @@ def main():
         require(llms_text, profile, "llms.txt")
     require(llms_text, contact_mailto, "llms.txt")
 
-    require_casefold(cv_text, "Taigo Sakai", "assets/cv.txt")
+    require_casefold(cv_text, name, "assets/cv.txt")
     require(cv_text, "https://sakai1250.github.io/", "assets/cv.txt")
 
     # Publication resources in the machine-readable CV should stay attached to
@@ -161,7 +162,7 @@ def main():
     # Parse it as JSON so malformed metadata cannot pass as a simple string match.
     person = read_person_json_ld(index_text)
     expected_fields = {
-        "name": "Taigo Sakai",
+        "name": name,
         "url": "https://sakai1250.github.io/",
     }
     for field, expected in expected_fields.items():
