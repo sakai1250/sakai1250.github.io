@@ -6,12 +6,15 @@ from __future__ import annotations
 from pathlib import Path
 import re
 
+from cv_profile import read_cv_name
+
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
 STYLE = ROOT / "style.css"
 MAIN = ROOT / "main.js"
 README = ROOT / "README.md"
 EFFECTS = ROOT / "effects.js"
+CV = ROOT / "assets" / "cv.txt"
 
 DESKTOP_STATS_RULE = """
 
@@ -70,6 +73,9 @@ def hide_redundant_social_icon_labels(text: str) -> str:
 def update_index() -> None:
     text = INDEX.read_text(encoding="utf-8")
     old = text
+    cv_name = read_cv_name(CV.read_text(encoding="utf-8"))
+    languages_alt = f"Most used GitHub languages for {cv_name}"
+    activity_alt = f"GitHub activity statistics for {cv_name}"
 
     text = text.replace(
         'href="assets/cv.pdf" target="_blank" class="header-btn" rel="noopener noreferrer"',
@@ -83,12 +89,12 @@ def update_index() -> None:
     )
     text = text.replace(
         'id="stats-langs" alt="Top Langs"',
-        'id="stats-langs" alt="Most used GitHub languages for Taigo Sakai"',
+        f'id="stats-langs" alt="{languages_alt}"',
         1,
     )
     text = text.replace(
         'id="stats-general" alt="github stats"',
-        'id="stats-general" alt="GitHub activity statistics for Taigo Sakai"',
+        f'id="stats-general" alt="{activity_alt}"',
         1,
     )
     text = text.replace(
@@ -111,9 +117,9 @@ def update_index() -> None:
         raise SystemExit("CV header action was not made primary")
     if 'href="https://github.com/sakai1250" target="_blank" class="header-btn primary"' in text:
         raise SystemExit("GitHub header action is still primary")
-    if 'id="stats-langs" alt="Most used GitHub languages for Taigo Sakai"' not in text:
+    if f'id="stats-langs" alt="{languages_alt}"' not in text:
         raise SystemExit("GitHub languages image is missing descriptive alt text")
-    if 'id="stats-general" alt="GitHub activity statistics for Taigo Sakai"' not in text:
+    if f'id="stats-general" alt="{activity_alt}"' not in text:
         raise SystemExit("GitHub stats image is missing descriptive alt text")
     if '<div class="app-thumb" aria-hidden="true"\n                    style="display:flex;align-items:center;justify-content:center;background:#0d1117;font-size:24px;">🎮' not in text:
         raise SystemExit("decorative game placeholder is exposed to assistive technology")
