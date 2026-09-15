@@ -42,6 +42,8 @@ jobs:
         run: python scripts/check_validation_docs.py
       - name: Check links, accessibility basics, generated data, CV text, and indexing files
         run: python scripts/check_site_integrity.py
+      - name: Check public profile name alignment
+        run: python scripts/check_profile_name_alignment.py
       - name: Check local CSS asset references
         run: python scripts/check_css_asset_references.py
       - name: Check research award source alignment
