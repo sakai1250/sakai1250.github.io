@@ -5,7 +5,7 @@ from pathlib import Path
 import html
 import re
 
-from cv_profile import read_cv_field, read_cv_header_profile
+from cv_profile import read_cv_field, read_cv_header_profile, read_cv_name
 from profile_descriptions import build_search_description
 
 
@@ -44,15 +44,15 @@ def read_cv_education_label(cv_text: str, prefix: str) -> str:
 def build_page_title(cv_text: str) -> str:
     roles, _ = read_cv_header_profile(cv_text)
     role_title = roles[0] if len(roles) == 1 else ", ".join(roles[:-1]) + " & " + roles[-1]
-    return f"Taigo Sakai | {role_title}"
+    return f"{read_cv_name(cv_text)} | {role_title}"
 
 
 def maintain_page_titles(text: str, cv_text: str) -> str:
     desired_title = html.escape(build_page_title(cv_text), quote=True)
     patterns = (
-        (re.compile(r"<title>Taigo Sakai \| [^<]+</title>"), f"<title>{desired_title}</title>", "document title"),
-        (re.compile(r'<meta property="og:title" content="Taigo Sakai \| [^"]+">'), f'<meta property="og:title" content="{desired_title}">', "Open Graph title"),
-        (re.compile(r'<meta name="twitter:title" content="Taigo Sakai \| [^"]+">'), f'<meta name="twitter:title" content="{desired_title}">', "Twitter title"),
+        (re.compile(r"<title>[^<]+ \| [^<]+</title>"), f"<title>{desired_title}</title>", "document title"),
+        (re.compile(r'<meta property="og:title" content="[^"]+ \| [^"]+">'), f'<meta property="og:title" content="{desired_title}">', "Open Graph title"),
+        (re.compile(r'<meta name="twitter:title" content="[^"]+ \| [^"]+">'), f'<meta name="twitter:title" content="{desired_title}">', "Twitter title"),
     )
     for pattern, replacement, label in patterns:
         text, count = pattern.subn(replacement, text, count=1)
