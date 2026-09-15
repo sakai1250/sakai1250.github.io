@@ -11,6 +11,13 @@ def read_cv_field(cv_text: str, label: str) -> str:
     return match.group(1)
 
 
+def read_cv_name(cv_text: str) -> str:
+    first_line = cv_text.splitlines()[0].strip() if cv_text.splitlines() else ""
+    if not first_line or ":" in first_line:
+        raise SystemExit("assets/cv.txt is missing the profile name header")
+    return first_line.title()
+
+
 def read_cv_header_profile(cv_text: str) -> tuple[list[str], str]:
     preamble = cv_text.split("\n\n", 1)[0]
     lines = [line.strip() for line in preamble.splitlines() if line.strip()]
