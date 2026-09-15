@@ -1,7 +1,12 @@
 from pathlib import Path
 
+from cv_profile import read_cv_field, read_cv_name
+
 
 js_path = Path("main.js")
+cv_text = Path("assets/cv.txt").read_text(encoding="utf-8")
+english_name = read_cv_name(cv_text)
+japanese_name = read_cv_field(cv_text, "Japanese name").replace(" ", "")
 js = js_path.read_text(encoding="utf-8")
 
 init_anchor = "    safeInit(initReadingProgress, 'ReadingProgress');\n"
@@ -19,8 +24,8 @@ share_function = r'''function initContextualShareLink() {
         const pageUrl = `${window.location.origin}${window.location.pathname}${window.location.search}${window.location.hash}`;
         const lang = document.documentElement.dataset.lang === 'en' ? 'en' : 'ja';
         const shareText = lang === 'ja'
-            ? '坂井泰吾のポートフォリオです。'
-            : "Check out Taigo Sakai's Portfolio!";
+            ? '__JAPANESE_NAME__のポートフォリオです。'
+            : "Check out __ENGLISH_NAME__'s Portfolio!";
         const params = new URLSearchParams({
             text: shareText,
             url: pageUrl,
@@ -35,7 +40,7 @@ share_function = r'''function initContextualShareLink() {
     window.addEventListener('hashchange', sync);
     sync();
 }
-'''
+'''.replace("__JAPANESE_NAME__", japanese_name).replace("__ENGLISH_NAME__", english_name)
 
 function_start = js.find("function initContextualShareLink() {")
 if function_start == -1:
@@ -53,8 +58,8 @@ for marker in (
     "safeInit(initContextualShareLink, 'ContextualShareLink');",
     "const pageUrl = `${window.location.origin}${window.location.pathname}${window.location.search}${window.location.hash}`;",
     "document.documentElement.dataset.lang === 'en' ? 'en' : 'ja'",
-    "'坂井泰吾のポートフォリオです。'",
-    '"Check out Taigo Sakai\'s Portfolio!"',
+    f"'{japanese_name}のポートフォリオです。'",
+    f'"Check out {english_name}\'s Portfolio!"',
     "text: shareText,",
     "via: 'ikaitaig'",
     "link.addEventListener('click', sync);",
