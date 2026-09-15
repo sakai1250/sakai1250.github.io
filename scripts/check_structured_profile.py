@@ -9,7 +9,6 @@ from cv_profile import read_cv_field, read_cv_header_profile
 PROFILE_FIELDS = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
 RESEARCH_FOCUS = "Computer Vision, Continual Learning, and Multi-View Tracking"
 PROFILE_IMAGE_URL = "https://sakai1250.github.io/assets/avatar.jpg"
-PROFILE_IMAGE_ALT = "Portrait of Taigo Sakai"
 
 
 class JsonLdParser(HTMLParser):
@@ -130,7 +129,7 @@ def main():
         role_title = cv_roles[0]
     else:
         role_title = ", ".join(cv_roles[:-1]) + " & " + cv_roles[-1]
-    expected_page_title = f"Taigo Sakai | {role_title}"
+    expected_page_title = f"{person['name']} | {role_title}"
     if document_title != expected_page_title:
         raise SystemExit(
             "document, Open Graph, and Twitter titles must match the assets/cv.txt role header: "
@@ -183,10 +182,11 @@ def main():
             "Open Graph and Twitter preview image alt text must match: "
             f"og:image:alt={og_image_alt!r}, twitter:image:alt={twitter_image_alt!r}"
         )
-    if og_image_alt != PROFILE_IMAGE_ALT:
+    expected_image_alt = f"Portrait of {person['name']}"
+    if og_image_alt != expected_image_alt:
         raise SystemExit(
             "Social preview image alt text must identify the portfolio owner: "
-            f"expected={PROFILE_IMAGE_ALT!r}, actual={og_image_alt!r}"
+            f"expected={expected_image_alt!r}, actual={og_image_alt!r}"
         )
 
     same_as = person.get("sameAs")
