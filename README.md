@@ -99,10 +99,11 @@ This catches broken or unreachable external navigation, images, stylesheets, for
 - `.node-version` is the single Node runtime version used by GitHub Actions and local JavaScript validation; update it when changing the JavaScript validation runtime.
 - `scripts/*.py` contains repeatable maintenance transforms and checks used by GitHub Actions; keep transforms idempotent so repeated runs do not alter already-correct content.
 - `assets/cv.pdf` is the CV linked from the site header.
-- `assets/cv.txt` is the machine-readable source of truth for the current role and affiliation used by profile maintenance.
+- `assets/cv.txt` is the machine-readable source of truth for profile identity, current role and affiliation, and research areas used by profile maintenance.
 - `llms.txt` routes machine-readable visitors to the appropriate primary sources.
 - `sitemap.xml` and `robots.txt` support search indexing.
 - `scripts/maintain_profile_metadata.py` derives the main visible role, document/social titles, and JSON-LD role and affiliation from `assets/cv.txt`; update the CV source instead of duplicating those values in maintenance code.
+- `scripts/maintain_profile_names.py` derives public name variants and keeps README and `llms.txt` research areas aligned with `assets/cv.txt`; update the CV source instead of editing those derived values independently.
 - Keep the JSON-LD `Person` data aligned with the visible profile and CV, especially current affiliation and `sameAs` links that are not derived from the CV role header.
 - Keep the primary portfolio content visible without JavaScript. Do not place a full-screen loader or other overlay in front of the page that requires JavaScript to disappear; optional effects may fail without blocking research, CV, contact, or GitHub navigation.
 - When editing an app card, verify that its title, App Store URL, image, and GitHub repository all refer to the same product. In particular, `PresentMemo` is the MAIORAL repository and `otsuri_docter` is the おつりDoctor repository.
