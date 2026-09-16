@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import html
 import json
 import re
@@ -19,6 +18,10 @@ def require_casefold(text, needle, source):
 
 def normalize_text(text):
     return " ".join(text.split())
+
+
+def normalize_research_area(text):
+    return normalize_text(text).casefold().replace("&", "and")
 
 
 def read_section_bullets(text, heading):
@@ -107,13 +110,22 @@ def main():
     for route in required_routes:
         require(llms_text, route, "llms.txt")
 
-    # Keep the machine-readable research focus anchored to the CV instead of
-    # allowing renamed or omitted research areas to drift independently.
+    # Keep both machine-readable and repository-facing research summaries anchored
+    # to the CV instead of allowing renamed or omitted research areas to drift.
     cv_research_areas = read_section_bullets(cv_text, "RESEARCH AREAS")
     if not cv_research_areas:
         raise SystemExit("assets/cv.txt RESEARCH AREAS must contain at least one bullet")
     for area in cv_research_areas:
         require(llms_text, f"- {area}", "llms.txt")
+
+    readme_research = re.search(r"(?m)^- Research:\s*(.+)$", readme_text)
+    if not readme_research:
+        raise SystemExit("README.md is missing the Research focus summary")
+    normalized_readme_research = normalize_research_area(readme_research.group(1))
+    for area in cv_research_areas:
+        normalized_area = normalize_research_area(area)
+        if normalized_area not in normalized_readme_research:
+            raise SystemExit(f"README.md Research focus is missing CV research area: {area}")
 
     contact_email = read_cv_field(cv_text, "Email")
     contact_mailto = f"mailto:{contact_email}"
