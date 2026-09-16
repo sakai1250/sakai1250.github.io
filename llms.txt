@@ -35,9 +35,10 @@ Use the machine-readable CV as the primary source for biographical, publication,
 
 - Computer Vision
 - Deep Learning
-- Continual Learning and Long-Tailed Learning
-- Multi-View Detection and Tracking
-- Medical Image Classification
+- Continual Learning
+- Long-Tailed Learning
+- Multi-View Detection & Tracking
+- Deep Learning for Medical Imaging
 
 ## Audience routes
 
