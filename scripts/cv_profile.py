@@ -5,10 +5,13 @@ import re
 
 
 def read_cv_field(cv_text: str, label: str) -> str:
-    match = re.search(rf"^{re.escape(label)}:\s*(\S+)\s*$", cv_text, flags=re.MULTILINE)
+    match = re.search(rf"^{re.escape(label)}:\s*(.+?)\s*$", cv_text, flags=re.MULTILINE)
     if not match:
         raise SystemExit(f"assets/cv.txt is missing a machine-readable {label} field")
-    return match.group(1)
+    value = match.group(1).strip()
+    if not value:
+        raise SystemExit(f"assets/cv.txt has an empty machine-readable {label} field")
+    return value
 
 
 def read_cv_name(cv_text: str) -> str:
