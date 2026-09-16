@@ -45,11 +45,16 @@ def maintain_llms_name(text: str, name: str) -> str:
 
 def validate_name_independence() -> None:
     synthetic = "Example Researcher"
-    readme = "# Old Name — Portfolio\n\nPersonal portfolio for Old Name, a researcher.\n"
-    llms = "# Old Name\n\n## Identity\n\n- English name: Old Name\n"
-    if synthetic not in maintain_readme_name(readme, synthetic):
+    old_name = "Old Name"
+    readme = f"# {old_name} — Portfolio\n\nPersonal portfolio for {old_name}, a researcher.\n"
+    llms = f"# {old_name}\n\n## Identity\n\n- English name: {old_name}\n"
+
+    maintained_readme = maintain_readme_name(readme, synthetic)
+    if maintained_readme.count(synthetic) != 2 or old_name in maintained_readme:
         raise SystemExit("README name maintenance depends on the current profile literal")
-    if maintain_llms_name(llms, synthetic).count(synthetic) != 2:
+
+    maintained_llms = maintain_llms_name(llms, synthetic)
+    if maintained_llms.count(synthetic) != 2 or old_name in maintained_llms:
         raise SystemExit("llms.txt name maintenance depends on the current profile literal")
 
 
