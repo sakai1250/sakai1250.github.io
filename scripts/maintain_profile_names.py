@@ -23,6 +23,10 @@ def read_section_bullets(text: str, heading: str) -> list[str]:
     return re.findall(r"^-\s+(.+)$", match.group("body"), flags=re.MULTILINE)
 
 
+def normalize_research_area(text: str) -> str:
+    return " ".join(text.split()).casefold().replace("&", "and")
+
+
 def maintain_readme_name(text: str, name: str) -> str:
     text, heading_count = re.subn(
         r"(?m)^# .+ — Portfolio$", f"# {name} — Portfolio", text, count=1
@@ -39,6 +43,25 @@ def maintain_readme_name(text: str, name: str) -> str:
     if intro_count != 1:
         raise SystemExit("Could not find README profile introduction")
     return text
+
+
+def maintain_readme_research_areas(text: str, research_areas: list[str]) -> str:
+    if not research_areas:
+        raise SystemExit("assets/cv.txt RESEARCH AREAS must contain at least one bullet")
+    match = re.search(r"(?m)^- Research:\s*(.+)$", text)
+    if not match:
+        raise SystemExit("Could not find README Research focus summary")
+
+    existing = [item.strip() for item in match.group(1).split(",") if item.strip()]
+    normalized_existing = {normalize_research_area(item) for item in existing}
+    missing = [
+        area for area in research_areas if normalize_research_area(area) not in normalized_existing
+    ]
+    if not missing:
+        return text
+
+    updated = existing + [area.casefold() for area in missing]
+    return text[: match.start(1)] + ", ".join(updated) + text[match.end(1) :]
 
 
 def maintain_llms_identity(
@@ -142,6 +165,14 @@ def validate_identity_independence() -> None:
 
 
 def validate_research_area_independence() -> None:
+    research_areas = ["Synthetic Area", "Another & Area"]
+    readme = "## Focus\n\n- Research: existing area, another and area\n"
+    maintained_readme = maintain_readme_research_areas(readme, research_areas)
+    if "synthetic area" not in maintained_readme or maintained_readme.count("another and area") != 1:
+        raise SystemExit("README research-area maintenance failed")
+    if maintain_readme_research_areas(maintained_readme, research_areas) != maintained_readme:
+        raise SystemExit("README research-area maintenance is not idempotent")
+
     llms = "## Research focus\n\n- Existing Area\n\n## Audience routes\n"
     maintained = maintain_llms_research_areas(llms, ["Synthetic Area", "Another Area"])
     for area in ("Existing Area", "Synthetic Area", "Another Area"):
@@ -165,9 +196,9 @@ def main() -> None:
     publication_name = read_cv_field(cv_text, "Publication name")
     roles, affiliation = read_cv_header_profile(cv_text)
     research_areas = read_section_bullets(cv_text, "RESEARCH AREAS")
+    readme_text = maintain_readme_name(README_PATH.read_text(encoding="utf-8"), name)
     README_PATH.write_text(
-        maintain_readme_name(README_PATH.read_text(encoding="utf-8"), name),
-        encoding="utf-8",
+        maintain_readme_research_areas(readme_text, research_areas), encoding="utf-8"
     )
     llms_text = maintain_llms_identity(
         LLMS_PATH.read_text(encoding="utf-8"),
