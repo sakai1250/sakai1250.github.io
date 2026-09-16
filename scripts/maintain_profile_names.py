@@ -12,6 +12,17 @@ README_PATH = Path("README.md")
 LLMS_PATH = Path("llms.txt")
 
 
+def read_section_bullets(text: str, heading: str) -> list[str]:
+    match = re.search(
+        rf"^{re.escape(heading)}\s*$\n(?P<body>.*?)(?=\n[A-Z][A-Z ]+\n|\Z)",
+        text,
+        flags=re.MULTILINE | re.DOTALL,
+    )
+    if not match:
+        raise SystemExit(f"assets/cv.txt is missing section: {heading}")
+    return re.findall(r"^-\s+(.+)$", match.group("body"), flags=re.MULTILINE)
+
+
 def maintain_readme_name(text: str, name: str) -> str:
     text, heading_count = re.subn(
         r"(?m)^# .+ — Portfolio$", f"# {name} — Portfolio", text, count=1
@@ -71,6 +82,25 @@ def maintain_llms_identity(
     return text
 
 
+def maintain_llms_research_areas(text: str, research_areas: list[str]) -> str:
+    if not research_areas:
+        raise SystemExit("assets/cv.txt RESEARCH AREAS must contain at least one bullet")
+    match = re.search(
+        r"(?ms)^## Research focus\s*\n(?P<body>.*?)(?=\n## |\Z)", text
+    )
+    if not match:
+        raise SystemExit("Could not find llms.txt Research focus section")
+
+    body = match.group("body")
+    existing = set(re.findall(r"(?m)^-\s+(.+)$", body))
+    missing = [area for area in research_areas if area not in existing]
+    if not missing:
+        return text
+
+    updated_body = body.rstrip() + "\n" + "\n".join(f"- {area}" for area in missing) + "\n"
+    return text[: match.start("body")] + updated_body + text[match.end("body") :]
+
+
 def validate_identity_independence() -> None:
     synthetic_name = "Example Researcher"
     synthetic_japanese_name = "例 研究者"
@@ -111,27 +141,44 @@ def validate_identity_independence() -> None:
         raise SystemExit("llms.txt role maintenance depends on the current profile literal")
 
 
+def validate_research_area_independence() -> None:
+    llms = "## Research focus\n\n- Existing Area\n\n## Audience routes\n"
+    maintained = maintain_llms_research_areas(llms, ["Synthetic Area", "Another Area"])
+    for area in ("Existing Area", "Synthetic Area", "Another Area"):
+        if f"- {area}" not in maintained:
+            raise SystemExit("llms.txt research-area maintenance failed")
+    if maintained.count("- Synthetic Area") != 1:
+        raise SystemExit("llms.txt research-area maintenance is not idempotent")
+    maintained_again = maintain_llms_research_areas(
+        maintained, ["Synthetic Area", "Another Area"]
+    )
+    if maintained_again != maintained:
+        raise SystemExit("llms.txt research-area maintenance is not idempotent")
+
+
 def main() -> None:
     validate_identity_independence()
+    validate_research_area_independence()
     cv_text = CV_PATH.read_text(encoding="utf-8")
     name = read_cv_name(cv_text)
     japanese_name = read_cv_field(cv_text, "Japanese name")
     publication_name = read_cv_field(cv_text, "Publication name")
     roles, affiliation = read_cv_header_profile(cv_text)
+    research_areas = read_section_bullets(cv_text, "RESEARCH AREAS")
     README_PATH.write_text(
         maintain_readme_name(README_PATH.read_text(encoding="utf-8"), name),
         encoding="utf-8",
     )
+    llms_text = maintain_llms_identity(
+        LLMS_PATH.read_text(encoding="utf-8"),
+        name,
+        japanese_name,
+        publication_name,
+        roles,
+        affiliation,
+    )
     LLMS_PATH.write_text(
-        maintain_llms_identity(
-            LLMS_PATH.read_text(encoding="utf-8"),
-            name,
-            japanese_name,
-            publication_name,
-            roles,
-            affiliation,
-        ),
-        encoding="utf-8",
+        maintain_llms_research_areas(llms_text, research_areas), encoding="utf-8"
     )
 
 
