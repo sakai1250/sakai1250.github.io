@@ -8,10 +8,10 @@ from maintain_profile_metadata import build_page_title, build_sidebar_roles
 
 
 def main() -> None:
-    synthetic_cv = """TAIGO SAKAI
+    synthetic_cv = """EXAMPLE RESEARCHER
 Portfolio: https://example.com
 Email: test@example.com
-Publication name: T. Sakai
+Publication name: E. Researcher
 ORCID: https://orcid.org/0000-0000-0000-0000
 Ph.D. Student | Visiting Researcher | Computer Vision Researcher
 Meijo University, Japan
@@ -28,7 +28,7 @@ Meijo University, Japan
     if affiliation != "Meijo University":
         raise SystemExit(f"CV affiliation was not found after the role header: {affiliation!r}")
 
-    expected_title = "Taigo Sakai | Ph.D. Student, Visiting Researcher & Computer Vision Researcher"
+    expected_title = "Example Researcher | Ph.D. Student, Visiting Researcher & Computer Vision Researcher"
     if build_page_title(synthetic_cv) != expected_title:
         raise SystemExit("Page title did not follow the content-based CV role parser")
 
