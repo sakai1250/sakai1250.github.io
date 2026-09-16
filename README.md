@@ -24,7 +24,7 @@ Personal portfolio for Taigo Sakai, a Ph.D. student, Special Assistant, and comp
 
 ## Focus
 
-- Research: continual learning, long-tailed learning, multi-view detection and tracking
+- Research: continual learning, long-tailed learning, multi-view detection and tracking, deep learning for medical imaging
 - Engineering: deep learning systems, iOS/Web applications, research tooling
 
 The site keeps research outputs, awards, applications, and the downloadable CV in one place so that research collaborators, recruiters, and engineers can reach the relevant material directly.
