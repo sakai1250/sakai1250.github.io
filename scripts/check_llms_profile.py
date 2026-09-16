@@ -21,6 +21,17 @@ def normalize_text(text):
     return " ".join(text.split())
 
 
+def read_section_bullets(text, heading):
+    match = re.search(
+        rf"^{re.escape(heading)}\s*$\n(?P<body>.*?)(?=\n[A-Z][A-Z ]+\n|\Z)",
+        text,
+        flags=re.MULTILINE | re.DOTALL,
+    )
+    if not match:
+        raise SystemExit(f"assets/cv.txt is missing section: {heading}")
+    return re.findall(r"^-\s+(.+)$", match.group("body"), flags=re.MULTILINE)
+
+
 def normalize_publication_title(text):
     return normalize_text(text).rstrip(".,，。")
 
@@ -95,6 +106,14 @@ def main():
     ]
     for route in required_routes:
         require(llms_text, route, "llms.txt")
+
+    # Keep the machine-readable research focus anchored to the CV instead of
+    # allowing renamed or omitted research areas to drift independently.
+    cv_research_areas = read_section_bullets(cv_text, "RESEARCH AREAS")
+    if not cv_research_areas:
+        raise SystemExit("assets/cv.txt RESEARCH AREAS must contain at least one bullet")
+    for area in cv_research_areas:
+        require(llms_text, f"- {area}", "llms.txt")
 
     contact_email = read_cv_field(cv_text, "Email")
     contact_mailto = f"mailto:{contact_email}"
