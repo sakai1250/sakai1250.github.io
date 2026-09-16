@@ -122,10 +122,14 @@ def main():
     readme_research = re.search(r"(?m)^- Research:\s*(.+)$", readme_text)
     if not readme_research:
         raise SystemExit("README.md is missing the Research focus summary")
-    normalized_readme_research = normalize_research_area(readme_research.group(1))
+    normalized_readme_areas = {
+        normalize_research_area(item)
+        for item in readme_research.group(1).split(",")
+        if item.strip()
+    }
     for area in cv_research_areas:
         normalized_area = normalize_research_area(area)
-        if normalized_area not in normalized_readme_research:
+        if normalized_area not in normalized_readme_areas:
             raise SystemExit(f"README.md Research focus is missing CV research area: {area}")
 
     contact_email = read_cv_field(cv_text, "Email")
