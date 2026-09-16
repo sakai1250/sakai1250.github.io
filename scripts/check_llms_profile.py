@@ -87,6 +87,7 @@ def main():
         "https://sakai1250.github.io/#research-research-achievements",
         "https://sakai1250.github.io/#research-education",
         "https://sakai1250.github.io/#research-awards",
+        "https://sakai1250.github.io/#research-academic-service",
         "https://sakai1250.github.io/#research-internship",
         "https://sakai1250.github.io/#engineer-content",
         "https://sakai1250.github.io/#engineer-my-apps-and-services",
