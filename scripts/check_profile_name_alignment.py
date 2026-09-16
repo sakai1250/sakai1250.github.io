@@ -40,6 +40,7 @@ def main() -> None:
 
     readme = Path("README.md").read_text(encoding="utf-8")
     require(readme, f"# {name} — Portfolio", "README.md")
+    require(readme, f"Personal portfolio for {name},", "README.md")
 
     llms = Path("llms.txt").read_text(encoding="utf-8")
     require(llms, f"# {name}", "llms.txt")
