@@ -34,3 +34,14 @@ def read_cv_header_profile(cv_text: str) -> tuple[list[str], str]:
     if len(roles) < 2 or not affiliation or ":" in affiliation:
         raise SystemExit("assets/cv.txt has an incomplete role or affiliation header")
     return roles, affiliation
+
+
+def read_cv_section_bullets(cv_text: str, heading: str) -> list[str]:
+    match = re.search(
+        rf"^{re.escape(heading)}\s*$\n(?P<body>.*?)(?=\n[A-Z][A-Z ]+\n|\Z)",
+        cv_text,
+        flags=re.MULTILINE | re.DOTALL,
+    )
+    if not match:
+        raise SystemExit(f"assets/cv.txt is missing section: {heading}")
+    return re.findall(r"^-\s+(.+)$", match.group("body"), flags=re.MULTILINE)
