@@ -215,9 +215,18 @@ def main():
         )
 
     if person["name"].upper() not in cv_text.upper():
-        raise SystemExit("Person JSON-LD name must appear in assets/cv.txt")
+        raise SystemExit("assets/cv.txt is missing the JSON-LD person name")
+    for required_role in cv_roles:
+        if required_role not in cv_text:
+            raise SystemExit(f"assets/cv.txt is missing current role: {required_role}")
+    if affiliation["name"] not in cv_text:
+        raise SystemExit("assets/cv.txt is missing the current affiliation")
+    if person["url"] not in cv_text:
+        raise SystemExit("assets/cv.txt is missing the canonical portfolio URL")
 
-    print("Structured profile metadata matches CV-derived identity and professional links.")
+    print(
+        "OK: public metadata, localized social previews, Person JSON-LD, and assets/cv.txt contain a consistent professional identity"
+    )
 
 
 if __name__ == "__main__":
