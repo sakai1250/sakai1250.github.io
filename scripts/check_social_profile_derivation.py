@@ -14,6 +14,11 @@ Publication name: T. Sakai
 ORCID: https://orcid.org/0000-0000-0000-0000
 Ph.D. Student | Visiting Researcher | Computer Vision Researcher
 Future University, Tokyo, Japan
+
+RESEARCH AREAS
+- Computer Vision
+- Continual Learning
+- Multi-View Tracking
 """
     synthetic_social_description = build_social_description(synthetic_cv)
     expected_social = (
