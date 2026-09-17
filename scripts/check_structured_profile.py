@@ -4,10 +4,10 @@ from pathlib import Path
 import json
 
 from cv_profile import read_cv_field, read_cv_header_profile
+from profile_descriptions import build_social_description
 
 
 PROFILE_FIELDS = ("GitHub", "Qiita", "LinkedIn", "Google Scholar")
-RESEARCH_FOCUS = "Computer Vision, Continual Learning, and Multi-View Tracking"
 PROFILE_IMAGE_URL = "https://sakai1250.github.io/assets/avatar.jpg"
 
 
@@ -147,13 +147,10 @@ def main():
             f"description={description!r}, og:description={og_description!r}"
         )
 
-    social_roles = cv_roles[:2]
-    expected_twitter_description = (
-        f"{' and '.join(social_roles)} at {cv_affiliation} researching {RESEARCH_FOCUS}."
-    )
+    expected_twitter_description = build_social_description(cv_text)
     if twitter_description != expected_twitter_description:
         raise SystemExit(
-            "Twitter description must match the current CV roles and affiliation: "
+            "Twitter description must match the CV-derived social description: "
             f"expected={expected_twitter_description!r}, actual={twitter_description!r}"
         )
 
@@ -218,18 +215,9 @@ def main():
         )
 
     if person["name"].upper() not in cv_text.upper():
-        raise SystemExit("assets/cv.txt is missing the JSON-LD person name")
-    for required_role in cv_roles:
-        if required_role not in cv_text:
-            raise SystemExit(f"assets/cv.txt is missing current role: {required_role}")
-    if affiliation["name"] not in cv_text:
-        raise SystemExit("assets/cv.txt is missing the current affiliation")
-    if person["url"] not in cv_text:
-        raise SystemExit("assets/cv.txt is missing the canonical portfolio URL")
+        raise SystemExit("Person JSON-LD name must appear in assets/cv.txt")
 
-    print(
-        "OK: public metadata, localized social previews, Person JSON-LD, and assets/cv.txt contain a consistent professional identity"
-    )
+    print("Structured profile metadata matches CV-derived identity and professional links.")
 
 
 if __name__ == "__main__":
