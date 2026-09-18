@@ -41,45 +41,15 @@ Then open `http://localhost:8000`.
 
 ## Local validation
 
-Use the Python version declared in `.python-version` and the Node version declared in `.node-version` for maintenance and validation so local runs match GitHub Actions. Install the maintenance dependency and run the core deterministic checks used by post-optimization validation:
+Use the Python version declared in `.python-version` and the Node version declared in `.node-version` so local validation matches GitHub Actions. Install the maintenance dependency, then run the shared deterministic validation entry point:
 
 ```bash
 PYTHON="python$(cat .python-version)"
 "$PYTHON" -m pip install -r requirements-maintenance.txt
-"$PYTHON" scripts/run_deterministic_maintenance.py --compile-only
-node --check main.js
-"$PYTHON" scripts/run_deterministic_maintenance.py
-"$PYTHON" scripts/check_app_repo_links.py
-"$PYTHON" scripts/check_thumbnail_cache_policy.py
-"$PYTHON" scripts/check_contextual_share_localization.py
-"$PYTHON" scripts/check_local_deep_links.py
-"$PYTHON" scripts/check_site_integrity.py
-"$PYTHON" scripts/check_profile_name_alignment.py
-"$PYTHON" scripts/check_css_asset_references.py
-"$PYTHON" scripts/check_research_award_alignment.py
-"$PYTHON" scripts/check_control_accessible_names.py
-"$PYTHON" scripts/check_utility_control_localization.py
-"$PYTHON" scripts/check_form_control_names.py
-"$PYTHON" scripts/check_new_tab_link_security.py
-"$PYTHON" scripts/check_progressive_enhancement.py
-"$PYTHON" scripts/check_security_contact.py
-"$PYTHON" scripts/check_structured_profile.py
-"$PYTHON" scripts/check_sidebar_role_derivation.py
-"$PYTHON" scripts/check_social_profile_derivation.py
-"$PYTHON" scripts/check_llms_profile.py
-"$PYTHON" scripts/check_year_filter_coverage.py
-"$PYTHON" scripts/check_python_runtime_alignment.py
-"$PYTHON" scripts/check_node_runtime_alignment.py
-"$PYTHON" scripts/check_github_action_pins.py
-"$PYTHON" scripts/check_workflow_permissions.py
-"$PYTHON" scripts/check_workflow_timeouts.py
-"$PYTHON" scripts/check_validation_docs.py
-git diff --exit-code -- index.html 404.html main.js style.css sitemap.xml README.md llms.txt SECURITY.md .well-known/security.txt
-"$PYTHON" scripts/maintain_static_fallbacks.py
-git diff --exit-code -- index.html sitemap.xml
+"$PYTHON" scripts/run_local_validation.py
 ```
 
-If either diff command reports changes, include the generated maintenance updates in the same branch before pushing. The second pass deliberately runs static fallback maintenance on an already-maintained tree so local validation catches ordering or idempotence regressions that the post-optimization workflow also checks.
+The command validates maintenance and JavaScript syntax, runs the deterministic `check_*.py` suite, applies deterministic maintenance, and verifies that generated files remain unchanged. Individual check scripts can still be run directly when diagnosing a failure.
 
 External URLs are checked by a separate network-dependent workflow. When changing publication, CV, profile, organization, app, repository, stylesheet, form-action, sitemap, or robots URLs, run the same check locally when network access is available:
 
