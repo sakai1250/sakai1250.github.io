@@ -44,4 +44,13 @@ def read_cv_section_bullets(cv_text: str, heading: str) -> list[str]:
     )
     if not match:
         raise SystemExit(f"assets/cv.txt is missing section: {heading}")
-    return re.findall(r"^-\s+(.+)$", match.group("body"), flags=re.MULTILINE)
+
+    bullets = [
+        bullet.strip()
+        for bullet in re.findall(r"^-\s+(.+)$", match.group("body"), flags=re.MULTILINE)
+    ]
+    if not bullets:
+        raise SystemExit(f"assets/cv.txt section has no bullets: {heading}")
+    if len(bullets) != len(set(bullets)):
+        raise SystemExit(f"assets/cv.txt section has duplicate bullets: {heading}")
+    return bullets
