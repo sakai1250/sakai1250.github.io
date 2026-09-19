@@ -14,7 +14,6 @@ MAINTENANCE_SCRIPTS = (
     "scripts/maintain_profile_metadata.py",
     "scripts/maintain_profile_names.py",
     "scripts/maintain_jsonld_profile_image.py",
-    "scripts/maintain_jsonld_research_areas.py",
     "scripts/maintain_research_awards.py",
     "scripts/maintain_toc_fallback.py",
     "scripts/maintain_modal_accessibility.py",
