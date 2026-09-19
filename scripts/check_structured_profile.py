@@ -3,7 +3,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 import json
 
-from cv_profile import read_cv_field, read_cv_header_profile
+from cv_profile import read_cv_field, read_cv_header_profile, read_cv_section_bullets
 from profile_descriptions import build_social_description
 
 
@@ -184,6 +184,14 @@ def main():
         raise SystemExit(
             "Social preview image alt text must identify the portfolio owner: "
             f"expected={expected_image_alt!r}, actual={og_image_alt!r}"
+        )
+
+    research_areas = person.get("knowsAbout")
+    expected_research_areas = read_cv_section_bullets(cv_text, "RESEARCH AREAS")
+    if research_areas != expected_research_areas:
+        raise SystemExit(
+            "Person JSON-LD knowsAbout must exactly match the RESEARCH AREAS bullets from assets/cv.txt: "
+            f"expected={expected_research_areas!r}, actual={research_areas!r}"
         )
 
     same_as = person.get("sameAs")
