@@ -28,6 +28,7 @@ CHECKS = [
     "scripts/check_github_action_pins.py",
     "scripts/check_workflow_permissions.py",
     "scripts/check_workflow_timeouts.py",
+    "scripts/check_static_update_date_history.py",
     "scripts/check_validation_docs.py",
 ]
 
