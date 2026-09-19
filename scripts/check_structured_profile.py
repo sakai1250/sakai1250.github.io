@@ -3,7 +3,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 import json
 
-from cv_profile import read_cv_field, read_cv_header_profile
+from cv_profile import read_cv_field, read_cv_header_profile, read_cv_section_bullets
 from profile_descriptions import build_social_description
 
 
@@ -101,6 +101,13 @@ def main():
         raise SystemExit(
             "Person JSON-LD jobTitle must match the assets/cv.txt role header: "
             f"expected={expected_job_title!r}, actual={person['jobTitle']!r}"
+        )
+
+    expected_research_areas = read_cv_section_bullets(cv_text, "RESEARCH AREAS")
+    if person.get("knowsAbout") != expected_research_areas:
+        raise SystemExit(
+            "Person JSON-LD knowsAbout must exactly match the assets/cv.txt research areas: "
+            f"expected={expected_research_areas!r}, actual={person.get('knowsAbout')!r}"
         )
 
     if person["url"] != "https://sakai1250.github.io/":
