@@ -12,8 +12,6 @@ import xml.etree.ElementTree as ET
 
 INDEX_PATH = Path("index.html")
 SITEMAP_PATH = Path("sitemap.xml")
-# Public "last updated" dates should describe visitor-facing content, not changes to
-# maintenance code that leave the generated page unchanged.
 TRACKED_PAGE_FILES = (
     "index.html",
     "main.js",
@@ -44,48 +42,41 @@ def parse_git_timestamp(value: str, label: str) -> datetime:
 
 def effective_git_update_timestamp(tracked_file: str) -> datetime | None:
     result = subprocess.run(
-        ["git", "log", "-1", "--format=%H%x1f%cI%x1f%s", "--", tracked_file],
+        ["git", "log", "--format=%H%x1f%cI%x1f%s", "--", tracked_file],
         check=True,
         capture_output=True,
         text=True,
     )
-    value = result.stdout.strip()
-    if not value:
+    records = [line for line in result.stdout.splitlines() if line]
+    if not records:
         return None
 
-    try:
-        commit_sha, timestamp_value, subject = value.split("\x1f", 2)
-    except ValueError as exc:
-        raise SystemExit(f"Unexpected git log record for {tracked_file}: {value}") from exc
+    for record in records:
+        try:
+            commit_sha, timestamp_value, subject = record.split("\x1f", 2)
+        except ValueError as exc:
+            raise SystemExit(
+                f"Unexpected git log record for {tracked_file}: {record}"
+            ) from exc
 
-    timestamp = parse_git_timestamp(timestamp_value, "source update")
-    if subject != OPTIMIZER_COMMIT_MESSAGE:
-        return timestamp
+        timestamp = parse_git_timestamp(timestamp_value, "source update")
+        if subject != OPTIMIZER_COMMIT_MESSAGE:
+            return timestamp
 
-    parent_result = subprocess.run(
-        ["git", "show", "-s", "--format=%cI", f"{commit_sha}^"],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    parent_value = parent_result.stdout.strip()
-    if not parent_value:
-        return timestamp
+        parent_result = subprocess.run(
+            ["git", "show", "-s", "--format=%cI", f"{commit_sha}^"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        parent_value = parent_result.stdout.strip()
+        if not parent_value:
+            return timestamp
 
-    parent_timestamp = parse_git_timestamp(parent_value, "optimizer parent")
-    elapsed = timestamp - parent_timestamp
-    if not (timedelta(0) <= elapsed <= OPTIMIZER_PARENT_WINDOW):
-        return timestamp
-
-    previous_result = subprocess.run(
-        ["git", "log", "-1", "--format=%cI", f"{commit_sha}^", "--", tracked_file],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    previous_value = previous_result.stdout.strip()
-    if previous_value:
-        return parse_git_timestamp(previous_value, "previous content update")
+        parent_timestamp = parse_git_timestamp(parent_value, "optimizer parent")
+        elapsed = timestamp - parent_timestamp
+        if not (timedelta(0) <= elapsed <= OPTIMIZER_PARENT_WINDOW):
+            return timestamp
 
     return parent_timestamp
 
