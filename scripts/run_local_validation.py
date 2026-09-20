@@ -29,6 +29,7 @@ CHECKS = [
     "scripts/check_workflow_permissions.py",
     "scripts/check_workflow_timeouts.py",
     "scripts/check_validation_docs.py",
+    "scripts/check_update_date_derivation.py",
 ]
 
 MAINTAINED_PATHS = [
