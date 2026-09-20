@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Keep visible portfolio fallback counts and sitemap update dates aligned."""
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import html
@@ -12,8 +12,6 @@ import xml.etree.ElementTree as ET
 
 INDEX_PATH = Path("index.html")
 SITEMAP_PATH = Path("sitemap.xml")
-# Public "last updated" dates should describe visitor-facing content, not changes to
-# maintenance code that leave the generated page unchanged.
 TRACKED_PAGE_FILES = (
     "index.html",
     "main.js",
@@ -22,14 +20,16 @@ TRACKED_PAGE_FILES = (
 )
 HOME_URL = "https://sakai1250.github.io/"
 SITE_TIMEZONE = ZoneInfo("Asia/Tokyo")
-OPTIMIZER_COMMIT_MESSAGE = "chore: update portfolio assets and optimized images"
-OPTIMIZER_PARENT_WINDOW = timedelta(minutes=30)
 STATIC_SITEMAP_FILES = {
     "https://sakai1250.github.io/assets/cv.pdf": "assets/cv.pdf",
     "https://sakai1250.github.io/assets/cv.txt": "assets/cv.txt",
     "https://sakai1250.github.io/llms.txt": "llms.txt",
 }
 QIITA_FALLBACK = '''<li><a href="https://qiita.com/sakai1250" target="_blank" rel="noopener noreferrer"><span lang="ja">Qiitaプロフィールを見る</span><span lang="en">Open Qiita profile</span></a></li>'''
+FRESHNESS_PATTERNS = (
+    re.compile(r'(<span\s+id="last-updated">)[^<]*(</span>)'),
+    re.compile(r'(<span\s+id="last-updated-en">)[^<]*(</span>)'),
+)
 
 
 def parse_git_timestamp(value: str, label: str) -> datetime:
@@ -42,52 +42,55 @@ def parse_git_timestamp(value: str, label: str) -> datetime:
     return timestamp
 
 
+def normalize_freshness_fields(text: str) -> str:
+    """Ignore only the generated footer dates when comparing homepage revisions."""
+    for pattern in FRESHNESS_PATTERNS:
+        text, count = pattern.subn(r"\g<1>__LAST_UPDATED__\g<2>", text, count=1)
+        if count != 1:
+            raise SystemExit("Could not normalize both footer dates in historical index.html")
+    return text
+
+
+def git_file_at_revision(revision: str, tracked_file: str) -> str | None:
+    result = subprocess.run(
+        ["git", "show", f"{revision}:{tracked_file}"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return None
+    return result.stdout
+
+
+def index_commit_is_freshness_only(commit_sha: str) -> bool:
+    current = git_file_at_revision(commit_sha, "index.html")
+    parent = git_file_at_revision(f"{commit_sha}^", "index.html")
+    if current is None or parent is None:
+        return False
+    return normalize_freshness_fields(current) == normalize_freshness_fields(parent)
+
+
 def effective_git_update_timestamp(tracked_file: str) -> datetime | None:
     result = subprocess.run(
-        ["git", "log", "-1", "--format=%H%x1f%cI%x1f%s", "--", tracked_file],
+        ["git", "log", "--format=%H%x1f%cI", "--", tracked_file],
         check=True,
         capture_output=True,
         text=True,
     )
-    value = result.stdout.strip()
-    if not value:
+    records = [line for line in result.stdout.splitlines() if line.strip()]
+    if not records:
         return None
 
-    try:
-        commit_sha, timestamp_value, subject = value.split("\x1f", 2)
-    except ValueError as exc:
-        raise SystemExit(f"Unexpected git log record for {tracked_file}: {value}") from exc
+    for value in records:
+        try:
+            commit_sha, timestamp_value = value.split("\x1f", 1)
+        except ValueError as exc:
+            raise SystemExit(f"Unexpected git log record for {tracked_file}: {value}") from exc
+        timestamp = parse_git_timestamp(timestamp_value, "source update")
+        if tracked_file != "index.html" or not index_commit_is_freshness_only(commit_sha):
+            return timestamp
 
-    timestamp = parse_git_timestamp(timestamp_value, "source update")
-    if subject != OPTIMIZER_COMMIT_MESSAGE:
-        return timestamp
-
-    parent_result = subprocess.run(
-        ["git", "show", "-s", "--format=%cI", f"{commit_sha}^"],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    parent_value = parent_result.stdout.strip()
-    if not parent_value:
-        return timestamp
-
-    parent_timestamp = parse_git_timestamp(parent_value, "optimizer parent")
-    elapsed = timestamp - parent_timestamp
-    if not (timedelta(0) <= elapsed <= OPTIMIZER_PARENT_WINDOW):
-        return timestamp
-
-    previous_result = subprocess.run(
-        ["git", "log", "-1", "--format=%cI", f"{commit_sha}^", "--", tracked_file],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    previous_value = previous_result.stdout.strip()
-    if previous_value:
-        return parse_git_timestamp(previous_value, "previous content update")
-
-    return parent_timestamp
+    return None
 
 
 def git_update_date(*tracked_files: str) -> str:
