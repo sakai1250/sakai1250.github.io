@@ -1,6 +1,6 @@
 # Taigo Sakai — Portfolio
 
-Personal portfolio for Taigo Sakai, Ph.D. Student, Special Assistant, and Computer Vision Researcher at Meijo University, Nagoya, Japan.
+Personal portfolio for Taigo Sakai, Ph.D. Student, Special Assistant, and Computer Vision Researcher at Meijo University.
 
 ## Quick links
 
