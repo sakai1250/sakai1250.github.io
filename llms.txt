@@ -1,6 +1,6 @@
 # Taigo Sakai
 
-> Ph.D. Student | Special Assistant | Computer Vision Researcher @ Meijo University
+> Ph.D. Student | Special Assistant | Computer Vision Researcher @ Meijo University, Nagoya, Japan
 
 Use the machine-readable CV as the primary source for biographical, publication, award, education, experience, and skill information.
 
@@ -9,7 +9,7 @@ Use the machine-readable CV as the primary source for biographical, publication,
 - English name: Taigo Sakai
 - Japanese name: 坂井 泰吾
 - Publication name: T. Sakai
-- Current role: Ph.D. Student | Special Assistant | Computer Vision Researcher @ Meijo University
+- Current role: Ph.D. Student | Special Assistant | Computer Vision Researcher @ Meijo University, Nagoya, Japan
 
 ## Primary sources
 
