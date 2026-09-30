@@ -27,16 +27,31 @@ def normalize_research_area(text: str) -> str:
     return " ".join(text.split()).casefold().replace("&", "and")
 
 
-def maintain_readme_name(text: str, name: str) -> str:
+def format_readme_role_summary(roles: list[str], affiliation: str) -> str:
+    if not roles or not affiliation:
+        raise SystemExit("CV role and affiliation are required for the README introduction")
+    if len(roles) == 1:
+        role_text = roles[0]
+    elif len(roles) == 2:
+        role_text = f"{roles[0]} and {roles[1]}"
+    else:
+        role_text = ", ".join(roles[:-1]) + f", and {roles[-1]}"
+    return f"{role_text} at {affiliation}"
+
+
+def maintain_readme_identity(
+    text: str, name: str, roles: list[str], affiliation: str
+) -> str:
     text, heading_count = re.subn(
         r"(?m)^# .+ — Portfolio$", f"# {name} — Portfolio", text, count=1
     )
     if heading_count != 1:
         raise SystemExit("Could not find README profile heading")
 
+    role_summary = format_readme_role_summary(roles, affiliation)
     text, intro_count = re.subn(
-        r"(?m)^Personal portfolio for [^,]+, (.+)$",
-        lambda match: f"Personal portfolio for {name}, {match.group(1)}",
+        r"(?m)^Personal portfolio for [^,]+, .+$",
+        f"Personal portfolio for {name}, {role_summary}.",
         text,
         count=1,
     )
@@ -131,16 +146,28 @@ def validate_identity_independence() -> None:
     synthetic_roles = ["Research Fellow", "Computer Vision Researcher"]
     synthetic_affiliation = "Example University"
     old_name = "Old Name"
-    readme = f"# {old_name} — Portfolio\n\nPersonal portfolio for {old_name}, a researcher.\n"
+    readme = f"# {old_name} — Portfolio\n\nPersonal portfolio for {old_name}, Old Role at Old University.\n"
     llms = (
         f"# {old_name}\n\n> Old Role @ Old University\n\n## Identity\n\n"
         f"- English name: {old_name}\n- Japanese name: 旧 氏名\n"
         f"- Publication name: O. Name\n- Current role: Old Role @ Old University\n"
     )
 
-    maintained_readme = maintain_readme_name(readme, synthetic_name)
-    if maintained_readme.count(synthetic_name) != 2 or old_name in maintained_readme:
-        raise SystemExit("README name maintenance depends on the current profile literal")
+    maintained_readme = maintain_readme_identity(
+        readme, synthetic_name, synthetic_roles, synthetic_affiliation
+    )
+    expected_readme = (
+        "Personal portfolio for Example Researcher, Research Fellow and "
+        "Computer Vision Researcher at Example University."
+    )
+    if expected_readme not in maintained_readme:
+        raise SystemExit("README role and affiliation are not derived from profile inputs")
+    if old_name in maintained_readme or "Old Role" in maintained_readme or "Old University" in maintained_readme:
+        raise SystemExit("README identity maintenance depends on current profile literals")
+    if maintain_readme_identity(
+        maintained_readme, synthetic_name, synthetic_roles, synthetic_affiliation
+    ) != maintained_readme:
+        raise SystemExit("README identity maintenance is not idempotent")
 
     maintained_llms = maintain_llms_identity(
         llms,
@@ -196,7 +223,9 @@ def main() -> None:
     publication_name = read_cv_field(cv_text, "Publication name")
     roles, affiliation = read_cv_header_profile(cv_text)
     research_areas = read_section_bullets(cv_text, "RESEARCH AREAS")
-    readme_text = maintain_readme_name(README_PATH.read_text(encoding="utf-8"), name)
+    readme_text = maintain_readme_identity(
+        README_PATH.read_text(encoding="utf-8"), name, roles, affiliation
+    )
     README_PATH.write_text(
         maintain_readme_research_areas(readme_text, research_areas), encoding="utf-8"
     )
