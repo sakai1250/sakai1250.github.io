@@ -6,18 +6,13 @@ import re
 
 from cv_profile import read_cv_field, read_cv_header_profile, read_cv_name
 
-
 CV_PATH = Path("assets/cv.txt")
 README_PATH = Path("README.md")
 LLMS_PATH = Path("llms.txt")
 
 
 def read_section_bullets(text: str, heading: str) -> list[str]:
-    match = re.search(
-        rf"^{re.escape(heading)}\s*$\n(?P<body>.*?)(?=\n[A-Z][A-Z ]+\n|\Z)",
-        text,
-        flags=re.MULTILINE | re.DOTALL,
-    )
+    match = re.search(rf"^{re.escape(heading)}\s*$\n(?P<body>.*?)(?=\n[A-Z][A-Z ]+\n|\Z)", text, flags=re.MULTILINE | re.DOTALL)
     if not match:
         raise SystemExit(f"assets/cv.txt is missing section: {heading}")
     return re.findall(r"^-\s+(.+)$", match.group("body"), flags=re.MULTILINE)
@@ -27,19 +22,24 @@ def normalize_research_area(text: str) -> str:
     return " ".join(text.split()).casefold().replace("&", "and")
 
 
-def maintain_readme_name(text: str, name: str) -> str:
-    text, heading_count = re.subn(
-        r"(?m)^# .+ — Portfolio$", f"# {name} — Portfolio", text, count=1
-    )
+def format_readme_role_summary(roles: list[str], affiliation: str) -> str:
+    if not roles or not affiliation:
+        raise SystemExit("CV role and affiliation are required for the README introduction")
+    if len(roles) == 1:
+        role_text = roles[0]
+    elif len(roles) == 2:
+        role_text = f"{roles[0]} and {roles[1]}"
+    else:
+        role_text = ", ".join(roles[:-1]) + f", and {roles[-1]}"
+    return f"{role_text} at {affiliation}"
+
+
+def maintain_readme_identity(text: str, name: str, roles: list[str], affiliation: str) -> str:
+    text, heading_count = re.subn(r"(?m)^# .+ — Portfolio$", f"# {name} — Portfolio", text, count=1)
     if heading_count != 1:
         raise SystemExit("Could not find README profile heading")
-
-    text, intro_count = re.subn(
-        r"(?m)^Personal portfolio for [^,]+, (.+)$",
-        lambda match: f"Personal portfolio for {name}, {match.group(1)}",
-        text,
-        count=1,
-    )
+    role_summary = format_readme_role_summary(roles, affiliation)
+    text, intro_count = re.subn(r"(?m)^Personal portfolio for [^,]+, .+$", f"Personal portfolio for {name}, {role_summary}.", text, count=1)
     if intro_count != 1:
         raise SystemExit("Could not find README profile introduction")
     return text
@@ -51,55 +51,30 @@ def maintain_readme_research_areas(text: str, research_areas: list[str]) -> str:
     match = re.search(r"(?m)^- Research:\s*(.+)$", text)
     if not match:
         raise SystemExit("Could not find README Research focus summary")
-
     existing = [item.strip() for item in match.group(1).split(",") if item.strip()]
     normalized_existing = {normalize_research_area(item) for item in existing}
-    missing = [
-        area for area in research_areas if normalize_research_area(area) not in normalized_existing
-    ]
+    missing = [area for area in research_areas if normalize_research_area(area) not in normalized_existing]
     if not missing:
         return text
-
     updated = existing + [area.casefold() for area in missing]
     return text[: match.start(1)] + ", ".join(updated) + text[match.end(1) :]
 
 
-def maintain_llms_identity(
-    text: str,
-    name: str,
-    japanese_name: str,
-    publication_name: str,
-    roles: list[str],
-    affiliation: str,
-) -> str:
+def maintain_llms_identity(text: str, name: str, japanese_name: str, publication_name: str, roles: list[str], affiliation: str) -> str:
     text, heading_count = re.subn(r"(?m)^# .+$", f"# {name}", text, count=1)
     if heading_count != 1:
         raise SystemExit("Could not find llms.txt profile heading")
-
     role_text = " | ".join(roles)
     summary = f"> {role_text} @ {affiliation}"
     text, summary_count = re.subn(r"(?m)^> .+$", summary, text, count=1)
     if summary_count != 1:
         raise SystemExit("Could not find llms.txt profile summary")
-
-    identity_fields = {
-        "English name": name,
-        "Japanese name": japanese_name,
-        "Publication name": publication_name,
-    }
+    identity_fields = {"English name": name, "Japanese name": japanese_name, "Publication name": publication_name}
     for label, value in identity_fields.items():
-        text, field_count = re.subn(
-            rf"(?m)^- {re.escape(label)}: .+$", f"- {label}: {value}", text, count=1
-        )
+        text, field_count = re.subn(rf"(?m)^- {re.escape(label)}: .+$", f"- {label}: {value}", text, count=1)
         if field_count != 1:
             raise SystemExit(f"Could not find llms.txt {label} field")
-
-    text, role_count = re.subn(
-        r"(?m)^- Current role: .+$",
-        f"- Current role: {role_text} @ {affiliation}",
-        text,
-        count=1,
-    )
+    text, role_count = re.subn(r"(?m)^- Current role: .+$", f"- Current role: {role_text} @ {affiliation}", text, count=1)
     if role_count != 1:
         raise SystemExit("Could not find llms.txt current role field")
     return text
@@ -108,18 +83,14 @@ def maintain_llms_identity(
 def maintain_llms_research_areas(text: str, research_areas: list[str]) -> str:
     if not research_areas:
         raise SystemExit("assets/cv.txt RESEARCH AREAS must contain at least one bullet")
-    match = re.search(
-        r"(?ms)^## Research focus\s*\n(?P<body>.*?)(?=\n## |\Z)", text
-    )
+    match = re.search(r"(?ms)^## Research focus\s*\n(?P<body>.*?)(?=\n## |\Z)", text)
     if not match:
         raise SystemExit("Could not find llms.txt Research focus section")
-
     body = match.group("body")
     existing = set(re.findall(r"(?m)^-\s+(.+)$", body))
     missing = [area for area in research_areas if area not in existing]
     if not missing:
         return text
-
     updated_body = body.rstrip() + "\n" + "\n".join(f"- {area}" for area in missing) + "\n"
     return text[: match.start("body")] + updated_body + text[match.end("body") :]
 
@@ -131,31 +102,19 @@ def validate_identity_independence() -> None:
     synthetic_roles = ["Research Fellow", "Computer Vision Researcher"]
     synthetic_affiliation = "Example University"
     old_name = "Old Name"
-    readme = f"# {old_name} — Portfolio\n\nPersonal portfolio for {old_name}, a researcher.\n"
-    llms = (
-        f"# {old_name}\n\n> Old Role @ Old University\n\n## Identity\n\n"
-        f"- English name: {old_name}\n- Japanese name: 旧 氏名\n"
-        f"- Publication name: O. Name\n- Current role: Old Role @ Old University\n"
-    )
-
-    maintained_readme = maintain_readme_name(readme, synthetic_name)
-    if maintained_readme.count(synthetic_name) != 2 or old_name in maintained_readme:
-        raise SystemExit("README name maintenance depends on the current profile literal")
-
-    maintained_llms = maintain_llms_identity(
-        llms,
-        synthetic_name,
-        synthetic_japanese_name,
-        synthetic_publication_name,
-        synthetic_roles,
-        synthetic_affiliation,
-    )
+    readme = f"# {old_name} — Portfolio\n\nPersonal portfolio for {old_name}, Old Role at Old University.\n"
+    llms = (f"# {old_name}\n\n> Old Role @ Old University\n\n## Identity\n\n" f"- English name: {old_name}\n- Japanese name: 旧 氏名\n" f"- Publication name: O. Name\n- Current role: Old Role @ Old University\n")
+    maintained_readme = maintain_readme_identity(readme, synthetic_name, synthetic_roles, synthetic_affiliation)
+    expected_readme = "Personal portfolio for Example Researcher, Research Fellow and Computer Vision Researcher at Example University."
+    if expected_readme not in maintained_readme:
+        raise SystemExit("README role and affiliation are not derived from profile inputs")
+    if old_name in maintained_readme or "Old Role" in maintained_readme or "Old University" in maintained_readme:
+        raise SystemExit("README identity maintenance depends on current profile literals")
+    if maintain_readme_identity(maintained_readme, synthetic_name, synthetic_roles, synthetic_affiliation) != maintained_readme:
+        raise SystemExit("README identity maintenance is not idempotent")
+    maintained_llms = maintain_llms_identity(llms, synthetic_name, synthetic_japanese_name, synthetic_publication_name, synthetic_roles, synthetic_affiliation)
     expected_role = "Research Fellow | Computer Vision Researcher @ Example University"
-    expected_identity_fields = (
-        f"- English name: {synthetic_name}",
-        f"- Japanese name: {synthetic_japanese_name}",
-        f"- Publication name: {synthetic_publication_name}",
-    )
+    expected_identity_fields = (f"- English name: {synthetic_name}", f"- Japanese name: {synthetic_japanese_name}", f"- Publication name: {synthetic_publication_name}")
     if any(field not in maintained_llms for field in expected_identity_fields):
         raise SystemExit("llms.txt name variants are not fully derived from profile inputs")
     if old_name in maintained_llms or "旧 氏名" in maintained_llms or "O. Name" in maintained_llms:
@@ -172,7 +131,6 @@ def validate_research_area_independence() -> None:
         raise SystemExit("README research-area maintenance failed")
     if maintain_readme_research_areas(maintained_readme, research_areas) != maintained_readme:
         raise SystemExit("README research-area maintenance is not idempotent")
-
     llms = "## Research focus\n\n- Existing Area\n\n## Audience routes\n"
     maintained = maintain_llms_research_areas(llms, ["Synthetic Area", "Another Area"])
     for area in ("Existing Area", "Synthetic Area", "Another Area"):
@@ -180,9 +138,7 @@ def validate_research_area_independence() -> None:
             raise SystemExit("llms.txt research-area maintenance failed")
     if maintained.count("- Synthetic Area") != 1:
         raise SystemExit("llms.txt research-area maintenance is not idempotent")
-    maintained_again = maintain_llms_research_areas(
-        maintained, ["Synthetic Area", "Another Area"]
-    )
+    maintained_again = maintain_llms_research_areas(maintained, ["Synthetic Area", "Another Area"])
     if maintained_again != maintained:
         raise SystemExit("llms.txt research-area maintenance is not idempotent")
 
@@ -196,21 +152,10 @@ def main() -> None:
     publication_name = read_cv_field(cv_text, "Publication name")
     roles, affiliation = read_cv_header_profile(cv_text)
     research_areas = read_section_bullets(cv_text, "RESEARCH AREAS")
-    readme_text = maintain_readme_name(README_PATH.read_text(encoding="utf-8"), name)
-    README_PATH.write_text(
-        maintain_readme_research_areas(readme_text, research_areas), encoding="utf-8"
-    )
-    llms_text = maintain_llms_identity(
-        LLMS_PATH.read_text(encoding="utf-8"),
-        name,
-        japanese_name,
-        publication_name,
-        roles,
-        affiliation,
-    )
-    LLMS_PATH.write_text(
-        maintain_llms_research_areas(llms_text, research_areas), encoding="utf-8"
-    )
+    readme_text = maintain_readme_identity(README_PATH.read_text(encoding="utf-8"), name, roles, affiliation)
+    README_PATH.write_text(maintain_readme_research_areas(readme_text, research_areas), encoding="utf-8")
+    llms_text = maintain_llms_identity(LLMS_PATH.read_text(encoding="utf-8"), name, japanese_name, publication_name, roles, affiliation)
+    LLMS_PATH.write_text(maintain_llms_research_areas(llms_text, research_areas), encoding="utf-8")
 
 
 if __name__ == "__main__":
