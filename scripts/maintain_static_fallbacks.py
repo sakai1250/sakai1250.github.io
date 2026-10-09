@@ -17,6 +17,7 @@ TRACKED_PAGE_FILES = (
     "main.js",
     "style.css",
     "assets/data.json",
+    "assets/cv.txt",
 )
 HOME_URL = "https://sakai1250.github.io/"
 SITE_TIMEZONE = ZoneInfo("Asia/Tokyo")
