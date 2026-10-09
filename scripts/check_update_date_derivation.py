@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Regression checks for visitor-facing update-date classification."""
 
-from maintain_static_fallbacks import normalize_freshness_fields
+from datetime import datetime
+from unittest.mock import patch
+
+from maintain_static_fallbacks import TRACKED_PAGE_FILES, git_update_date, normalize_freshness_fields
 
 
 def page(date: str, research_area: str = "Continual Learning") -> str:
@@ -25,6 +28,17 @@ def main() -> None:
     assert normalize_freshness_fields(before) != normalize_freshness_fields(semantic_change), (
         "semantic homepage changes must still advance the public update date"
     )
+    # CV-only edits must advance the public date, even if HTML/CSS/JS are unchanged.
+    def source_timestamp(path: str) -> datetime:
+        return datetime.fromisoformat(
+            "2026-10-01T12:00:00+09:00" if path == "assets/cv.txt" else "2026-09-19T12:00:00+09:00"
+        )
+
+    with patch("maintain_static_fallbacks.effective_git_update_timestamp", side_effect=source_timestamp):
+        assert git_update_date(*TRACKED_PAGE_FILES) == "2026-10-01", (
+            "CV source changes must advance the homepage update date"
+        )
+
     print("Update-date derivation regression checks passed")
 
 
