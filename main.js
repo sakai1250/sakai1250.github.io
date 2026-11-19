@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit(initContactForm, 'ContactForm');
     safeInit(initStickyHeader, 'StickyHeader');
     safeInit(initReadingProgress, 'ReadingProgress');
+    safeInit(initViewTransitions, 'ViewTransitions');
     safeInit(initContextualShareLink, 'ContextualShareLink');
 
 });
@@ -218,7 +219,7 @@ function initTheme() {
             img.src = img.src.replace(/theme=[^&]+/, `theme=${t === 'dark' ? 'dracula' : 'default'}`);
         });
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-        if (metaThemeColor) metaThemeColor.setAttribute('content', t === 'dark' ? '#09131F' : '#F7F3EA');
+        if (metaThemeColor) metaThemeColor.setAttribute('content', t === 'dark' ? '#09090B' : '#FCFCFB');
     };
     if (btn) btn.addEventListener('click', () => set(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark', true, true));
     window.addEventListener('portfolio:languagechange', () => syncAccessibleName(document.documentElement.getAttribute('data-theme') || 'dark'));
@@ -411,21 +412,6 @@ function initModals() {
 }
 
 function initStats() {
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const animate = (obj, end) => {
-        if (reduceMotion) {
-            obj.textContent = end;
-            return;
-        }
-        let start = null;
-        const step = (ts) => {
-            if (!start) start = ts;
-            const progress = Math.min((ts - start) / 1500, 1);
-            obj.textContent = Math.floor(progress * end);
-            if (progress < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
-    };
     const researchSections = Array.from(document.querySelectorAll('#research-content .section-card'));
     const findResearchSection = (englishTitle) => researchSections.find(section =>
         section.querySelector('.section-title [lang="en"]')?.textContent.trim() === englishTitle
@@ -440,7 +426,7 @@ function initStats() {
         { id: 'stat-apps', v: appCount }
     ].forEach(s => {
         const el = document.getElementById(s.id);
-        if (el) animate(el, s.v);
+        if (el) el.textContent = s.v;
     });
 }
 
@@ -701,11 +687,37 @@ function initReadingProgress() {
     const r = 26, c = r * 2 * Math.PI;
     circle.style.strokeDasharray = `${c} ${c}`;
     circle.style.strokeDashoffset = c;
+    // Browsers with scroll-driven animations draw the ring from CSS alone.
+    if (window.CSS && CSS.supports('animation-timeline: scroll()')) return;
     window.addEventListener('scroll', () => {
         const h = document.documentElement, b = document.body;
         const p = (h.scrollTop || b.scrollTop) / (h.scrollHeight - h.clientHeight);
         circle.style.strokeDashoffset = c - (p * c);
     }, { passive: true });
+}
+
+function initViewTransitions() {
+    if (typeof document.startViewTransition !== 'function') return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let passthrough = false;
+    // Wrap the existing tab, language, and theme handlers in a view transition by
+    // pausing the user's click and replaying it inside the transition callback.
+    document.addEventListener('click', (event) => {
+        if (passthrough || reduceMotion.matches || event.defaultPrevented) return;
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        const target = event.target instanceof Element
+            ? event.target.closest('#lang-toggle, #theme-toggle, .tab-item[data-tab]')
+            : null;
+        if (!target) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const transition = document.startViewTransition(() => {
+            passthrough = true;
+            try { target.click(); } finally { passthrough = false; }
+        });
+        // A quick second click skips the first transition; that is not an error.
+        [transition.ready, transition.finished, transition.updateCallbackDone].forEach(p => p.catch(() => {}));
+    }, true);
 }
 
 function initLanguage() {

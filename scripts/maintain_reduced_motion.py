@@ -4,39 +4,13 @@ from pathlib import Path
 path = Path('main.js')
 text = path.read_text(encoding='utf-8')
 
-legacy_stats = """function initStats() {
-    const animate = (obj, end) => {
-        let start = null;
-        const step = (ts) => {
-            if (!start) start = ts;
-            const progress = Math.min((ts - start) / 1500, 1);
-            obj.innerHTML = Math.floor(progress * end);
-            if (progress < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
-    };"""
-
-reduced_motion_stats = """function initStats() {
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const animate = (obj, end) => {
-        if (reduceMotion) {
-            obj.textContent = end;
-            return;
-        }
-        let start = null;
-        const step = (ts) => {
-            if (!start) start = ts;
-            const progress = Math.min((ts - start) / 1500, 1);
-            obj.textContent = Math.floor(progress * end);
-            if (progress < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
-    };"""
-
-if legacy_stats in text:
-    text = text.replace(legacy_stats, reduced_motion_stats, 1)
-elif reduced_motion_stats not in text:
-    raise SystemExit('Could not find the expected stats animation implementation')
+# The header counts are plain numbers written once at load; there is no count-up
+# animation left to keep reduced-motion aware. Require that static form.
+static_stats_marker = """function initStats() {
+    const researchSections"""
+static_stats_assignment = 'if (el) el.textContent = s.v;'
+if static_stats_marker not in text or static_stats_assignment not in text or 'animate(el, s.v)' in text:
+    raise SystemExit('Could not find the expected static stats implementation')
 
 legacy_scroll = """function scrollToSection(section) {
     window.scrollTo({
@@ -92,9 +66,6 @@ elif sticky_aware_toc_scroll not in text:
 
 required = [
     "window.matchMedia('(prefers-reduced-motion: reduce)').matches",
-    'if (reduceMotion) {',
-    'obj.textContent = end;',
-    'requestAnimationFrame(step);',
     "behavior: reduceMotion ? 'auto' : 'smooth'",
     'top: target.getBoundingClientRect().top + window.scrollY - getStickyOffset()',
     'top: s.getBoundingClientRect().top + window.scrollY - getStickyOffset()',
