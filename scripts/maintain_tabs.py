@@ -352,21 +352,14 @@ html_path.write_text(html, encoding="utf-8")
 
 css_path = Path("style.css")
 css = css_path.read_text(encoding="utf-8")
-old_css = """.tab-item {
-  padding: 9px 17px;
-  border-radius: 999px;
-  color: var(--muted);
-"""
-new_css = """.tab-item {
-  padding: 9px 17px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-"""
-if old_css in css:
-    css = css.replace(old_css, new_css, 1)
-elif new_css not in css:
+# Tabs are links/buttons, so the rule must reset the native border and background.
+# The visual treatment (underline, pill, ...) belongs to the design system, not here.
+tab_rule = re.search(r"\.tab-item \{([^}]*)\}", css)
+if (
+    tab_rule is None
+    or "border: 0;" not in tab_rule.group(1)
+    or "background: transparent;" not in tab_rule.group(1)
+):
     raise SystemExit("Could not find expected tab styling")
 
 old_toc_tooltip = ".toc-link:hover::after { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0); }"

@@ -63,8 +63,11 @@ This catches broken or unreachable external navigation, images, stylesheets, for
 ## Maintenance
 
 - `index.html` contains the portfolio content and page structure.
-- `style.css` controls the visual presentation and light/dark themes.
-- `main.js` handles filtering, language switching, statistics, and interaction.
+- `style.css` controls the visual presentation and light/dark themes. Colours, fonts, and spacing tokens live in `@layer tokens` (OKLCH); the hero follows the active theme. Keep `--accent` (text-safe) separate from `--accent-mark` (dots and rules only), and keep the custom-property names that inline styles and `main.js` use.
+- `main.js` handles filtering, language switching, statistics, and interaction. `initViewTransitions()` wraps the tab, language, and theme switches in a view transition when the browser supports it.
+- `hero-network.js` draws the decorative neural-network figure in the hero. It is `aria-hidden`, makes no network requests, draws one static frame under `prefers-reduced-motion`, and pauses off-screen or in a hidden tab.
+- `scripts/maintain_publication_structure.py` marks up each research achievement as authors / title / venue without changing its visible text; `scripts/check_publication_structure.py` verifies the structure and that guarantee.
+- `scripts/check_design_system.py` and `scripts/check_color_contrast.py` keep the Index design (no legacy fonts, gold, pills, or soft shadows) and the text contrast thresholds; `scripts/check_hero_network.py` covers the figure's geometry and its page contract.
 - `.python-version` is the single Python runtime version used by GitHub Actions and the documented local validation commands; update it when changing the maintenance runtime.
 - `.node-version` is the single Node runtime version used by GitHub Actions and local JavaScript validation; update it when changing the JavaScript validation runtime.
 - `scripts/*.py` contains repeatable maintenance transforms and checks used by GitHub Actions; keep transforms idempotent so repeated runs do not alter already-correct content.
