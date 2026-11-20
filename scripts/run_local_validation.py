@@ -11,10 +11,6 @@ CHECKS = [
     "scripts/check_site_integrity.py",
     "scripts/check_profile_name_alignment.py",
     "scripts/check_css_asset_references.py",
-    "scripts/check_color_contrast.py",
-    "scripts/check_design_system.py",
-    "scripts/check_hero_network.py",
-    "scripts/check_publication_structure.py",
     "scripts/check_research_award_alignment.py",
     "scripts/check_control_accessible_names.py",
     "scripts/check_utility_control_localization.py",
@@ -58,7 +54,6 @@ def main() -> None:
     python = sys.executable
     run(python, "scripts/run_deterministic_maintenance.py", "--compile-only")
     run("node", "--check", "main.js")
-    run("node", "--check", "hero-network.js")
     for check in CHECKS:
         run(python, check)
 

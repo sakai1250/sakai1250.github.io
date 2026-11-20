@@ -2,7 +2,6 @@
 """Guard the HCV2026 award label against CV/source and generated-page drift."""
 
 from pathlib import Path
-import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -38,9 +37,7 @@ if not SOURCE_ONLY:
     if INDEX.count(f">{PUBLIC_LABEL}</span>") < 2:
         raise SystemExit("index.html: Japanese and English HCV2026 award labels are not aligned with the CV")
 
-    # Markup (e.g. the .pub-tag span around the award phrase) is presentation; compare the visible text.
-    visible_index = re.sub(r"<[^>]+>", "", INDEX)
-    if "NeuroGuard: Neural Gradient Update Aware of Representation Damage" not in visible_index or "Oral, Outstanding Paper Award, Malmö, Sweden." not in visible_index:
+    if "NeuroGuard: Neural Gradient Update Aware of Representation Damage" not in INDEX or "Oral, Outstanding Paper Award, Malmö, Sweden." not in INDEX:
         raise SystemExit("index.html: HCV2026 award is not attached to the NeuroGuard publication entry")
 
     for legacy in LEGACY_LABELS:
