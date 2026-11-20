@@ -137,6 +137,7 @@ required = [
     'assets/data.json',
     'style.css',
     'main.js',
+    'hero-network.js',
     '404.html',
     'robots.txt',
     'sitemap.xml',

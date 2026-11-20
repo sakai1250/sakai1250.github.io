@@ -16,7 +16,7 @@ README = ROOT / "README.md"
 EFFECTS = ROOT / "effects.js"
 CV = ROOT / "assets" / "cv.txt"
 
-DESKTOP_STATS_RULE = """
+OBSOLETE_DESKTOP_STATS_RULE = """
 
 @media (min-width: 769px) {
   .header-stats {
@@ -141,8 +141,10 @@ def update_style() -> None:
     text = STYLE.read_text(encoding="utf-8")
     old = text
     text = text.replace(CURSOR_STYLE, "")
-    if DESKTOP_STATS_RULE.strip() not in text:
-        text = text.rstrip() + DESKTOP_STATS_RULE + "\n"
+    # The hero grid places the stats; the old floating offset must not come back.
+    text = text.replace(OBSOLETE_DESKTOP_STATS_RULE, "")
+    if "translate(-50%, -8px)" in text:
+        raise SystemExit("obsolete floating header stats offset is still present")
     if '.cursor {' in text or '@keyframes blink' in text:
         raise SystemExit("obsolete typing cursor styles are still present")
     if text != old:

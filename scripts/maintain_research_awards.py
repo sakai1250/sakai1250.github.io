@@ -23,6 +23,14 @@ HCV_PUBLICATION_WITH_AWARD = (
     'NeuroGuard: Neural Gradient Update Aware of Representation Damage,”\n'
     '                  <div class="muted">ECCV 2026 Workshop on Human-inspired Computer Vision, Oral, Outstanding Paper Award, Malmö, Sweden.</div>'
 )
+# The same publication once research achievements are marked up as authors / title / venue
+# (see maintain_publication_structure.py): the award phrase sits in a .pub-tag span.
+HCV_STRUCTURED_HEAD = (
+    'NeuroGuard: Neural Gradient Update Aware of Representation Damage<span class="pub-q" aria-hidden="true">,”</span></span>\n'
+    '                  <div class="muted pub-venue">ECCV 2026 Workshop on Human-inspired Computer Vision, Oral, '
+)
+HCV_STRUCTURED_MARKER = HCV_STRUCTURED_HEAD + 'Malmö, Sweden.</div>'
+HCV_STRUCTURED_WITH_AWARD = HCV_STRUCTURED_HEAD + '<span class="pub-tag">Outstanding Paper Award</span>, Malmö, Sweden.</div>'
 HCV_AWARD_LABEL = "HCV2026 Outstanding Paper Award"
 HCV_AWARD_URL = "https://arxiv.org/abs/2608.08068"
 HCV_AWARD_LINK = (
@@ -118,10 +126,13 @@ def maintain_hcv_award(text: str, cv_text: str) -> str:
     if HCV_CV_PUBLICATION_LINE not in cv_text:
         raise SystemExit("HCV2026 award is listed in the CV but missing from the NeuroGuard publication entry")
 
-    if HCV_PUBLICATION_WITH_AWARD not in text:
-        if HCV_PUBLICATION_MARKER not in text:
+    if HCV_PUBLICATION_WITH_AWARD not in text and HCV_STRUCTURED_WITH_AWARD not in text:
+        if HCV_PUBLICATION_MARKER in text:
+            text = text.replace(HCV_PUBLICATION_MARKER, HCV_PUBLICATION_WITH_AWARD, 1)
+        elif HCV_STRUCTURED_MARKER in text:
+            text = text.replace(HCV_STRUCTURED_MARKER, HCV_STRUCTURED_WITH_AWARD, 1)
+        else:
             raise SystemExit("Could not find the NeuroGuard HCV2026 publication entry")
-        text = text.replace(HCV_PUBLICATION_MARKER, HCV_PUBLICATION_WITH_AWARD, 1)
 
     awards_pattern = re.compile(
         r'(<section class="section-card" id="research-awards">.*?<ul class="repo-list">\n)(.*?)(\n\s*</ul>\n\s*</section>)',
