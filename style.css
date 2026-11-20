@@ -1,5 +1,5 @@
 /* === Taigo Sakai Portfolio — Index design system ===
-   Ruled paper, one accent hue, Geist / Geist Mono. No cards, soft shadows, or pills.
+   Ruled paper, one accent hue, Cormorant Garamond / DM Sans. No cards, soft shadows, or pills.
    The hero follows the theme: ink on paper (light), light lines on ink (dark). */
 
 @layer reset, tokens, base, layout, components;
@@ -37,8 +37,9 @@
     --hero-accent-rgb: 238, 75, 36;
     --hero-ink-rgb: 17, 17, 17;
     --hero-node-rgb: 252, 252, 251;
-    --font-sans: "Geist", "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
-    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, "Noto Sans JP", monospace;
+    --font-sans: "DM Sans", "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+    --font-mono: "DM Sans", "Noto Sans JP", system-ui, sans-serif;
+    --font-display: "Cormorant Garamond", Georgia, "Noto Serif JP", serif;
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
     --gutter: clamp(16px, 4vw, 32px);
     --page-pad: max(var(--gutter), calc((100vw - 1240px) / 2));
@@ -295,10 +296,11 @@
   .header-identity { display: block; }
   .header-name {
     color: var(--hero-fg);
-    font-size: clamp(52px, 10.5vw, 124px);
+    font-family: var(--font-display);
+    font-size: clamp(60px, 11.5vw, 136px);
     font-weight: 600;
-    letter-spacing: -0.058em;
-    line-height: 0.92;
+    letter-spacing: -0.02em;
+    line-height: 0.9;
   }
   .header-subtitle {
     margin-top: 28px;
@@ -333,7 +335,7 @@
 
   .header-stats { display: flex; align-items: baseline; gap: 12px 36px; flex-wrap: wrap; margin-top: 40px; }
   .stat-item { display: flex; align-items: baseline; gap: 10px; color: var(--hero-fg); }
-  .stat-value { font-size: 30px; font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+  .stat-value { font-family: var(--font-display); font-size: 34px; font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
   .stat-label { color: var(--hero-muted); font: 500 11.5px var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; }
   .hero a:hover { color: var(--accent); }
 
@@ -426,9 +428,10 @@
   .section-title {
     margin-bottom: 20px;
     color: var(--text-main);
-    font-size: clamp(24px, 3vw, 30px);
+    font-family: var(--font-display);
+    font-size: clamp(28px, 3.4vw, 36px);
     font-weight: 600;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.01em;
     line-height: 1.2;
   }
   .section-title [lang="ja"], .subsection-title [lang="ja"] { letter-spacing: 0; }
@@ -697,7 +700,7 @@
     cursor: pointer;
   }
   .modal-img { width: 100%; max-height: 300px; object-fit: cover; border-radius: 4px; }
-  .modal-title { margin: 20px 44px 8px 0; font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
+  .modal-title { margin: 20px 44px 8px 0; font-family: var(--font-display); font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
   .modal-desc { color: var(--text-sub); }
   .modal-links { display: flex; gap: 8px 16px; flex-wrap: wrap; margin-top: 16px; }
 

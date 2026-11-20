@@ -56,8 +56,8 @@ elif theme_icon_decorative not in text:
 # page renders immediately using the existing system-font fallbacks, then apply
 # the web fonts only after the stylesheet has arrived.
 google_fonts_url = (
-    'https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&'
-    'family=Geist+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap'
+    'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&'
+    'family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap'
 )
 blocking_google_fonts = (
     '  <link\n'
