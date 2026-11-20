@@ -10,9 +10,9 @@ INDEX = Path("index.html")
 STYLE = Path("style.css")
 MAIN = Path("main.js")
 
-REQUIRED_FONT_FAMILIES = ("family=Geist:", "family=Geist+Mono:", "Noto+Sans+JP")
-FORBIDDEN_FONTS_HTML = ("Cormorant", "DM+Sans")
-FORBIDDEN_FONTS_CSS = ("Cormorant", "DM Sans")
+REQUIRED_FONT_FAMILIES = ("family=Cormorant+Garamond:", "family=DM+Sans:", "Noto+Sans+JP")
+FORBIDDEN_FONTS_HTML = ("family=Geist",)
+FORBIDDEN_FONTS_CSS = ("Geist",)
 FORBIDDEN_GOLD = ("#C6A15B", "#8A611E", "#EEE2CA", "--accent-2", "--accent-soft")
 FORBIDDEN_CSS_STRINGS = (
     ".reveal-item",
@@ -143,14 +143,14 @@ def problems_in_main(js: str) -> list[str]:
 
 
 def self_test() -> None:
-    good_html = '<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Geist+Mono:wght@400&family=Noto+Sans+JP:wght@400&display=swap" rel="stylesheet">'
+    good_html = '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=DM+Sans:wght@400&family=Noto+Sans+JP:wght@400&display=swap" rel="stylesheet">'
     header = '<a class="header-brand"></a><div class="header-tab-row"></div><div class="header-actions"></div>'
     good_html = good_html + header
     assert problems_in_index(good_html) == []
     assert any("DOM order" in p for p in problems_in_index(good_html.replace("header-actions", "x").replace("header-tab-row", "header-actions").replace("x", "header-tab-row")))
-    old_html = good_html.replace("Geist+Mono", "DM+Sans")
-    assert any("Geist+Mono" in p for p in problems_in_index(old_html))
-    assert any("DM+Sans" in p for p in problems_in_index(old_html))
+    old_html = good_html.replace("DM+Sans", "family=Geist")
+    assert any("family=Geist" in p for p in problems_in_index(old_html))
+    assert any("family=Geist" in p for p in problems_in_index(old_html))
 
     good_css = f"{LAYER_ORDER}\n@layer tokens {{ :root {{ --accent-mark: #ee4b24; }} }}\n" \
                ".rule { box-shadow: 0 1px 0 #111, 0 0 0 3px #fff; border-radius: 4px; }\n" \
@@ -163,7 +163,7 @@ def self_test() -> None:
     assert any("soft shadow" in p for p in problems_in_css(good_css + ".card { box-shadow: 0 4px 14px rgba(0,0,0,.1); }"))
     assert any("pill" in p for p in problems_in_css(good_css + ".chip { border-radius: 999px; }"))
     assert any("gold" in p for p in problems_in_css(good_css + ".x { color: #c6a15b; }"))
-    assert any("Cormorant" in p for p in problems_in_css(good_css + ".x { font-family: 'Cormorant Garamond'; }"))
+    assert any("Geist" in p for p in problems_in_css(good_css + ".x { font-family: 'Geist'; }"))
     assert any("@keyframes blink" in p for p in problems_in_css(good_css + "@keyframes blink { 50% { opacity: 0; } }"))
     assert any("@layer" in p for p in problems_in_css(good_css.replace(LAYER_ORDER, "")))
 
