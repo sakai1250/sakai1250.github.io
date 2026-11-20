@@ -2,7 +2,7 @@ name: Progressive enhancement check
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - .python-version
       - index.html

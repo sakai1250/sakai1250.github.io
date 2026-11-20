@@ -2,7 +2,7 @@ name: Interaction maintenance check
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
 
 permissions:
@@ -45,7 +45,7 @@ jobs:
               cat "$first_diff"
               exit 1
             fi
-            echo "::notice::Portfolio maintenance produced changes on this push; Optimize Portfolio Assets will apply them to main."
+            echo "::notice::Portfolio maintenance produced changes on this push; Optimize Portfolio Assets will apply them to master."
           fi
 
           # Compare the complete diff after a second pass with the first-pass diff.

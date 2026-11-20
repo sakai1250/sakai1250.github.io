@@ -2,7 +2,7 @@ name: Security contact check
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - '.python-version'
       - '.well-known/security.txt'
@@ -55,12 +55,12 @@ jobs:
               --retry 2 --retry-delay 3 --retry-all-errors --max-time 20 \
               "$url" --output "$deployed_file" && \
               cmp --silent .well-known/security.txt "$deployed_file"; then
-              echo 'OK: deployed security.txt is reachable and matches main'
+              echo 'OK: deployed security.txt is reachable and matches master'
               exit 0
             fi
 
             if [[ "$attempt" -lt 12 ]]; then
-              echo "Deployed security.txt does not match main yet; retrying ($attempt/12)."
+              echo "Deployed security.txt does not match master yet; retrying ($attempt/12)."
               sleep 10
             fi
           done

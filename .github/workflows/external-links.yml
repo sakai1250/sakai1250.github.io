@@ -2,7 +2,7 @@ name: External Link Check
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - '.python-version'
       - 'index.html'

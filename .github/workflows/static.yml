@@ -1,4 +1,4 @@
-# Validate the latest main branch after portfolio optimization finishes.
+# Validate the latest master branch after portfolio optimization finishes.
 # GitHub Pages' native branch deployment remains the single deployment owner.
 name: Post-optimization site validation
 
@@ -21,10 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout latest main branch
+      - name: Checkout latest master branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          ref: main
+          ref: master
           persist-credentials: false
           fetch-depth: 0
       - name: Set up Python
